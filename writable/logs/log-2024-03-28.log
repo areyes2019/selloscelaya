@@ -1,0 +1,91 @@
+CRITICAL - 2024-03-28 16:59:31 --> ParseError: syntax error, unexpected '}', expecting ';'
+in APPPATH\Controllers\Home.php on line 10.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\sellospararopa\\app\\Controllers\\Home.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\Home')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\Home')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\Home')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\Home', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 19:10:26 --> ParseError: syntax error, unexpected '"' (T_CONSTANT_ENCAPSED_STRING), expecting ';' or ','
+in APPPATH\Views\welcome_message.php on line 255.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('welcome_message', [], true)
+ 3 APPPATH\Controllers\Home.php(11): view('welcome_message', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 19:12:01 --> ParseError: syntax error, unexpected '"' (T_CONSTANT_ENCAPSED_STRING), expecting ';' or ','
+in APPPATH\Views\welcome_message.php on line 273.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('welcome_message', [], true)
+ 3 APPPATH\Controllers\Home.php(11): view('welcome_message', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 20:23:41 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "madera.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('madera.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('madera', [], true)
+ 3 APPPATH\Controllers\Home.php(23): view('madera', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->madera()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 20:39:40 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "madera.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('madera.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('madera', [], true)
+ 3 APPPATH\Controllers\Home.php(23): view('madera', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->madera()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 21:16:54 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "fechadores.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('fechadores.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('fechadores', [], true)
+ 3 APPPATH\Controllers\Home.php(41): view('fechadores', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->fechadores()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 21:17:12 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "fechadores.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('fechadores.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('fechadores', [], true)
+ 3 APPPATH\Controllers\Home.php(41): view('fechadores', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->fechadores()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 21:23:10 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "portatiles.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('portatiles.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('portatiles', [], true)
+ 3 APPPATH\Controllers\Home.php(29): view('portatiles', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->portatiles()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 21:34:01 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "textiles.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('textiles.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('textiles', [], true)
+ 3 APPPATH\Controllers\Home.php(47): view('textiles', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->textiles()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-03-28 21:34:59 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "gigantes.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('gigantes.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('gigantes', [], true)
+ 3 APPPATH\Controllers\Home.php(35): view('gigantes', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Home->gigantes()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
