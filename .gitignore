@@ -11,4 +11,4 @@ readme.md
 robot.txt
 spark
 *App/Config
-!Routes.php
+!App/Config/Routes.php
