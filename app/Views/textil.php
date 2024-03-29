@@ -1,4 +1,5 @@
-<?php echo $header ?>
+<?= $this->extend('template') ?>
+<?= $this->section('contenido') ?>
 <!-- Sellos autoentintables -->
     <div class="container-xxl py-5">
         <div class="container">
@@ -13,9 +14,9 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <h6 class="text-primary text-uppercase">// Sellos Fechadores //</h6>
-                    <h1 class="mb-4"><span class="text-primary">Control Total /</span> Prácticos y Limpios</h1>
-                    <p class="mb-4">Registra la fecha de recepción, envío, pago, vencimiento, etc. de forma rápida y precisa. Permite un seguimiento eficiente de tareas y plazos. La fecha impresa es clara e inconfundible, eliminando la posibilidad de errores caligráficos o de interpretación. Facilita la clasificación y búsqueda de documentos por fecha.</p>
+                    <h6 class="text-primary text-uppercase">// Sellos Para Ropa //</h6>
+                    <h1 class="mb-4"><span class="text-primary">Identifica la ropa de tu bebé</span> con sellos de goma personalizados</h1>
+                    <p class="mb-4">¿Cansado de buscar las etiquetas de la ropa de tu bebé? ¿Te preocupa que tu pequeño pierda sus prendas en la guardería o el colegio? ¡Los sellos de goma para ropa de bebé son la solución perfecta! Personaliza la ropa de tu bebé con su nombre, apellido o un dibujo divertido. Fáciles de usar, rápidos y duraderos. Resistentes al agua y a la lavadora. Ideales para ropa, baberos, toallas, mochilas y mucho más. ¡Pide tus sellos de goma para ropa de bebé hoy mismo y disfruta de la tranquilidad de saber que sus cosas siempre estarán identificadas!</p>
                     <div class="row g-4 mb-3 pb-3">
                         <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
                             <div class="d-flex">
@@ -23,8 +24,8 @@
                                     <span class="fw-bold text-secondary">01</span>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>Sello de 60 x 40 mm</h6>
-                                    <span>Ideal para hasta 5 líneas de texto</span>
+                                    <h6>Adiós a las etiquetas perdidas</h6>
+                                    <span>Olvídate de las etiquetas que se caen o se desgastan. Los sellos de goma son permanentes y resistentes al agua y a la lavadora.</span>
                                 </div>
                             </div>
                         </div>
@@ -34,8 +35,8 @@
                                     <span class="fw-bold text-secondary">02</span>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>Sello de 50 x 30 mm</h6>
-                                    <span>Lo puedes personalizar con hasta 4 líneas de texto y un logo pequeño</span>
+                                    <h6>Ahorro de tiempo y dinero</h6>
+                                    <span>No necesitas comprar etiquetas nuevas cada vez que tu bebé crece o cambia de ropa. Un sello de goma te durará años.</span>
                                 </div>
                             </div>
                         </div>
@@ -45,19 +46,8 @@
                                     <span class="fw-bold text-secondary">03</span>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>Sello de 45 mm dim</h6>
-                                    <span>Redondo con capacidad de hasta 5 lineas y un logo pequeño</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 wow fadeIn" data-wow-delay="0.5s">
-                            <div class="d-flex">
-                                <div class="bg-light d-flex flex-shrink-0 align-items-center justify-content-center mt-1" style="width: 45px; height: 45px;">
-                                    <span class="fw-bold text-secondary">04</span>
-                                </div>
-                                <div class="ps-3">
-                                    <h6>Sello de 43 x 43 mm</h6>
-                                    <span>El más vendido. Ideal para hasta 5 lineas de texto y un logo regular</span>
+                                    <h6>Personalización única</h6>
+                                    <span>Puedes personalizar el sello con el nombre de tu bebé, un dibujo divertido o una frase especial. ¡Haz que la ropa de tu pequeño sea única!</span>
                                 </div>
                             </div>
                         </div>
@@ -68,4 +58,4 @@
         </div>
     </div>
 <!-- Sellos gigantes -->
-<?php echo $footer ?>
+<?php echo $this->endSection()?>

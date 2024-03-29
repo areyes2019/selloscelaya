@@ -1,8 +1,6 @@
-    <?php echo $header; ?>
-    
+<?= $this->extend('template') ?>    
 
-
-
+<?php echo $this->section('contenido') ?>
     <!-- Carousel Start -->
     <div class="container-fluid p-0 mb-5">
         <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
@@ -132,7 +130,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="" class="btn btn-primary py-3 px-5">Queiro mas información<i class="fa fa-arrow-right ms-3"></i></a>
+                    <a href="https://wa.link/toiw92" class="btn btn-primary py-3 px-5">Queiro mas información<i class="fa fa-arrow-right ms-3"></i></a>
                 </div>
             </div>
         </div>
@@ -216,7 +214,7 @@
                                     <p><i class="fa fa-check text-success me-3"></i>Rapidez y Precisión</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Limpieza y Orden</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Ergonomía de Diseño</p>
-                                    <a href="<?php echo base_url('autoentitables'); ?>" class="btn btn-primary py-3 px-5 mt-3">Quiero uno<i class="fa fa-arrow-right ms-3"></i></a>
+                                    <a href="https://wa.link/gcydqc" target="_blank" class="btn btn-primary py-3 px-5 mt-3">Quiero uno<i class="fa fa-arrow-right ms-3"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -235,7 +233,7 @@
                                     <p><i class="fa fa-check text-success me-3"></i>Durables</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Gran calidad de estampado</p>
                                     <p><i class="fa fa-check text-success me-3"></i>100% personalizados</p>
-                                    <a href="" class="btn btn-primary py-3 px-5 mt-3">Quiero uno<i class="fa fa-arrow-right ms-3"></i></a>
+                                    <a href="https://wa.link/6uydwx" target="_blank" class="btn btn-primary py-3 px-5 mt-3">Quiero uno<i class="fa fa-arrow-right ms-3"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -254,7 +252,7 @@
                                     <p><i class="fa fa-check text-success me-3"></i>Registro preciso</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Eficiencia en Documentación</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Organizacion y elegancia</p>
-                                    <a href="" class="btn btn-primary py-3 px-5 mt-3">Quero uno<i class="fa fa-arrow-right ms-3"></i></a>
+                                    <a href="https://wa.link/1l85w2" target="_blank" class="btn btn-primary py-3 px-5 mt-3">Quero uno<i class="fa fa-arrow-right ms-3"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -273,7 +271,7 @@
                                     <p><i class="fa fa-check text-success me-3"></i>Identificación Personalizada</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Durabilidad y Seguridad</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Hasta 800 estampaciones</p>
-                                    <a href="" class="btn btn-primary py-3 px-5 mt-3">Quiero uno<i class="fa fa-arrow-right ms-3"></i></a>
+                                    <a href="https://wa.link/9wprzd" target="_blank" class="btn btn-primary py-3 px-5 mt-3">Quiero uno<i class="fa fa-arrow-right ms-3"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -517,6 +515,6 @@
         </div>
     </div>
     <!-- Testimonial End -->
+<?php echo $this->endSection() ?>
     
 
-    <?php echo $footer ?>

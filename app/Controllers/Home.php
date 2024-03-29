@@ -4,46 +4,35 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
-    public function index(): string
+    public function index()
     {
-        $data['header'] = view('header');
+        return view('home');
+        /*$data['header'] = view('header');
         $data['footer'] = view('footer');
-        return view('welcome_message', $data);
+        return view('welcome_message', $data);*/
     }
     public function autoentintables()
     {
-        $data['header'] = view('header');
-        $data['footer'] = view('footer');
-        return view('autoentitables', $data);
+        return view('autoentitables');
     }
     public function madera(): string
     {
-        $data['header'] = view('header');
-        $data['footer'] = view('footer');
-        return view('madera', $data);
+        return view('madera');
     }
     public function portatiles(): string
     {
-        $data['header'] = view('header');
-        $data['footer'] = view('footer');
-        return view('portatiles', $data);
+        return view('portatiles');
     }
     public function gigantes(): string
     {
-        $data['header'] = view('header');
-        $data['footer'] = view('footer');
-        return view('gigantes', $data);
+        return view('gigantes');
     }
     public function fechadores(): string
     {
-        $data['header'] = view('header');
-        $data['footer'] = view('footer');
-        return view('fechadores', $data);
+        return view('fechadores');
     }
     public function textiles(): string
     {
-        $data['header'] = view('header');
-        $data['footer'] = view('footer');
-        return view('textil', $data);
+        return view('textil');
     }
 }

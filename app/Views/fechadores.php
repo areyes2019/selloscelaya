@@ -1,4 +1,5 @@
-<?php echo $header ?>
+<?= $this->extend('template') ?>
+<?= $this->section('contenido') ?>
 <!-- Sellos autoentintables -->
     <div class="container-xxl py-5">
         <div class="container">
@@ -68,4 +69,4 @@
         </div>
     </div>
 <!-- Sellos gigantes -->
-<?php echo $footer ?>
+<?= $this->endSection('contenido') ?>
