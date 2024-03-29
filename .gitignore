@@ -12,3 +12,4 @@ robot.txt
 spark
 App/Config/*
 !App/Config/Routes.php
+.gitignore
