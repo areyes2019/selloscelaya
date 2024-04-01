@@ -13,7 +13,7 @@
     <meta content="" name="description">
 
     <!-- Favicon -->
-    <link href="<?php echo base_url('public/img/logo.ico')?>" rel="icon">
+    <link rel="icon" href="<?php echo base_url('public/img/logo.ico')?>" type="image/x-icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
