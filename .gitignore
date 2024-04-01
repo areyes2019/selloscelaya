@@ -13,3 +13,5 @@ spark
 App/Config/*
 !App/Config/Routes.php
 .gitignore
+robots.txt
+sitemap.xml
