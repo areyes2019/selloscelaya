@@ -77,7 +77,7 @@
                 <a href="<?php echo base_url('#whoweare'); ?>" class="nav-item nav-link">Nosotros</a>
                 <a href="<?php echo base_url('#whyus'); ?>" class="nav-item nav-link">Por que elegirnos</a>
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Sellos</a>
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Nuestros Sellos de Goma</a>
                     <div class="dropdown-menu fade-up m-0">
                         <a href="<?php echo base_url('autoentitables'); ?>" class="dropdown-item">Autoentitables</a>
                         <a href="<?php echo base_url('madera'); ?>" class="dropdown-item">En Madera</a>
