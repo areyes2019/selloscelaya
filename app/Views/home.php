@@ -129,7 +129,7 @@
                             </div>
                         </div>
                     </div>
-                    <p>No importa cuál sea tu necesidad, en Sellos Celaya tenemos el sello perfecto para ti. ¡Contáctanos hoy mismo y descubre cómo podemos ayudarte a plasmar tu creatividad en cada impresión!</p>
+                    <p>No importa cuál sea tu necesidad, en Sellos Celaya tenemos el sello de goma perfecto para ti. ¡Contáctanos hoy mismo y descubre cómo podemos ayudarte a plasmar tu creatividad en cada impresión!</p>
                     <a href="https://wa.link/toiw92" class="btn btn-primary py-3 px-5">Queiro mas información<i class="fa fa-arrow-right ms-3"></i></a>
                 </div>
             </div>
