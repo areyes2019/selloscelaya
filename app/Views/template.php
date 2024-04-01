@@ -86,7 +86,7 @@
                         <a href="<?php echo base_url('gigantes'); ?>" class="dropdown-item">Gigantes</a>
                     </div>
                 </div>
-                <a href="contact.html" class="nav-item nav-link">Contacto</a>
+                <a href="<?php echo base_url('#contact'); ?>" class="nav-item nav-link">Contacto</a>
             </div>
             <a href="tel:4613581090" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Llamanos 461 358 1090<i class="fa fa-arrow-right ms-3"></i></a>
         </div>
