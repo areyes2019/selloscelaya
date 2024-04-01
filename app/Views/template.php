@@ -74,8 +74,8 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto p-4 p-lg-0">
                 <a href="index.html" class="nav-item nav-link active">Inicio</a>
-                <a href="about.html" class="nav-item nav-link">Nosotros</a>
-                <a href="service.html" class="nav-item nav-link">Por que elegirnos</a>
+                <a href="#whoweare" class="nav-item nav-link">Nosotros</a>
+                <a href="#whyus" class="nav-item nav-link">Por que elegirnos</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Sellos</a>
                     <div class="dropdown-menu fade-up m-0">

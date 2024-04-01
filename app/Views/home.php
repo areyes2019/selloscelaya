@@ -41,7 +41,7 @@
 
 
     <!-- Service Start -->
-    <div class="container-xxl py-5">
+    <div class="container-xxl py-5" id="whyus">
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
@@ -59,7 +59,6 @@
                         <div class="ps-4">
                             <h5 class="mb-3">Servicio a cliente excepcional</h5>
                             <p>Nuestro equipo amable y experimentado está siempre disponible para responder tus preguntas</p>
-                            <a class="text-secondary border-bottom" href="">Read More</a>
                         </div>
                     </div>
                 </div>
@@ -79,7 +78,7 @@
 
 
     <!-- About Start -->
-    <div class="container-xxl py-5">
+    <div class="container-xxl py-5" id="whoweare">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6 pt-4" style="min-height: 400px;">
@@ -130,6 +129,7 @@
                             </div>
                         </div>
                     </div>
+                    <p>No importa cuál sea tu necesidad, en Sellos Celaya tenemos el sello perfecto para ti. ¡Contáctanos hoy mismo y descubre cómo podemos ayudarte a plasmar tu creatividad en cada impresión!</p>
                     <a href="https://wa.link/toiw92" class="btn btn-primary py-3 px-5">Queiro mas información<i class="fa fa-arrow-right ms-3"></i></a>
                 </div>
             </div>
