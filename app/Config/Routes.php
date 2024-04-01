@@ -12,3 +12,4 @@ $routes->get('fechadores', 'Home::fechadores');
 $routes->get('portatiles', 'Home::portatiles');
 $routes->get('gigantes', 'Home::gigantes');
 $routes->get('textiles', 'Home::textiles');
+$routes->get('catalogo', 'Home::catalogo');

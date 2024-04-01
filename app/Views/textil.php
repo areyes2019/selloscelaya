@@ -6,11 +6,8 @@
             <div class="row g-5">
                 <div class="col-lg-6 pt-4" style="min-height: 400px;">
                     <div class="position-relative h-100 wow fadeIn" data-wow-delay="0.1s">
-                        <img class="position-absolute img-fluid w-100 h-100" src="<?php echo base_url('public/img/fechadores.png'); ?>" style="object-fit: contain;" alt="">
-                        <div class="position-absolute top-0 end-0 mt-n4 me-n4 py-4 px-5" style="background: rgba(0, 0, 0, .08);">
-                            <h1 class="display-4 text-white mb-0"><span class="fs-4"></span></h1>
-                            <h4 class="text-white"></h4>
-                        </div>
+                        <img class="position-absolute img-fluid w-100 h-100" src="<?php echo base_url('public/img/telabanner.png'); ?>" style="object-fit: contain;" alt="">
+                        
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -52,7 +49,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="" class="btn btn-primary py-3 px-5">Queiro mas información<i class="fa fa-arrow-right ms-3"></i></a>
+                    <a href="<?php echo base_url('catalogo'); ?>" class="btn btn-primary py-3 px-5">Queiro ver el muestrario<i class="fa fa-arrow-right ms-3"></i></a>
                 </div>
             </div>
         </div>

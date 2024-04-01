@@ -35,4 +35,8 @@ class Home extends BaseController
     {
         return view('textil');
     }
+    public function catalogo()
+    {
+        return view('catalogo');
+    }
 }
