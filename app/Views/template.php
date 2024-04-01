@@ -10,7 +10,6 @@
     <meta name="keywords" content="sellos de goma, sellos personalizados, sellos para empresas, sellos para oficinas, sellos automáticos">
     <meta name="author" content="sellos celaya">
     <meta name="language" content="es">
-    <meta content="" name="description">
 
     <!-- Favicon -->
     <link rel="icon" href="<?php echo base_url('/logo.ico')?>" type="image/x-icon">
