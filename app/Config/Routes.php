@@ -13,3 +13,12 @@ $routes->get('portatiles', 'Home::portatiles');
 $routes->get('gigantes', 'Home::gigantes');
 $routes->get('textiles', 'Home::textiles');
 $routes->get('catalogo', 'Home::catalogo');
+
+//logeo
+$routes->get('login', 'Login::login');
+
+$routes->group('admin',['filter'=>'AuthFilter'],function($routes){
+	$routes->get('admin', 'Login::index');
+});
+
+
