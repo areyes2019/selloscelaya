@@ -8,6 +8,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta name="description" content="Encuentra sellos de goma personalizados para tus necesidades comerciales o personales. Amplia variedad de diseños y tamaños disponibles. ¡Haz tu pedido ahora!">
     <meta name="keywords" content="sellos de goma, sellos personalizados, sellos para empresas, sellos para oficinas, sellos automáticos">
+    <meta property="og:image" content="<?php echo base_url('public/img/20.png'); ?>" />
     <meta name="author" content="sellos celaya">
     <meta name="language" content="es">
 

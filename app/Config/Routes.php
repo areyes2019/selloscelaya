@@ -1,7 +1,6 @@
 <?php
 
 use CodeIgniter\Router\RouteCollection;
-
 /**
  * @var RouteCollection $routes
  */
@@ -17,10 +16,10 @@ $routes->get('doctores', 'Home::catalogo');
 $routes->get('maestros', 'Home::catalogo');
 
 //logeo
-$routes->get('login', 'Login::login');
+$routes->get('login', 'Admin::login');
+$routes->get('admin', 'admin\Admin::index');
 
-$routes->group('admin',['filter'=>'AuthFilter'],function($routes){
-	$routes->get('admin', 'Login::index');
-});
+/*$routes->group('admin',['filter'=>'AuthFilter'],function($routes){
+});*/
 
 
