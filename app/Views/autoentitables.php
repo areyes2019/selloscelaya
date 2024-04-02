@@ -3,17 +3,12 @@
 <!-- Sellos autoentintables -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-6 pt-4" style="min-height: 400px;">
-                    <div class="position-relative h-100 wow fadeIn" data-wow-delay="0.1s">
-                        <img class="position-absolute img-fluid w-100 h-100" src="<?php echo base_url('public/img/autoentitables.png'); ?>" style="object-fit: contain;" alt="">
-                        <div class="position-absolute top-0 end-0 mt-n4 me-n4 py-4 px-5" style="background: rgba(0, 0, 0, .08);">
-                            <h1 class="display-4 text-white mb-0"><span class="fs-4"></span></h1>
-                            <h4 class="text-white"></h4>
-                        </div>
-                    </div>
+            <div class="row">
+                <div class="col-8 h-100">
+                    <img class="img-fluid" src="<?php echo base_url('public/img/autoentitables.png'); ?>" alt="">
                 </div>
-                <div class="col-lg-6">
+                <div class="col-4">
+                    
                     <h6 class="text-primary text-uppercase">// Sellos Autoentitables //</h6>
                     <h1 class="mb-4"><span class="text-primary">Sellos de Goma</span> Prácticos y Limpios</h1>
                     <p class="mb-4">Nuestros sellos autoentintables ofrecen una solución conveniente y eficiente, ya que eliminan la necesidad de utilizar almohadillas de tinta externas. Con un diseño integrado que recarga automáticamente la tinta después de cada impresión, nuestros sellos autoentintables son ideales para un uso rápido y sin complicaciones, lo que ahorra tiempo y esfuerzo en cada tarea de estampado.</p>
