@@ -26,7 +26,7 @@
                             <div class="d-flex">
                                 <div class="ps-3">
                                     <h6>¿Como lo pago?</h6>
-                                    <span>Puedes pagar en Oxxo, por trasferencia o directamente en nuestra ubucación.</span>
+                                    <span>Puedes pagar en Oxxo, por trasferencia o directamente en nuestra ubicación.</span>
                                 </div>
                             </div>
                         </div>
