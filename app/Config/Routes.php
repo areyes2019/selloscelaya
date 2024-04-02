@@ -13,6 +13,8 @@ $routes->get('portatiles', 'Home::portatiles');
 $routes->get('gigantes', 'Home::gigantes');
 $routes->get('textiles', 'Home::textiles');
 $routes->get('catalogo', 'Home::catalogo');
+$routes->get('doctores', 'Home::catalogo');
+$routes->get('maestros', 'Home::catalogo');
 
 //logeo
 $routes->get('login', 'Login::login');

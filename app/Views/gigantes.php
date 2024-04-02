@@ -2,15 +2,13 @@
 <?php echo $this->section('contenido')?>
 <div class="container-xxl py-5">
         <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-6 pt-4" style="min-height: 400px;">
-                    <div class="position-relative h-100 wow fadeIn" data-wow-delay="0.1s">
-                        <img class="position-absolute img-fluid w-100 h-100" src="<?php echo base_url('public/img/gigante.png'); ?>" style="object-fit: contain;" alt="">
-                    </div>
+            <div class="row">
+                <div class="col-8">
+                    <img class="img-fluid" src="<?php echo base_url('public/img/gigantes.png'); ?>" alt="">
                 </div>
-                <div class="col-lg-6">
-                    <h6 class="text-primary text-uppercase">// Sellos Gigantes //</h6>
-                    <h1 class="mb-4"><span class="text-primary">Hazlo en grande /</span> Piensa en Grande</h1>
+                <div class="col-4">          
+                    <h1 class="text-primary text-uppercase">Sellos Gigantes</h1>
+                    <h4 class="mb-4"><span class="text-primary">Hazlo en grande /</span> Piensa en Grande</h4>
                     <p class="mb-4">Imprime tu creatividad en: Empaques y etiquetas personalizadas. Murales y decoración de paredes. Banners y letreros llamativos. Tarjetas de felicitación únicas. Telas y ropa con diseños originales. ¡Y mucho más!</p>
                     <div class="row g-4 mb-3 pb-3">
                         <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
