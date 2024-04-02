@@ -1,6 +1,6 @@
 <?= $this->extend('template') ?>
-<meta property="og:image" content="<?php echo base_url('public/img/20.png'); ?>" />
 <?= $this->section('contenido') ?>
+<meta property="og:image" content="<?php echo base_url('public/img/20.png'); ?>" />
 <!-- Sellos autoentintables -->
     <div class="container-xxl py-5">
         <div class="container">
