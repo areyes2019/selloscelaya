@@ -1,0 +1,21 @@
+*{
+	margin: 0px;
+	padding: 0px;
+}
+#menu{
+	background-color: #d63031;
+	padding: 19px;
+	width: 100%;
+}
+#menu p{
+	color: white;
+	text-transform: uppercase;
+	font-size: 25px;
+	font-weight: bold;
+}
+#menu a{
+	text-decoration: none;
+	text-transform: uppercase;
+	color: white;
+	margin-right: 25px;
+}
