@@ -3,6 +3,13 @@
 <html lang="en">
 
 <head>
+    <meta charset="utf-8">
+    <title>Sellos Celaya | Personaliza tu sello </title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="description" content="Encuentra sellos de goma personalizados para tus necesidades comerciales o personales. Amplia variedad de diseños y tamaños disponibles. ¡Haz tu pedido ahora!">
+    <meta name="keywords" content="sellos de goma, sellos personalizados, sellos para empresas, sellos para oficinas, sellos automáticos">
+    <meta name="author" content="sellos celaya">
+    <meta name="language" content="es">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-H58H6V8WQP"></script>
     <script>
@@ -12,13 +19,6 @@
 
       gtag('config', 'G-H58H6V8WQP');
     </script>
-    <meta charset="utf-8">
-    <title>Sellos Celaya | Personaliza tu sello </title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta name="description" content="Encuentra sellos de goma personalizados para tus necesidades comerciales o personales. Amplia variedad de diseños y tamaños disponibles. ¡Haz tu pedido ahora!">
-    <meta name="keywords" content="sellos de goma, sellos personalizados, sellos para empresas, sellos para oficinas, sellos automáticos">
-    <meta name="author" content="sellos celaya">
-    <meta name="language" content="es">
 
     <!-- Favicon -->
     <link rel="icon" href="<?php echo base_url('/logo.ico')?>" type="image/x-icon">
