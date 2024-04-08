@@ -3,6 +3,13 @@
 <html lang="en">
 
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TL2W55L2');</script>
+    <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <title>Sellos Celaya | Personaliza tu sello </title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -10,15 +17,7 @@
     <meta name="keywords" content="sellos de goma, sellos personalizados, sellos para empresas, sellos para oficinas, sellos automáticos">
     <meta name="author" content="sellos celaya">
     <meta name="language" content="es">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H9GMB0K816"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-H9GMB0K816');
-    </script>
+    
 
     <!-- Favicon -->
     <link rel="icon" href="<?php echo base_url('/logo.ico')?>" type="image/x-icon">
@@ -45,6 +44,10 @@
 </head>
 
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TL2W55L2"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 <!-- Topbar Start -->
     <div class="container-fluid bg-light p-0">
         <div class="row gx-0 d-none d-lg-flex">
