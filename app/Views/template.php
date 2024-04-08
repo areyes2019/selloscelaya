@@ -11,13 +11,13 @@
     <meta name="author" content="sellos celaya">
     <meta name="language" content="es">
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H58H6V8WQP"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H9GMB0K816"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-H58H6V8WQP');
+      gtag('config', 'G-H9GMB0K816');
     </script>
 
     <!-- Favicon -->
