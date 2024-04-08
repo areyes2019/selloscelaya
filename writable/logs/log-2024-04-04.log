@@ -1,0 +1,492 @@
+CRITICAL - 2024-04-04 07:38:04 --> ErrorException: Undefined variable: cliente
+in APPPATH\Controllers\Admin\Clientes.php on line 30.
+ 1 APPPATH\Controllers\Admin\Clientes.php(30): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: cliente', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 30, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 07:38:10 --> ErrorException: Undefined variable: clientes
+in APPPATH\Controllers\Admin\Clientes.php on line 30.
+ 1 APPPATH\Controllers\Admin\Clientes.php(30): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: clientes', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 30, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 07:49:50 --> ErrorException: Array to string conversion
+in APPPATH\Controllers\Admin\Clientes.php on line 32.
+ 1 APPPATH\Controllers\Admin\Clientes.php(32): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Array to string conversion', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 32, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:01:25 --> ErrorException: Undefined variable: data
+in APPPATH\Controllers\Admin\Clientes.php on line 31.
+ 1 APPPATH\Controllers\Admin\Clientes.php(31): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: data', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 31, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:01:46 --> ErrorException: Undefined index: clientes
+in APPPATH\Controllers\Admin\Clientes.php on line 31.
+ 1 APPPATH\Controllers\Admin\Clientes.php(31): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined index: clientes', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 31, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:03:51 --> ErrorException: Undefined variable: data
+in APPPATH\Views\Panel\editar_cliente.php on line 5.
+ 1 APPPATH\Views\Panel\editar_cliente.php(5): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: data', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php', 5, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 5 APPPATH\Controllers\Admin\Clientes.php(33): view('Panel/editar_cliente', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:11:11 --> ParseError: syntax error, unexpected 'telefono' (T_STRING), expecting ']'
+in APPPATH\Views\Panel\editar_cliente.php on line 25.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(33): view('Panel/editar_cliente', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:11:55 --> ParseError: syntax error, unexpected 'telefono' (T_STRING), expecting ']'
+in APPPATH\Views\Panel\editar_cliente.php on line 25.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(33): view('Panel/editar_cliente', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:12:07 --> ParseError: syntax error, unexpected 'telefono' (T_STRING), expecting ']'
+in APPPATH\Views\Panel\editar_cliente.php on line 25.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(33): view('Panel/editar_cliente', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:12:27 --> ParseError: syntax error, unexpected 'telefono' (T_STRING), expecting ']'
+in APPPATH\Views\Panel\editar_cliente.php on line 25.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(33): view('Panel/editar_cliente', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:12:44 --> ParseError: syntax error, unexpected 'telefono' (T_STRING), expecting ']'
+in APPPATH\Views\Panel\editar_cliente.php on line 25.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(33): view('Panel/editar_cliente', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:13:21 --> ParseError: syntax error, unexpected ''idCliente?>">' (T_ENCAPSED_AND_WHITESPACE), expecting ']'
+in APPPATH\Views\Panel\editar_cliente.php on line 13.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(33): view('Panel/editar_cliente', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:25:20 --> ParseError: syntax error, unexpected '´' (T_STRING), expecting ']'
+in APPPATH\Controllers\Admin\Clientes.php on line 41.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\selloscelaya\\app\\Controllers\\admin\\Clientes.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\admin\\Clientes')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\admin\\Clientes')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\admin\\Clientes')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\admin\\Clientes', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:29:51 --> ErrorException: Undefined variable: model
+in APPPATH\Controllers\Admin\Clientes.php on line 49.
+ 1 APPPATH\Controllers\Admin\Clientes.php(49): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: model', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 49, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:46:05 --> ParseError: syntax error, unexpected 'endforeach' (T_ENDFOREACH)
+in APPPATH\Views\Panel\clientes.php on line 41.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/clientes', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(13): view('Panel/clientes', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:46:15 --> ParseError: syntax error, unexpected 'endforeach' (T_ENDFOREACH)
+in APPPATH\Views\Panel\clientes.php on line 41.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/clientes', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(13): view('Panel/clientes', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:46:57 --> ParseError: syntax error, unexpected ':', expecting ';'
+in APPPATH\Views\Panel\clientes.php on line 36.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/clientes', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(13): view('Panel/clientes', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:47:06 --> ParseError: syntax error, unexpected ':', expecting ';'
+in APPPATH\Views\Panel\clientes.php on line 36.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/clientes', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(13): view('Panel/clientes', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:47:18 --> ParseError: syntax error, unexpected ':', expecting ';'
+in APPPATH\Views\Panel\clientes.php on line 42.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/clientes', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(13): view('Panel/clientes', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:47:24 --> ErrorException: Undefined index: correo
+in APPPATH\Views\Panel\clientes.php on line 32.
+ 1 APPPATH\Views\Panel\clientes.php(32): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined index: correo', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\clientes.php', 32, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\clientes.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/clientes', [], true)
+ 5 APPPATH\Controllers\Admin\Clientes.php(13): view('Panel/clientes', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:54:00 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:54:51 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:55:01 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:55:36 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:55:40 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:55:48 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 08:56:26 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 09:01:42 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 09:02:40 --> CodeIgniter\Database\Exceptions\DataException: There is no data to update.
+in SYSTEMPATH\BaseModel.php on line 970.
+ 1 SYSTEMPATH\BaseModel.php(970): CodeIgniter\Database\Exceptions\DataException::forEmptyDataset('update')
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [])
+ 3 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 09:03:34 --> CodeIgniter\Database\Exceptions\DataException: Allowed fields must be specified for model: "App\Models\ClientesModel"
+in SYSTEMPATH\BaseModel.php on line 1294.
+ 1 SYSTEMPATH\BaseModel.php(1294): CodeIgniter\Database\Exceptions\DataException::forInvalidAllowedFields('App\\Models\\ClientesModel')
+ 2 SYSTEMPATH\BaseModel.php(965): CodeIgniter\BaseModel->doProtectFields([...])
+ 3 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [...])
+ 4 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 09:03:39 --> CodeIgniter\Database\Exceptions\DataException: Allowed fields must be specified for model: "App\Models\ClientesModel"
+in SYSTEMPATH\BaseModel.php on line 1294.
+ 1 SYSTEMPATH\BaseModel.php(1294): CodeIgniter\Database\Exceptions\DataException::forInvalidAllowedFields('App\\Models\\ClientesModel')
+ 2 SYSTEMPATH\BaseModel.php(965): CodeIgniter\BaseModel->doProtectFields([...])
+ 3 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [...])
+ 4 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 09:03:53 --> CodeIgniter\Database\Exceptions\DataException: Allowed fields must be specified for model: "App\Models\ClientesModel"
+in SYSTEMPATH\BaseModel.php on line 1294.
+ 1 SYSTEMPATH\BaseModel.php(1294): CodeIgniter\Database\Exceptions\DataException::forInvalidAllowedFields('App\\Models\\ClientesModel')
+ 2 SYSTEMPATH\BaseModel.php(965): CodeIgniter\BaseModel->doProtectFields([...])
+ 3 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [...])
+ 4 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 09:04:40 --> CodeIgniter\Database\Exceptions\DataException: Allowed fields must be specified for model: "App\Models\ClientesModel"
+in SYSTEMPATH\BaseModel.php on line 1294.
+ 1 SYSTEMPATH\BaseModel.php(1294): CodeIgniter\Database\Exceptions\DataException::forInvalidAllowedFields('App\\Models\\ClientesModel')
+ 2 SYSTEMPATH\BaseModel.php(965): CodeIgniter\BaseModel->doProtectFields([...])
+ 3 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update([...], [...])
+ 4 APPPATH\Controllers\Admin\Clientes.php(51): CodeIgniter\Model->update('1', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->actualizar()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 09:05:51 --> ParseError: syntax error, unexpected 'redirect' (T_STRING)
+in APPPATH\Controllers\Admin\Clientes.php on line 52.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\selloscelaya\\app\\Controllers\\admin\\Clientes.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\admin\\Clientes')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\admin\\Clientes')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\admin\\Clientes')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\admin\\Clientes', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 09:32:28 --> Error: Call to undefined function App\Controllers\Admin\ClientesModel()
+in APPPATH\Controllers\Admin\Clientes.php on line 56.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->eliminar('1')
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 12:29:03 --> Error: Class 'App\Controllers\Admin\ClientesModel' not found
+in APPPATH\Controllers\Admin\Articulos.php on line 10.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 12:29:47 --> Error: Class 'App\Controllers\Admin\ClientesModel' not found
+in APPPATH\Controllers\Admin\Articulos.php on line 10.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 12:29:55 --> Error: Class 'App\Controllers\Admin\ClientesModel' not found
+in APPPATH\Controllers\Admin\Articulos.php on line 10.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 12:30:04 --> Error: Class 'App\Controllers\Admin\ClientesModel' not found
+in APPPATH\Controllers\Admin\Articulos.php on line 10.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 12:30:13 --> Error: Class 'App\Controllers\Admin\ClientesModel' not found
+in APPPATH\Controllers\Admin\Articulos.php on line 10.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 14:22:37 --> Error: Class 'App\Controllers\Admin\ClientesModel' not found
+in APPPATH\Controllers\Admin\Articulos.php on line 10.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 14:22:46 --> Error: Class 'App\Controllers\Admin\ClientesModel' not found
+in APPPATH\Controllers\Admin\Articulos.php on line 10.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 14:23:53 --> Error: Class 'App\Controllers\Admin\ClientesModel' not found
+in APPPATH\Controllers\Admin\Articulos.php on line 10.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 14:25:34 --> ParseError: syntax error, unexpected end of file
+in APPPATH\Views\Panel\articulos.php on line 59.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/articulos', [], true)
+ 3 APPPATH\Controllers\Admin\Articulos.php(12): view('Panel/articulos', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 14:33:22 --> ParseError: syntax error, unexpected ''precio_pub'' (T_CONSTANT_ENCAPSED_STRING), expecting ']'
+in APPPATH\Controllers\Admin\Articulos.php on line 21.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\selloscelaya\\app\\Controllers\\admin\\Articulos.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\admin\\Articulos')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\admin\\Articulos')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\admin\\Articulos')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\admin\\Articulos', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 14:38:15 --> ParseError: syntax error, unexpected '$resultado' (T_VARIABLE)
+in APPPATH\Controllers\Admin\Articulos.php on line 31.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\selloscelaya\\app\\Controllers\\admin\\Articulos.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\admin\\Articulos')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\admin\\Articulos')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\admin\\Articulos')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\admin\\Articulos', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 14:41:07 --> ErrorException: Undefined variable: cliente
+in APPPATH\Views\Panel\articulos.php on line 40.
+ 1 APPPATH\Views\Panel\articulos.php(40): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: cliente', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\articulos.php', 40, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\articulos.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/articulos', [], true)
+ 5 APPPATH\Controllers\Admin\Articulos.php(12): view('Panel/articulos', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 14:54:41 --> ArgumentCountError: Too few arguments to function App\Controllers\Admin\Articulos::editar(), 0 passed in C:\laragon\www\selloscelaya\system\CodeIgniter.php on line 941 and exactly 1 expected
+in APPPATH\Controllers\Admin\Articulos.php on line 26.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->editar()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 15:00:11 --> ErrorException: Undefined variable: cliente
+in APPPATH\Views\Panel\editar_articulo.php on line 12.
+ 1 APPPATH\Views\Panel\editar_articulo.php(12): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: cliente', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_articulo.php', 12, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_articulo.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_articulo', [], true)
+ 5 APPPATH\Controllers\Admin\Articulos.php(33): view('Panel/editar_articulo', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->editar('5')
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 15:01:41 --> ParseError: syntax error, unexpected '" ?>>' (T_CONSTANT_ENCAPSED_STRING), expecting ';' or ','
+in APPPATH\Views\Panel\editar_articulo.php on line 19.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_articulo', [], true)
+ 3 APPPATH\Controllers\Admin\Articulos.php(33): view('Panel/editar_articulo', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->editar('5')
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 15:08:23 --> CodeIgniter\Database\Exceptions\DatabaseException: Updates are not allowed unless they contain a "where" or "like" clause.
+in SYSTEMPATH\Model.php on line 388.
+ 1 SYSTEMPATH\BaseModel.php(987): CodeIgniter\Model->doUpdate(null, [...])
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update(null, [...])
+ 3 APPPATH\Controllers\Admin\Articulos.php(50): CodeIgniter\Model->update(null, [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 15:08:49 --> CodeIgniter\Database\Exceptions\DatabaseException: Updates are not allowed unless they contain a "where" or "like" clause.
+in SYSTEMPATH\Model.php on line 388.
+ 1 SYSTEMPATH\BaseModel.php(987): CodeIgniter\Model->doUpdate(null, [...])
+ 2 SYSTEMPATH\Model.php(807): CodeIgniter\BaseModel->update(null, [...])
+ 3 APPPATH\Controllers\Admin\Articulos.php(50): CodeIgniter\Model->update(null, [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->actualizar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 16:07:13 --> ParseError: syntax error, unexpected 'endforeach' (T_ENDFOREACH), expecting end of file
+in APPPATH\Views\Panel\cotizaciones.php on line 73.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/cotizaciones', [], true)
+ 3 APPPATH\Controllers\Admin\Cotizaciones.php(10): view('Panel/cotizaciones')
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 16:07:19 --> ErrorException: Undefined variable: cliente
+in APPPATH\Views\Panel\cotizaciones.php on line 70.
+ 1 APPPATH\Views\Panel\cotizaciones.php(70): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: cliente', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php', 70, [])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/cotizaciones', [], true)
+ 5 APPPATH\Controllers\Admin\Cotizaciones.php(10): view('Panel/cotizaciones')
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 16:18:22 --> Error: Class 'App\Controllers\Admin\ArticulosModel' not found
+in APPPATH\Controllers\Admin\Cotizaciones.php on line 11.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 16:19:14 --> Error: Class 'App\Controllers\Admin\ArticulosModel' not found
+in APPPATH\Controllers\Admin\Cotizaciones.php on line 12.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 16:19:26 --> ErrorException: Undefined index: modelo
+in APPPATH\Views\Panel\articulos.php on line 37.
+ 1 APPPATH\Views\Panel\articulos.php(37): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined index: modelo', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\articulos.php', 37, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\articulos.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/articulos', [], true)
+ 5 APPPATH\Controllers\Admin\Cotizaciones.php(14): view('Panel/articulos', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-04 16:21:28 --> ErrorException: Undefined variable: cliente
+in APPPATH\Controllers\Admin\Cotizaciones.php on line 16.
+ 1 APPPATH\Controllers\Admin\Cotizaciones.php(16): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: cliente', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Cotizaciones.php', 16, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()

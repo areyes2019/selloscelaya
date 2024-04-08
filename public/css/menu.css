@@ -1,21 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap')
+
+/*font-family: "Poppins", sans-serif;*/
+
 *{
 	margin: 0px;
 	padding: 0px;
 }
-#menu{
-	background-color: #d63031;
-	padding: 19px;
-	width: 100%;
+body{
+	font-family: "Poppins", sans-serif;
+	font-size: 15px;
+	background-color: #ecf0f1;
+	height: auto;
 }
-#menu p{
+.my-nav{
+	background-color: #6F1E51;
 	color: white;
-	text-transform: uppercase;
-	font-size: 25px;
+	padding: 15px;
+}
+
+.my-ul{
+	padding: 15px;
+}
+
+.my-ul .nav-item .nav-link{
+	color: white;
+}
+
+h1{
+	color: grey;
+	font-family: "Poppins";
+	font-weight: bold;
+	margin: 0px;
+}
+
+h2{
+	color: #192a56;
+	font-style: italic;
+	margin: 0px;
+}
+p{
+	margin: 0px;
+	font-family: "Poppins",sans-serif;
+	line-height: 22px;
+}
+small{
+	color: #7f8c8d;
+	font-style: italic;
+}
+a{
+	text-decoration: none;
+}
+a:hover{
+	color: grey;
+}
+.italic-font{
+	margin: 0px;
+	font-family: "Poppins", sans-serif;
+	font-style: italic;
+	font-size: 14px;
+}
+
+.my-btn-primary{
+	background-color:#192a56;
+	color: white;
+	border: 0px;
+}
+.my-btn-danger{
+	background-color:#c0392b;
+	color: white;
+	border: 0px;
+}
+.my-btn-success{
+	background-color:#2980b9;
+	color: white;
+	border: 0px;
+}
+
+.my-btn-primary:active{
+	transform: scale(0.98);
+	box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+	background-color:#273c75 ;
+}
+.my-btn-danger:active{
+	transform: scale(0.98);
+	box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+	background-color:#273c75 ;
+}
+.my-btn-success:active{
+	transform: scale(0.98);
+	box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+	background-color:#273c75 ;
+}
+
+.my-input{
+	color: #2c3e50;
+	border-radius: 0px;
+	border: 1px solid #bdc3c7;
+	font-size: 14px;
+	padding: 2px;
+	outline: none;
+}
+
+.my-card{
+	background-color: white;
+	padding: 20px;
+	box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.20);
+}
+
+/*ESTILO DE LA BARRA SUPERIOR*/
+.my-card .select-nav{
+	width: 50%;
+	background-color: red;
+}
+
+.btn-nav{
+	padding: 2px 15px;
+	float: right;
+}
+.input-nav{
+	width: 10%;
+}
+.my-card .row .col-4 p:first-child{
+	font-weight: bold;
+	font-size: 18px;
+}
+.input-articles label{
+	margin-left: 15px;
+}
+.ticket{
+	text-align: center;
+}
+.ticket p:last-child{
 	font-weight: bold;
 }
-#menu a{
-	text-decoration: none;
-	text-transform: uppercase;
-	color: white;
-	margin-right: 25px;
+.ticket-body .ticket-item{
+	text-align: left;
+	display: flex;
+	margin-bottom: 29px;
+}
+
+.ticket-body .ticket-item div:first-child{
+	margin-right: 7px;
+}
+.ticket-body .ticket-item div:last-child{
+	text-align: right;
+}
+.invoice-detail table{
+	width: 100%;
+}
+.invoice-detail table tr{
+	border-bottom: 1px solid #ecf0f1;
+}
+
+.invoice-detail table tr th{
+	font-weight: bolder;
+	font-size: 25px;
+}
+
+.invoice-detail table tr:last-child td p:first-child{
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 25px;
+	text-align: left;
+}
+.invoice-detail table tr:last-child td p:last-child{
+	color: #16a085;
+	font-size: 25px;
+	font-weight: bold;
+	margin-top: 8px;
+}
+.line-invoice td{
+	color: #16a085;
+	font-weight: bold;
+	text-align: right;
+}
+/*Menu lateral*/
+.side-nav{
+	height: 100vh;
+}
+.side-nav .my-nav-header{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid white;
+}
+.side-nav .my-nav-header  label span{
+	font-size: 30px;
+}
+#menu:checked ~ a{
+	background-color: grey;
+}
+.side-nav .my-nav-header a:active{
+	color: grey;
+}
+.my-nav ul{
+	margin-top: 15px;
 }

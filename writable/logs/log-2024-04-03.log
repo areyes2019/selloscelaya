@@ -1,0 +1,300 @@
+CRITICAL - 2024-04-03 12:04:30 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "Panel/cotizaciones.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('Panel/cotizaciones.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/cotizaciones', [], true)
+ 3 APPPATH\Controllers\Admin\Cotizaciones.php(10): view('Panel/cotizaciones')
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 15:56:16 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "Panel/editar_cliente.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('Panel/editar_cliente.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(18): view('Panel/editar_cliente')
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 16:24:51 --> ParseError: syntax error, unexpected '}', expecting ';'
+in APPPATH\Controllers\Admin\Articulos.php on line 19.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\selloscelaya\\app\\Controllers\\admin\\Articulos.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\admin\\Articulos')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\admin\\Articulos')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\admin\\Articulos')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\admin\\Articulos', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 16:25:20 --> ParseError: syntax error, unexpected '}', expecting ';'
+in APPPATH\Controllers\Admin\Articulos.php on line 19.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\selloscelaya\\app\\Controllers\\admin\\Articulos.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\admin\\Articulos')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\admin\\Articulos')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\admin\\Articulos')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\admin\\Articulos', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 17:03:54 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "Panel/editar_cotizacion.php"
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(216): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('Panel/editar_cotizacion.php')
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cotizacion', [], true)
+ 3 APPPATH\Controllers\Admin\Cotizaciones.php(18): view('Panel/editar_cotizacion')
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->editar()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 21:45:30 --> ParseError: syntax error, unexpected ''telefono'' (T_CONSTANT_ENCAPSED_STRING), expecting ']'
+in APPPATH\Controllers\Admin\Clientes.php on line 26.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\selloscelaya\\app\\Controllers\\admin\\Clientes.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\admin\\Clientes')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\admin\\Clientes')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\admin\\Clientes')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\admin\\Clientes', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+ERROR - 2024-04-03 21:53:26 --> Error connecting to the database: mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\laragon\www\selloscelaya\system\Database\MySQLi\Connection.php:185
+Stack trace:
+#0 C:\laragon\www\selloscelaya\system\Database\MySQLi\Connection.php(185): mysqli->real_connect('localhost', '', '', 'sellos_celaya', 3306, '', 0)
+#1 C:\laragon\www\selloscelaya\system\Database\BaseConnection.php(392): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 C:\laragon\www\selloscelaya\system\Database\BaseConnection.php(575): CodeIgniter\Database\BaseConnection->initialize()
+#3 C:\laragon\www\selloscelaya\system\Database\BaseBuilder.php(2307): CodeIgniter\Database\BaseConnection->query('INSERT INTO `se...', Array, false)
+#4 C:\laragon\www\selloscelaya\system\Model.php(326): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\laragon\www\selloscelaya\system\BaseModel.php(802): CodeIgniter\Model->doInsert(Array)
+#6 C:\laragon\www\selloscelaya\system\Model.php(744): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\laragon\www\selloscelaya\app\Controllers\Admin\Clientes.php(21): CodeIgniter\Model->insert(Array)
+#8 C:\laragon\www\selloscelaya\system\CodeIgniter.php(941): App\Controllers\Admin\Clientes->nuevo()
+#9 C:\laragon\www\selloscelaya\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+#10 C:\laragon\www\selloscelaya\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\laragon\www\selloscelaya\index.php(79): CodeIgniter\CodeIgniter->run()
+#12 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Access denied for user ''@'localhost' (using password: NO) in C:\laragon\www\selloscelaya\system\Database\MySQLi\Connection.php:229
+Stack trace:
+#0 C:\laragon\www\selloscelaya\system\Database\BaseConnection.php(392): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 C:\laragon\www\selloscelaya\system\Database\BaseConnection.php(575): CodeIgniter\Database\BaseConnection->initialize()
+#2 C:\laragon\www\selloscelaya\system\Database\BaseBuilder.php(2307): CodeIgniter\Database\BaseConnection->query('INSERT INTO `se...', Array, false)
+#3 C:\laragon\www\selloscelaya\system\Model.php(326): CodeIgniter\Database\BaseBuilder->insert()
+#4 C:\laragon\www\selloscelaya\system\BaseModel.php(802): CodeIgniter\Model->doInsert(Array)
+#5 C:\laragon\www\selloscelaya\system\Model.php(744): CodeIgniter\BaseModel->insert(Array, true)
+#6 C:\laragon\www\selloscelaya\app\Controllers\Admin\Clientes.php(21): CodeIgniter\Model->insert(Array)
+#7 C:\laragon\www\selloscelaya\system\CodeIgniter.php(941): App\Controllers\Admin\Clientes->nuevo()
+#8 C:\laragon\www\selloscelaya\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+#9 C:\laragon\www\selloscelaya\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\laragon\www\selloscelaya\index.php(79): CodeIgniter\CodeIgniter->run()
+#11 {main}
+CRITICAL - 2024-04-03 21:53:26 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: Access denied for user ''@'localhost' (using password: NO)
+in SYSTEMPATH\Database\BaseConnection.php on line 428.
+ 1 SYSTEMPATH\Database\BaseConnection.php(575): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(2307): CodeIgniter\Database\BaseConnection->query('INSERT INTO `sellos_clientes` (`nombre`, `telefono`) VALUES (:nombre:, :telefono:)', [...], false)
+ 3 SYSTEMPATH\Model.php(326): CodeIgniter\Database\BaseBuilder->insert()
+ 4 SYSTEMPATH\BaseModel.php(802): CodeIgniter\Model->doInsert([...])
+ 5 SYSTEMPATH\Model.php(744): CodeIgniter\BaseModel->insert([...], true)
+ 6 APPPATH\Controllers\Admin\Clientes.php(21): CodeIgniter\Model->insert([...])
+ 7 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->nuevo()
+ 8 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 9 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:04:57 --> ErrorException: Undefined property: App\Controllers\Admin\Clientes::$ClientesModel
+in APPPATH\Controllers\Admin\Clientes.php on line 11.
+ 1 APPPATH\Controllers\Admin\Clientes.php(11): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined property: App\\Controllers\\Admin\\Clientes::$ClientesModel', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 11, [])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:05:04 --> ErrorException: Undefined property: App\Controllers\Admin\Clientes::$ClientesModel
+in APPPATH\Controllers\Admin\Clientes.php on line 11.
+ 1 APPPATH\Controllers\Admin\Clientes.php(11): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined property: App\\Controllers\\Admin\\Clientes::$ClientesModel', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 11, [])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:06:31 --> ErrorException: Undefined property: App\Controllers\Admin\Clientes::$ClientesModel
+in APPPATH\Controllers\Admin\Clientes.php on line 11.
+ 1 APPPATH\Controllers\Admin\Clientes.php(11): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined property: App\\Controllers\\Admin\\Clientes::$ClientesModel', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 11, [])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:07:23 --> ErrorException: Undefined property: App\Controllers\Admin\Clientes::$ClientesModel
+in APPPATH\Controllers\Admin\Clientes.php on line 11.
+ 1 APPPATH\Controllers\Admin\Clientes.php(11): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined property: App\\Controllers\\Admin\\Clientes::$ClientesModel', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 11, [])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:19:03 --> ParseError: syntax error, unexpected 'idCliente' (T_STRING), expecting ')'
+in APPPATH\Views\Panel\clientes.php on line 35.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/clientes', [], true)
+ 3 APPPATH\Controllers\Admin\Clientes.php(13): view('Panel/clientes', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->index()
+ 5 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 6 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:24:44 --> ParseError: syntax error, unexpected 'redirect' (T_STRING)
+in APPPATH\Controllers\Admin\Clientes.php on line 24.
+ 1 SYSTEMPATH\Autoloader\Autoloader.php(290): CodeIgniter\Autoloader\Autoloader->includeFile('C:\\laragon\\www\\selloscelaya\\app\\Controllers\\admin\\Clientes.php')
+ 2 SYSTEMPATH\Autoloader\Autoloader.php(266): CodeIgniter\Autoloader\Autoloader->loadInNamespace('App\\Controllers\\admin\\Clientes')
+ 3 [internal function]: CodeIgniter\Autoloader\Autoloader->loadClass('App\\Controllers\\admin\\Clientes')
+ 4 [internal function]: spl_autoload_call('App\\Controllers\\admin\\Clientes')
+ 5 SYSTEMPATH\CodeIgniter.php(899): class_exists('\\App\\Controllers\\admin\\Clientes', true)
+ 6 SYSTEMPATH\CodeIgniter.php(489): CodeIgniter\CodeIgniter->startController()
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:26:54 --> CodeIgniter\HTTP\Exceptions\HTTPException: The route for "/clientes" cannot be found.
+in SYSTEMPATH\HTTP\RedirectResponse.php on line 62.
+ 1 SYSTEMPATH\HTTP\RedirectResponse.php(62): CodeIgniter\HTTP\Exceptions\HTTPException::forInvalidRedirectRoute('/clientes')
+ 2 APPPATH\Controllers\Admin\Clientes.php(24): CodeIgniter\HTTP\RedirectResponse->route(false)
+ 3 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->nuevo()
+ 4 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 5 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:27:39 --> CodeIgniter\HTTP\Exceptions\HTTPException: The route for "/clientes/" cannot be found.
+in SYSTEMPATH\HTTP\RedirectResponse.php on line 62.
+ 1 SYSTEMPATH\HTTP\RedirectResponse.php(62): CodeIgniter\HTTP\Exceptions\HTTPException::forInvalidRedirectRoute('/clientes/')
+ 2 APPPATH\Controllers\Admin\Clientes.php(24): CodeIgniter\HTTP\RedirectResponse->route(false)
+ 3 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->nuevo()
+ 4 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 5 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:28:09 --> CodeIgniter\HTTP\Exceptions\HTTPException: The route for "/clientes/" cannot be found.
+in SYSTEMPATH\HTTP\RedirectResponse.php on line 62.
+ 1 SYSTEMPATH\HTTP\RedirectResponse.php(62): CodeIgniter\HTTP\Exceptions\HTTPException::forInvalidRedirectRoute('/clientes/')
+ 2 APPPATH\Controllers\Admin\Clientes.php(24): CodeIgniter\HTTP\RedirectResponse->route(false)
+ 3 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->nuevo()
+ 4 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 5 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:40:19 --> ArgumentCountError: Too few arguments to function App\Controllers\Admin\Clientes::editar(), 0 passed in C:\laragon\www\selloscelaya\system\CodeIgniter.php on line 941 and exactly 1 expected
+in APPPATH\Controllers\Admin\Clientes.php on line 26.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:40:30 --> ArgumentCountError: Too few arguments to function App\Controllers\Admin\Clientes::editar(), 0 passed in C:\laragon\www\selloscelaya\system\CodeIgniter.php on line 941 and exactly 1 expected
+in APPPATH\Controllers\Admin\Clientes.php on line 26.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:41:43 --> ArgumentCountError: Too few arguments to function App\Controllers\Admin\Clientes::editar(), 0 passed in C:\laragon\www\selloscelaya\system\CodeIgniter.php on line 941 and exactly 1 expected
+in APPPATH\Controllers\Admin\Clientes.php on line 26.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:44:16 --> CodeIgniter\Router\Exceptions\RouterException: The namespace delimiter is a backslash (\), not a slash (/). Route handler: "\App\Controllers\admin\Clientes/$id::editar"
+in SYSTEMPATH\Router\Router.php on line 480.
+ 1 SYSTEMPATH\Router\Router.php(480): CodeIgniter\Router\Exceptions\RouterException::forInvalidControllerName('\\App\\Controllers\\admin\\Clientes/$id::editar')
+ 2 SYSTEMPATH\Router\Router.php(187): CodeIgniter\Router\Router->checkRoutes('editar_cliente/21')
+ 3 SYSTEMPATH\CodeIgniter.php(823): CodeIgniter\Router\Router->handle('editar_cliente/21')
+ 4 SYSTEMPATH\CodeIgniter.php(450): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 5 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:44:23 --> CodeIgniter\Router\Exceptions\RouterException: The namespace delimiter is a backslash (\), not a slash (/). Route handler: "\App\Controllers\admin\Clientes/$id::editar"
+in SYSTEMPATH\Router\Router.php on line 480.
+ 1 SYSTEMPATH\Router\Router.php(480): CodeIgniter\Router\Exceptions\RouterException::forInvalidControllerName('\\App\\Controllers\\admin\\Clientes/$id::editar')
+ 2 SYSTEMPATH\Router\Router.php(187): CodeIgniter\Router\Router->checkRoutes('editar_cliente/21')
+ 3 SYSTEMPATH\CodeIgniter.php(823): CodeIgniter\Router\Router->handle('editar_cliente/21')
+ 4 SYSTEMPATH\CodeIgniter.php(450): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 5 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:44:50 --> CodeIgniter\Router\Exceptions\RouterException: A dynamic controller is not allowed for security reasons. Route handler: "\App\Controllers\admin\Clientes\$id::editar"
+in SYSTEMPATH\Router\Router.php on line 486.
+ 1 SYSTEMPATH\Router\Router.php(486): CodeIgniter\Router\Exceptions\RouterException::forDynamicController('\\App\\Controllers\\admin\\Clientes\\$id::editar')
+ 2 SYSTEMPATH\Router\Router.php(187): CodeIgniter\Router\Router->checkRoutes('editar_cliente/21')
+ 3 SYSTEMPATH\CodeIgniter.php(823): CodeIgniter\Router\Router->handle('editar_cliente/21')
+ 4 SYSTEMPATH\CodeIgniter.php(450): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 5 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:45:26 --> CodeIgniter\Router\Exceptions\RouterException: A dynamic controller is not allowed for security reasons. Route handler: "\App\Controllers\admin\Clientes\$1::editar"
+in SYSTEMPATH\Router\Router.php on line 486.
+ 1 SYSTEMPATH\Router\Router.php(486): CodeIgniter\Router\Exceptions\RouterException::forDynamicController('\\App\\Controllers\\admin\\Clientes\\$1::editar')
+ 2 SYSTEMPATH\Router\Router.php(187): CodeIgniter\Router\Router->checkRoutes('editar_cliente/21')
+ 3 SYSTEMPATH\CodeIgniter.php(823): CodeIgniter\Router\Router->handle('editar_cliente/21')
+ 4 SYSTEMPATH\CodeIgniter.php(450): CodeIgniter\CodeIgniter->tryToRouteIt(Object(CodeIgniter\Router\RouteCollection))
+ 5 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:45:54 --> ArgumentCountError: Too few arguments to function App\Controllers\Admin\Clientes::editar(), 0 passed in C:\laragon\www\selloscelaya\system\CodeIgniter.php on line 941 and exactly 1 expected
+in APPPATH\Controllers\Admin\Clientes.php on line 26.
+ 1 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar()
+ 2 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 3 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:49:06 --> ErrorException: Undefined variable: data
+in APPPATH\Controllers\Admin\Clientes.php on line 28.
+ 1 APPPATH\Controllers\Admin\Clientes.php(28): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: data', 'C:\\laragon\\www\\selloscelaya\\app\\Controllers\\Admin\\Clientes.php', 28, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('$id')
+ 3 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 4 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:55:01 --> ErrorException: Invalid argument supplied for foreach()
+in APPPATH\Views\Panel\editar_cliente.php on line 8.
+ 1 APPPATH\Views\Panel\editar_cliente.php(8): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Invalid argument supplied for foreach()', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php', 8, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 5 APPPATH\Controllers\Admin\Clientes.php(30): view('Panel/editar_cliente', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('$id')
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:55:35 --> ErrorException: Invalid argument supplied for foreach()
+in APPPATH\Views\Panel\editar_cliente.php on line 8.
+ 1 APPPATH\Views\Panel\editar_cliente.php(8): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Invalid argument supplied for foreach()', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php', 8, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 5 APPPATH\Controllers\Admin\Clientes.php(30): view('Panel/editar_cliente', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('$id')
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 22:56:10 --> ErrorException: Invalid argument supplied for foreach()
+in APPPATH\Views\Panel\editar_cliente.php on line 8.
+ 1 APPPATH\Views\Panel\editar_cliente.php(8): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Invalid argument supplied for foreach()', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php', 8, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 5 APPPATH\Controllers\Admin\Clientes.php(30): view('Panel/editar_cliente', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('$id')
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 23:01:13 --> ErrorException: Undefined variable: productos
+in APPPATH\Views\Panel\editar_cliente.php on line 8.
+ 1 APPPATH\Views\Panel\editar_cliente.php(8): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: productos', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php', 8, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 5 APPPATH\Controllers\Admin\Clientes.php(30): view('Panel/editar_cliente', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 23:01:45 --> ErrorException: Illegal string offset 'nomnbre'
+in APPPATH\Views\Panel\editar_cliente.php on line 12.
+ 1 APPPATH\Views\Panel\editar_cliente.php(12): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Illegal string offset \'nomnbre\'', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php', 12, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 5 APPPATH\Controllers\Admin\Clientes.php(30): view('Panel/editar_cliente', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-03 23:02:00 --> ErrorException: Illegal string offset 'nombre'
+in APPPATH\Views\Panel\editar_cliente.php on line 12.
+ 1 APPPATH\Views\Panel\editar_cliente.php(12): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Illegal string offset \'nombre\'', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php', 12, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\editar_cliente.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/editar_cliente', [], true)
+ 5 APPPATH\Controllers\Admin\Clientes.php(30): view('Panel/editar_cliente', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Clientes->editar('18')
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Clientes))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
