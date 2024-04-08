@@ -181,6 +181,11 @@
 
     <!-- Template Javascript -->
     <script src="<?php echo base_url('public/js/main.js'); ?> "></script>
+    <link rel="stylesheet" href="https://cdn.positus.global/production/resources/robbu/whatsapp-button/whatsapp-button.css">
+    <a id="robbu-whatsapp-button" class="left" target="_blank" href="https://api.whatsapp.com/send?phone=524613581090&text=Hola,%20me%20interesa%20un%20sello%20personalizado">
+      <div class="rwb-tooltip">Aquí estamos</div>
+      <img src="https://cdn.positus.global/production/resources/robbu/whatsapp-button/whatsapp-icon.svg">
+    </a>
 </body>
 
 </html>
