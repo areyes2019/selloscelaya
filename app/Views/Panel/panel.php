@@ -1,488 +1,356 @@
 <?php echo $this->extend('Panel/panel_template') ?>
 <?php echo $this->section('contenido') ?>
-<section id="main-body" class="mt-3">
-      <div class="container">
-        <h3>Lista de precios</h3>
-        <table id="example" class="table table-bordered" style="width:100%">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Office</th>
-                <th>Age</th>
-                <th>Start date</th>
-                <th>Salary</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Tiger Nixon</td>
-                <td>System Architect</td>
-                <td>Edinburgh</td>
-                <td>61</td>
-                <td>2011-04-25</td>
-                <td>$320,800</td>
-            </tr>
-            <tr>
-                <td>Garrett Winters</td>
-                <td>Accountant</td>
-                <td>Tokyo</td>
-                <td>63</td>
-                <td>2011-07-25</td>
-                <td>$170,750</td>
-            </tr>
-            <tr>
-                <td>Ashton Cox</td>
-                <td>Junior Technical Author</td>
-                <td>San Francisco</td>
-                <td>66</td>
-                <td>2009-01-12</td>
-                <td>$86,000</td>
-            </tr>
-            <tr>
-                <td>Cedric Kelly</td>
-                <td>Senior Javascript Developer</td>
-                <td>Edinburgh</td>
-                <td>22</td>
-                <td>2012-03-29</td>
-                <td>$433,060</td>
-            </tr>
-            <tr>
-                <td>Airi Satou</td>
-                <td>Accountant</td>
-                <td>Tokyo</td>
-                <td>33</td>
-                <td>2008-11-28</td>
-                <td>$162,700</td>
-            </tr>
-            <tr>
-                <td>Brielle Williamson</td>
-                <td>Integration Specialist</td>
-                <td>New York</td>
-                <td>61</td>
-                <td>2012-12-02</td>
-                <td>$372,000</td>
-            </tr>
-            <tr>
-                <td>Herrod Chandler</td>
-                <td>Sales Assistant</td>
-                <td>San Francisco</td>
-                <td>59</td>
-                <td>2012-08-06</td>
-                <td>$137,500</td>
-            </tr>
-            <tr>
-                <td>Rhona Davidson</td>
-                <td>Integration Specialist</td>
-                <td>Tokyo</td>
-                <td>55</td>
-                <td>2010-10-14</td>
-                <td>$327,900</td>
-            </tr>
-            <tr>
-                <td>Colleen Hurst</td>
-                <td>Javascript Developer</td>
-                <td>San Francisco</td>
-                <td>39</td>
-                <td>2009-09-15</td>
-                <td>$205,500</td>
-            </tr>
-            <tr>
-                <td>Sonya Frost</td>
-                <td>Software Engineer</td>
-                <td>Edinburgh</td>
-                <td>23</td>
-                <td>2008-12-13</td>
-                <td>$103,600</td>
-            </tr>
-            <tr>
-                <td>Jena Gaines</td>
-                <td>Office Manager</td>
-                <td>London</td>
-                <td>30</td>
-                <td>2008-12-19</td>
-                <td>$90,560</td>
-            </tr>
-            <tr>
-                <td>Quinn Flynn</td>
-                <td>Support Lead</td>
-                <td>Edinburgh</td>
-                <td>22</td>
-                <td>2013-03-03</td>
-                <td>$342,000</td>
-            </tr>
-            <tr>
-                <td>Charde Marshall</td>
-                <td>Regional Director</td>
-                <td>San Francisco</td>
-                <td>36</td>
-                <td>2008-10-16</td>
-                <td>$470,600</td>
-            </tr>
-            <tr>
-                <td>Haley Kennedy</td>
-                <td>Senior Marketing Designer</td>
-                <td>London</td>
-                <td>43</td>
-                <td>2012-12-18</td>
-                <td>$313,500</td>
-            </tr>
-            <tr>
-                <td>Tatyana Fitzpatrick</td>
-                <td>Regional Director</td>
-                <td>London</td>
-                <td>19</td>
-                <td>2010-03-17</td>
-                <td>$385,750</td>
-            </tr>
-            <tr>
-                <td>Michael Silva</td>
-                <td>Marketing Designer</td>
-                <td>London</td>
-                <td>66</td>
-                <td>2012-11-27</td>
-                <td>$198,500</td>
-            </tr>
-            <tr>
-                <td>Paul Byrd</td>
-                <td>Chief Financial Officer (CFO)</td>
-                <td>New York</td>
-                <td>64</td>
-                <td>2010-06-09</td>
-                <td>$725,000</td>
-            </tr>
-            <tr>
-                <td>Gloria Little</td>
-                <td>Systems Administrator</td>
-                <td>New York</td>
-                <td>59</td>
-                <td>2009-04-10</td>
-                <td>$237,500</td>
-            </tr>
-            <tr>
-                <td>Bradley Greer</td>
-                <td>Software Engineer</td>
-                <td>London</td>
-                <td>41</td>
-                <td>2012-10-13</td>
-                <td>$132,000</td>
-            </tr>
-            <tr>
-                <td>Dai Rios</td>
-                <td>Personnel Lead</td>
-                <td>Edinburgh</td>
-                <td>35</td>
-                <td>2012-09-26</td>
-                <td>$217,500</td>
-            </tr>
-            <tr>
-                <td>Jenette Caldwell</td>
-                <td>Development Lead</td>
-                <td>New York</td>
-                <td>30</td>
-                <td>2011-09-03</td>
-                <td>$345,000</td>
-            </tr>
-            <tr>
-                <td>Yuri Berry</td>
-                <td>Chief Marketing Officer (CMO)</td>
-                <td>New York</td>
-                <td>40</td>
-                <td>2009-06-25</td>
-                <td>$675,000</td>
-            </tr>
-            <tr>
-                <td>Caesar Vance</td>
-                <td>Pre-Sales Support</td>
-                <td>New York</td>
-                <td>21</td>
-                <td>2011-12-12</td>
-                <td>$106,450</td>
-            </tr>
-            <tr>
-                <td>Doris Wilder</td>
-                <td>Sales Assistant</td>
-                <td>Sydney</td>
-                <td>23</td>
-                <td>2010-09-20</td>
-                <td>$85,600</td>
-            </tr>
-            <tr>
-                <td>Angelica Ramos</td>
-                <td>Chief Executive Officer (CEO)</td>
-                <td>London</td>
-                <td>47</td>
-                <td>2009-10-09</td>
-                <td>$1,200,000</td>
-            </tr>
-            <tr>
-                <td>Gavin Joyce</td>
-                <td>Developer</td>
-                <td>Edinburgh</td>
-                <td>42</td>
-                <td>2010-12-22</td>
-                <td>$92,575</td>
-            </tr>
-            <tr>
-                <td>Jennifer Chang</td>
-                <td>Regional Director</td>
-                <td>Singapore</td>
-                <td>28</td>
-                <td>2010-11-14</td>
-                <td>$357,650</td>
-            </tr>
-            <tr>
-                <td>Brenden Wagner</td>
-                <td>Software Engineer</td>
-                <td>San Francisco</td>
-                <td>28</td>
-                <td>2011-06-07</td>
-                <td>$206,850</td>
-            </tr>
-            <tr>
-                <td>Fiona Green</td>
-                <td>Chief Operating Officer (COO)</td>
-                <td>San Francisco</td>
-                <td>48</td>
-                <td>2010-03-11</td>
-                <td>$850,000</td>
-            </tr>
-            <tr>
-                <td>Shou Itou</td>
-                <td>Regional Marketing</td>
-                <td>Tokyo</td>
-                <td>20</td>
-                <td>2011-08-14</td>
-                <td>$163,000</td>
-            </tr>
-            <tr>
-                <td>Michelle House</td>
-                <td>Integration Specialist</td>
-                <td>Sydney</td>
-                <td>37</td>
-                <td>2011-06-02</td>
-                <td>$95,400</td>
-            </tr>
-            <tr>
-                <td>Suki Burks</td>
-                <td>Developer</td>
-                <td>London</td>
-                <td>53</td>
-                <td>2009-10-22</td>
-                <td>$114,500</td>
-            </tr>
-            <tr>
-                <td>Prescott Bartlett</td>
-                <td>Technical Author</td>
-                <td>London</td>
-                <td>27</td>
-                <td>2011-05-07</td>
-                <td>$145,000</td>
-            </tr>
-            <tr>
-                <td>Gavin Cortez</td>
-                <td>Team Leader</td>
-                <td>San Francisco</td>
-                <td>22</td>
-                <td>2008-10-26</td>
-                <td>$235,500</td>
-            </tr>
-            <tr>
-                <td>Martena Mccray</td>
-                <td>Post-Sales support</td>
-                <td>Edinburgh</td>
-                <td>46</td>
-                <td>2011-03-09</td>
-                <td>$324,050</td>
-            </tr>
-            <tr>
-                <td>Unity Butler</td>
-                <td>Marketing Designer</td>
-                <td>San Francisco</td>
-                <td>47</td>
-                <td>2009-12-09</td>
-                <td>$85,675</td>
-            </tr>
-            <tr>
-                <td>Howard Hatfield</td>
-                <td>Office Manager</td>
-                <td>San Francisco</td>
-                <td>51</td>
-                <td>2008-12-16</td>
-                <td>$164,500</td>
-            </tr>
-            <tr>
-                <td>Hope Fuentes</td>
-                <td>Secretary</td>
-                <td>San Francisco</td>
-                <td>41</td>
-                <td>2010-02-12</td>
-                <td>$109,850</td>
-            </tr>
-            <tr>
-                <td>Vivian Harrell</td>
-                <td>Financial Controller</td>
-                <td>San Francisco</td>
-                <td>62</td>
-                <td>2009-02-14</td>
-                <td>$452,500</td>
-            </tr>
-            <tr>
-                <td>Timothy Mooney</td>
-                <td>Office Manager</td>
-                <td>London</td>
-                <td>37</td>
-                <td>2008-12-11</td>
-                <td>$136,200</td>
-            </tr>
-            <tr>
-                <td>Jackson Bradshaw</td>
-                <td>Director</td>
-                <td>New York</td>
-                <td>65</td>
-                <td>2008-09-26</td>
-                <td>$645,750</td>
-            </tr>
-            <tr>
-                <td>Olivia Liang</td>
-                <td>Support Engineer</td>
-                <td>Singapore</td>
-                <td>64</td>
-                <td>2011-02-03</td>
-                <td>$234,500</td>
-            </tr>
-            <tr>
-                <td>Bruno Nash</td>
-                <td>Software Engineer</td>
-                <td>London</td>
-                <td>38</td>
-                <td>2011-05-03</td>
-                <td>$163,500</td>
-            </tr>
-            <tr>
-                <td>Sakura Yamamoto</td>
-                <td>Support Engineer</td>
-                <td>Tokyo</td>
-                <td>37</td>
-                <td>2009-08-19</td>
-                <td>$139,575</td>
-            </tr>
-            <tr>
-                <td>Thor Walton</td>
-                <td>Developer</td>
-                <td>New York</td>
-                <td>61</td>
-                <td>2013-08-11</td>
-                <td>$98,540</td>
-            </tr>
-            <tr>
-                <td>Finn Camacho</td>
-                <td>Support Engineer</td>
-                <td>San Francisco</td>
-                <td>47</td>
-                <td>2009-07-07</td>
-                <td>$87,500</td>
-            </tr>
-            <tr>
-                <td>Serge Baldwin</td>
-                <td>Data Coordinator</td>
-                <td>Singapore</td>
-                <td>64</td>
-                <td>2012-04-09</td>
-                <td>$138,575</td>
-            </tr>
-            <tr>
-                <td>Zenaida Frank</td>
-                <td>Software Engineer</td>
-                <td>New York</td>
-                <td>63</td>
-                <td>2010-01-04</td>
-                <td>$125,250</td>
-            </tr>
-            <tr>
-                <td>Zorita Serrano</td>
-                <td>Software Engineer</td>
-                <td>San Francisco</td>
-                <td>56</td>
-                <td>2012-06-01</td>
-                <td>$115,000</td>
-            </tr>
-            <tr>
-                <td>Jennifer Acosta</td>
-                <td>Junior Javascript Developer</td>
-                <td>Edinburgh</td>
-                <td>43</td>
-                <td>2013-02-01</td>
-                <td>$75,650</td>
-            </tr>
-            <tr>
-                <td>Cara Stevens</td>
-                <td>Sales Assistant</td>
-                <td>New York</td>
-                <td>46</td>
-                <td>2011-12-06</td>
-                <td>$145,600</td>
-            </tr>
-            <tr>
-                <td>Hermione Butler</td>
-                <td>Regional Director</td>
-                <td>London</td>
-                <td>47</td>
-                <td>2011-03-21</td>
-                <td>$356,250</td>
-            </tr>
-            <tr>
-                <td>Lael Greer</td>
-                <td>Systems Administrator</td>
-                <td>London</td>
-                <td>21</td>
-                <td>2009-02-27</td>
-                <td>$103,500</td>
-            </tr>
-            <tr>
-                <td>Jonas Alexander</td>
-                <td>Developer</td>
-                <td>San Francisco</td>
-                <td>30</td>
-                <td>2010-07-14</td>
-                <td>$86,500</td>
-            </tr>
-            <tr>
-                <td>Shad Decker</td>
-                <td>Regional Director</td>
-                <td>Edinburgh</td>
-                <td>51</td>
-                <td>2008-11-13</td>
-                <td>$183,000</td>
-            </tr>
-            <tr>
-                <td>Michael Bruce</td>
-                <td>Javascript Developer</td>
-                <td>Singapore</td>
-                <td>29</td>
-                <td>2011-06-27</td>
-                <td>$183,000</td>
-            </tr>
-            <tr>
-                <td>Donna Snider</td>
-                <td>Customer Support</td>
-                <td>New York</td>
-                <td>27</td>
-                <td>2011-01-25</td>
-                <td>$112,000</td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Office</th>
-                <th>Age</th>
-                <th>Start date</th>
-                <th>Salary</th>
-            </tr>
-        </tfoot>
-    </table>
-      </div>
-    </section>
+<div class="midde_cont">
+                  <div class="container-fluid">
+                     <div class="row column_title">
+                        <div class="col-md-12">
+                           <div class="page_title">
+                              <h2>Panel Principal</h2>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row column1">
+                        <div class="col-md-6 col-lg-3">
+                           <div class="full counter_section margin_bottom_30">
+                              <div class="couter_icon">
+                                 <div> 
+                                    <i class="fa fa-user yellow_color"></i>
+                                 </div>
+                              </div>
+                              <div class="counter_no">
+                                 <div>
+                                    <p class="total_no">2500</p>
+                                    <p class="head_couter">Welcome</p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="full counter_section margin_bottom_30">
+                              <div class="couter_icon">
+                                 <div> 
+                                    <i class="fa fa-clock-o blue1_color"></i>
+                                 </div>
+                              </div>
+                              <div class="counter_no">
+                                 <div>
+                                    <p class="total_no">123.50</p>
+                                    <p class="head_couter">Average Time</p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="full counter_section margin_bottom_30">
+                              <div class="couter_icon">
+                                 <div> 
+                                    <i class="fa fa-cloud-download green_color"></i>
+                                 </div>
+                              </div>
+                              <div class="counter_no">
+                                 <div>
+                                    <p class="total_no">1,805</p>
+                                    <p class="head_couter">Collections</p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="full counter_section margin_bottom_30">
+                              <div class="couter_icon">
+                                 <div> 
+                                    <i class="fa fa-comments-o red_color"></i>
+                                 </div>
+                              </div>
+                              <div class="counter_no">
+                                 <div>
+                                    <p class="total_no">54</p>
+                                    <p class="head_couter">Comments</p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="row column1 social_media_section">
+                        <div class="col-md-6 col-lg-3">
+                           <div class="full socile_icons fb margin_bottom_30">
+                              <div class="social_icon">
+                                 <i class="fa fa-facebook"></i>
+                              </div>
+                              <div class="social_cont">
+                                 <ul>
+                                    <li>
+                                       <span><strong>35k</strong></span>
+                                       <span>Friends</span>
+                                    </li>
+                                    <li>
+                                       <span><strong>128</strong></span>
+                                       <span>Feeds</span>
+                                    </li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="full socile_icons tw margin_bottom_30">
+                              <div class="social_icon">
+                                 <i class="fa fa-twitter"></i>
+                              </div>
+                              <div class="social_cont">
+                                 <ul>
+                                    <li>
+                                       <span><strong>584k</strong></span>
+                                       <span>Followers</span>
+                                    </li>
+                                    <li>
+                                       <span><strong>978</strong></span>
+                                       <span>Tweets</span>
+                                    </li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="full socile_icons linked margin_bottom_30">
+                              <div class="social_icon">
+                                 <i class="fa fa-linkedin"></i>
+                              </div>
+                              <div class="social_cont">
+                                 <ul>
+                                    <li>
+                                       <span><strong>758+</strong></span>
+                                       <span>Contacts</span>
+                                    </li>
+                                    <li>
+                                       <span><strong>365</strong></span>
+                                       <span>Feeds</span>
+                                    </li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                           <div class="full socile_icons google_p margin_bottom_30">
+                              <div class="social_icon">
+                                 <i class="fa fa-google-plus"></i>
+                              </div>
+                              <div class="social_cont">
+                                 <ul>
+                                    <li>
+                                       <span><strong>450</strong></span>
+                                       <span>Followers</span>
+                                    </li>
+                                    <li>
+                                       <span><strong>57</strong></span>
+                                       <span>Circles</span>
+                                    </li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- graph -->
+                     <div class="row column2 graph margin_bottom_30">
+                        <div class="col-md-l2 col-lg-12">
+                           <div class="white_shd full">
+                              <div class="full graph_head">
+                                 <div class="heading1 margin_0">
+                                    <h2>Extra Area Chart</h2>
+                                 </div>
+                              </div>
+                              <div class="full graph_revenue">
+                                 <div class="row">
+                                    <div class="col-md-12">
+                                       <div class="content">
+                                          <div class="area_chart">
+                                             <canvas height="120" id="canvas"></canvas>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- end graph -->
+                     <div class="row column3">
+                        <!-- testimonial -->
+                        <div class="col-md-6">
+                           <div class="dark_bg full margin_bottom_30">
+                              <div class="full graph_head">
+                                 <div class="heading1 margin_0">
+                                    <h2>Testimonial</h2>
+                                 </div>
+                              </div>
+                              <div class="full graph_revenue">
+                                 <div class="row">
+                                    <div class="col-md-12">
+                                       <div class="content testimonial">
+                                          <div id="testimonial_slider" class="carousel slide" data-ride="carousel">
+                                             <!-- Wrapper for carousel items -->
+                                             <div class="carousel-inner">
+                                                <div class="item carousel-item active">
+                                                   <div class="img-box"><img src="images/layout_img/user_img.jpg" alt=""></div>
+                                                   <p class="testimonial">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae..</p>
+                                                   <p class="overview"><b>Michael Stuart</b>Seo Founder</p>
+                                                </div>
+                                                <div class="item carousel-item">
+                                                   <div class="img-box"><img src="images/layout_img/user_img.jpg" alt=""></div>
+                                                   <p class="testimonial">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae..</p>
+                                                   <p class="overview"><b>Michael Stuart</b>Seo Founder</p>
+                                                </div>
+                                                <div class="item carousel-item">
+                                                   <div class="img-box"><img src="images/layout_img/user_img.jpg" alt=""></div>
+                                                   <p class="testimonial">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae..</p>
+                                                   <p class="overview"><b>Michael Stuart</b>Seo Founder</p>
+                                                </div>
+                                             </div>
+                                             <!-- Carousel controls -->
+                                             <a class="carousel-control left carousel-control-prev" href="#testimonial_slider" data-slide="prev">
+                                             <i class="fa fa-angle-left"></i>
+                                             </a>
+                                             <a class="carousel-control right carousel-control-next" href="#testimonial_slider" data-slide="next">
+                                             <i class="fa fa-angle-right"></i>
+                                             </a>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- end testimonial -->
+                        <!-- progress bar -->
+                        <div class="col-md-6">
+                           <div class="white_shd full margin_bottom_30">
+                              <div class="full graph_head">
+                                 <div class="heading1 margin_0">
+                                    <h2>Progress Bar</h2>
+                                 </div>
+                              </div>
+                              <div class="full progress_bar_inner">
+                                 <div class="row">
+                                    <div class="col-md-12">
+                                       <div class="progress_bar">
+                                          <!-- Skill Bars -->
+                                          <span class="skill" style="width:73%;">Facebook <span class="info_valume">73%</span></span>                  
+                                          <div class="progress skill-bar ">
+                                             <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" aria-valuenow="73" aria-valuemin="0" aria-valuemax="100" style="width: 73%;">
+                                             </div>
+                                          </div>
+                                          <span class="skill" style="width:62%;">Twitter <span class="info_valume">62%</span></span>   
+                                          <div class="progress skill-bar">
+                                             <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" style="width: 62%;">
+                                             </div>
+                                          </div>
+                                          <span class="skill" style="width:54%;">Instagram <span class="info_valume">54%</span></span>
+                                          <div class="progress skill-bar">
+                                             <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" aria-valuenow="54" aria-valuemin="0" aria-valuemax="100" style="width: 54%;">
+                                             </div>
+                                          </div>
+                                          <span class="skill" style="width:82%;">Google plus <span class="info_valume">82%</span></span>
+                                          <div class="progress skill-bar">
+                                             <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100" style="width: 82%;">
+                                             </div>
+                                          </div>
+                                          <span class="skill" style="width:48%;">Other <span class="info_valume">48%</span></span>
+                                          <div class="progress skill-bar">
+                                             <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100" style="width: 48%;">
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- end progress bar -->
+                     </div>
+                     <div class="row column4 graph">
+                        <div class="col-md-6 margin_bottom_30">
+                           <div class="dash_blog">
+                              <div class="dash_blog_inner">
+                                 <div class="dash_head">
+                                    <h3><span><i class="fa fa-calendar"></i> 6 July 2018</span><span class="plus_green_bt"><a href="#">+</a></span></h3>
+                                 </div>
+                                 <div class="list_cont">
+                                    <p>Today Tasks for Ronney Jack</p>
+                                 </div>
+                                 <div class="task_list_main">
+                                    <ul class="task_list">
+                                       <li><a href="#">Meeting about plan for Admin Template 2018</a><br><strong>10:00 AM</strong></li>
+                                       <li><a href="#">Create new task for Dashboard</a><br><strong>10:00 AM</strong></li>
+                                       <li><a href="#">Meeting about plan for Admin Template 2018</a><br><strong>11:00 AM</strong></li>
+                                       <li><a href="#">Create new task for Dashboard</a><br><strong>10:00 AM</strong></li>
+                                       <li><a href="#">Meeting about plan for Admin Template 2018</a><br><strong>02:00 PM</strong></li>
+                                    </ul>
+                                 </div>
+                                 <div class="read_more">
+                                    <div class="center"><a class="main_bt read_bt" href="#">Read More</a></div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                           <div class="dash_blog">
+                              <div class="dash_blog_inner">
+                                 <div class="dash_head">
+                                    <h3><span><i class="fa fa-comments-o"></i> Updates</span><span class="plus_green_bt"><a href="#">+</a></span></h3>
+                                 </div>
+                                 <div class="list_cont">
+                                    <p>User confirmation</p>
+                                 </div>
+                                 <div class="msg_list_main">
+                                    <ul class="msg_list">
+                                       <li>
+                                          <span><img src="images/layout_img/msg2.png" class="img-responsive" alt="#" /></span>
+                                          <span>
+                                          <span class="name_user">Herman Beck</span>
+                                          <span class="msg_user">Sed ut perspiciatis unde omnis.</span>
+                                          <span class="time_ago">12 min ago</span>
+                                          </span>
+                                       </li>
+                                       <li>
+                                          <span><img src="images/layout_img/msg3.png" class="img-responsive" alt="#" /></span>
+                                          <span>
+                                          <span class="name_user">John Smith</span>
+                                          <span class="msg_user">On the other hand, we denounce.</span>
+                                          <span class="time_ago">12 min ago</span>
+                                          </span>
+                                       </li>
+                                       <li>
+                                          <span><img src="images/layout_img/msg2.png" class="img-responsive" alt="#" /></span>
+                                          <span>
+                                          <span class="name_user">John Smith</span>
+                                          <span class="msg_user">Sed ut perspiciatis unde omnis.</span>
+                                          <span class="time_ago">12 min ago</span>
+                                          </span>
+                                       </li>
+                                       <li>
+                                          <span><img src="images/layout_img/msg3.png" class="img-responsive" alt="#" /></span>
+                                          <span>
+                                          <span class="name_user">John Smith</span>
+                                          <span class="msg_user">On the other hand, we denounce.</span>
+                                          <span class="time_ago">12 min ago</span>
+                                          </span>
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 <div class="read_more">
+                                    <div class="center"><a class="main_bt read_bt" href="#">Read More</a></div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- footer -->
+                  <div class="container-fluid">
+                     <div class="footer">
+                        <p>Copyright © 2018 Designed by html.design. All rights reserved.<br><br>
+                           Distributed By: <a href="https://themewagon.com/">ThemeWagon</a>
+                        </p>
+                     </div>
+                  </div>
+               </div>
 <?php echo $this->endSection() ?>

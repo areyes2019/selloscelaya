@@ -1,0 +1,103 @@
+CRITICAL - 2024-04-08 21:36:38 --> ParseError: syntax error, unexpected '/'
+in APPPATH\Views\Panel\panel_template.php on line 530.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\View\View.php(244): CodeIgniter\View\View->render('Panel/panel_template', [], true)
+ 3 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/panel', [], true)
+ 4 APPPATH\Controllers\Admin\Admin.php(10): view('Panel/panel')
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Admin->index()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Admin))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 21:36:47 --> ParseError: syntax error, unexpected '/'
+in APPPATH\Views\Panel\panel_template.php on line 530.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\View\View.php(244): CodeIgniter\View\View->render('Panel/panel_template', [], true)
+ 3 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/panel', [], true)
+ 4 APPPATH\Controllers\Admin\Admin.php(10): view('Panel/panel')
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Admin->index()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Admin))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 21:37:24 --> ParseError: syntax error, unexpected '/'
+in APPPATH\Views\Panel\panel_template.php on line 530.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\View\View.php(244): CodeIgniter\View\View->render('Panel/panel_template', [], true)
+ 3 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/panel', [], true)
+ 4 APPPATH\Controllers\Admin\Admin.php(10): view('Panel/panel')
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Admin->index()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Admin))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 21:37:31 --> ParseError: syntax error, unexpected '/'
+in APPPATH\Views\Panel\panel_template.php on line 530.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\View\View.php(244): CodeIgniter\View\View->render('Panel/panel_template', [], true)
+ 3 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/panel', [], true)
+ 4 APPPATH\Controllers\Admin\Admin.php(10): view('Panel/panel')
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Admin->index()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Admin))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 21:38:02 --> ParseError: syntax error, unexpected '/'
+in APPPATH\Views\Panel\panel_template.php on line 529.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\View\View.php(244): CodeIgniter\View\View->render('Panel/panel_template', [], true)
+ 3 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/panel', [], true)
+ 4 APPPATH\Controllers\Admin\Admin.php(10): view('Panel/panel')
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Admin->index()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Admin))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 21:47:09 --> ParseError: syntax error, unexpected 'chart_custom_style1' (T_STRING), expecting ')'
+in APPPATH\Views\Panel\panel_template.php on line 534.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\View\View.php(244): CodeIgniter\View\View->render('Panel/panel_template', [], true)
+ 3 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/panel', [], true)
+ 4 APPPATH\Controllers\Admin\Admin.php(10): view('Panel/panel')
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Admin->index()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Admin))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 21:47:24 --> ParseError: syntax error, unexpected 'chart_custom_style1' (T_STRING), expecting ')'
+in APPPATH\Views\Panel\panel_template.php on line 534.
+ 1 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\View\View.php(244): CodeIgniter\View\View->render('Panel/panel_template', [], true)
+ 3 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/panel', [], true)
+ 4 APPPATH\Controllers\Admin\Admin.php(10): view('Panel/panel')
+ 5 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Admin->index()
+ 6 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Admin))
+ 7 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 22:53:17 --> ErrorException: Undefined variable: clientes
+in APPPATH\Views\Panel\articulos.php on line 60.
+ 1 APPPATH\Views\Panel\articulos.php(60): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: clientes', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\articulos.php', 60, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\articulos.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/articulos', [], true)
+ 5 APPPATH\Controllers\Admin\Articulos.php(12): view('Panel/articulos', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 22:53:31 --> ErrorException: Undefined variable: clientes
+in APPPATH\Views\Panel\articulos.php on line 60.
+ 1 APPPATH\Views\Panel\articulos.php(60): CodeIgniter\Debug\Exceptions->errorHandler(8, 'Undefined variable: clientes', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\articulos.php', 60, [...])
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\articulos.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/articulos', [], true)
+ 5 APPPATH\Controllers\Admin\Articulos.php(12): view('Panel/articulos', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2024-04-08 23:33:00 --> Error: Call to undefined method CodeIgniter\View\View::renderSecction()
+in APPPATH\Views\Panel\panel_template.php on line 64.
+ 1 SYSTEMPATH\View\View.php(228): include()
+ 2 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH\View\View.php(244): CodeIgniter\View\View->render('Panel/panel_template', [], true)
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/articulos', [], true)
+ 5 APPPATH\Controllers\Admin\Articulos.php(12): view('Panel/articulos', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Articulos->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
