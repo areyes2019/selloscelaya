@@ -14,6 +14,7 @@ $routes->get('textiles', 'Home::textiles');
 $routes->get('catalogo', 'Home::catalogo');
 $routes->get('doctores', 'Home::catalogo');
 $routes->get('maestros', 'Home::catalogo');
+$routes->post('contacto', 'Home::contacto');
 
 //logeo
 $routes->get('login', 'Admin::login');

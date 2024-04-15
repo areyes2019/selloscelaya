@@ -39,4 +39,18 @@ class Home extends BaseController
     {
         return view('catalogo');
     }
+    public function contacto()
+    {
+        $correo = $this->request->getPost('correo');
+        $nombre = $this->request->getPost('nombre');
+        $texto = $this->request->getPost('texto');
+        
+        $email = \Config\Services::email();
+        $email->setFrom($correo, $nombre);
+        $email->setTo('ventas@selloscelaya.com');
+        $email->setSubject('Quiero más información');
+        $email->setMessage($texto);
+        $email->send();
+        return view('home');
+    }
 }

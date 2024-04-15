@@ -353,25 +353,16 @@
                 <div class="col-lg-6">
                     <div class="bg-primary h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
                         <h1 class="text-white mb-4">Contáctanos para mas información</h1>
-                        <form>
+                        <form method="post" action="<?php echo base_url('contacto');?>">
                             <div class="row g-3">
                                 <div class="col-12 col-sm-6">
-                                    <input type="text" class="form-control border-0" placeholder="Nombre" style="height: 55px;">
+                                    <input type="text" class="form-control border-0" placeholder="Nombre" style="height: 55px;" name="nombre">
                                 </div>
                                 <div class="col-12 col-sm-6">
-                                    <input type="email" class="form-control border-0" placeholder="Email" style="height: 55px;">
-                                </div>
-                                <div class="col-12 col-sm-6">
-                                    <select class="form-select border-0" style="height: 55px;">
-                                        <option selected>Seleciona una opción</option>
-                                        <option value="1">Autoentitable</option>
-                                        <option value="2">Madera</option>
-                                        <option value="3">Fechador</option>
-                                        <option value="3">Tela</option>
-                                    </select>
+                                    <input type="email" class="form-control border-0" placeholder="Email" style="height: 55px;" name="correo">
                                 </div>
                                 <div class="col-12">
-                                    <textarea class="form-control border-0" placeholder="Escribe aqui tu consulta"></textarea>
+                                    <textarea class="form-control border-0" placeholder="Escribe aqui tu consulta" name="texto"></textarea>
                                 </div>
                                 <div class="col-12">
                                     <button class="btn btn-secondary w-100 py-3" type="submit">Enviar</button>
