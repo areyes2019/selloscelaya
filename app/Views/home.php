@@ -241,7 +241,7 @@
                             <div class="row g-4">
                                 <div class="col-md-6" style="min-height: 350px;">
                                     <div class="position-relative h-100">
-                                        <img class="position-absolute img-fluid w-100 h-100" src="<?php echo base_url('public/img/fechadores.jpg'); ?>"
+                                        <img class="img-fluid w-100 h-100" src="<?php echo base_url('public/img/fechadores.jpg'); ?>"
                                             style="object-fit: cover;" alt="">
                                     </div>
                                 </div>
@@ -252,7 +252,7 @@
                                     <p><i class="fa fa-check text-success me-3"></i>Registro preciso</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Eficiencia en Documentación</p>
                                     <p><i class="fa fa-check text-success me-3"></i>Organizacion y elegancia</p>
-                                    <a href="https://wa.link/1l85w2" target="_blank" class="btn btn-primary py-3 px-5 mt-3">Quero uno<i class="fa fa-arrow-right ms-3"></i></a>
+                                    <a href="https://wa.link/1l85w2" target="_blank" class="btn btn-primary py-3 px-5 mt-3">Quiero uno<i class="fa fa-arrow-right ms-3"></i></a>
                                 </div>
                             </div>
                         </div>
