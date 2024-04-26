@@ -76,6 +76,25 @@
     </div>
     <!-- Service End -->
 
+    <!-- Envio a domicilio -->
+    <div class="container-xxl py-5" id="whoweare">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-8 pt-4" style="min-height: 400px;">
+                    <div class="position-relative h-100 wow fadeIn" data-wow-delay="0.1s">
+                        <img class="img-fluid" src="<?php echo base_url('public/img/envios.png'); ?>" style="object-fit: cover;" alt="grupos de sellos de goma fechadores">
+                    </div>
+                </div>
+                <div class="col-4">
+                    <h1 class="mb-4"><span class="text-primary">Envíos</span> A domicilio</h1>
+                    <p class="mb-4">Descubre la comodidad de recibir tus compras en la puerta de tu hogar. Con nuestros envíos locales a domicilio, olvídate del estrés del tráfico y las largas esperas. ¡Haz tu pedido y déjanos encargarnos del resto! Entrega rápida, sin complicaciones y con un servicio personalizado que se adapta a tus necesidades. ¡Con nosotros, tu satisfacción está garantizada desde el momento en que haces clic hasta que recibes tu paquete!</p>
+                    
+                    <p>Envio local a solo <span class="text-danger"><strong>$50.00</strong></span>. Para toda el área metropolitana de Celaya</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Envio a domicilio -->
 
     <!-- About Start -->
     <div class="container-xxl py-5" id="whoweare">
@@ -287,11 +306,7 @@
             <div class="row g-5">
                 <div class="col-lg-6 pt-4" style="min-height: 400px;">
                     <div class="position-relative h-100 wow fadeIn" data-wow-delay="0.1s">
-                        <img class="position-absolute img-fluid w-100 h-100" src="<?php echo base_url('public/img/gigante.jpg'); ?>" style="object-fit: cover;" alt="">
-                        <div class="position-absolute top-0 end-0 mt-n4 me-n4 py-4 px-5" style="background: rgba(0, 0, 0, .08);">
-                            <h1 class="display-4 text-white mb-0">Por que.. <span class="fs-4">Grande es</span></h1>
-                            <h4 class="text-white">MEJOR</h4>
-                        </div>
+                        <img class="img-fluid" src="<?php echo base_url('public/img/big.png'); ?>" style="object-fit: cover;" alt="grande es mejor">
                     </div>
                 </div>
                 <div class="col-lg-6">
