@@ -27,7 +27,7 @@ class Articulos extends BaseController
 	{
 
 		$model = new ArticulosModel();
-		$resultado = $model->where('idArticulo',$id)->findAll();
+		$resultado = $model->where('id_articulo',$id)->findAll();
 		$nombre = $resultado[0]['nombre']." - ".$resultado[0]['modelo'];
 		$data = ['articulos'=>$resultado,'nombre'=>$nombre];
 		return view('Panel/editar_articulo',$data);
@@ -39,13 +39,18 @@ class Articulos extends BaseController
 
 		$modelo = new ArticulosModel();
 		$id = $this->request->getPost('idarticulo');
+		if (!empty($this->request->getPost('stock'))) {
+			$stock = $this->request->getPost('stock');
+		}else{
+			$stock = 0;
+		}
 		$data = [
 			'nombre'=> $this->request->getPost('nombre'),
 			'modelo' => $this->request->getPost('modelo'),
 			'precio_prov' => $this->request->getPost('precio_prov'),
 			'precio_pub' => $this->request->getPost('precio_pub'),
 			'minimo' => $this->request->getPost('minimo'),
-			'stock' => $this->request->getPost('stock'),
+			'stock' => $stock,
 		];
 		$modelo->update($id,$data);
 		return redirect()->to('/articulos');

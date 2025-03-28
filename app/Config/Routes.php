@@ -39,13 +39,13 @@ $routes->group('',static function($routes){
 	$routes->post('agregar_familia', 'Admin\Proveedores::agregar_familia');
 
 	/*Articulos*/
-	$routes->get('articulos', 'admin\Articulos::index');
-	$routes->get('mostrar_articulos', 'admin\Articulos::mostrar');
-	$routes->get('mostrar_articulos_compras/(:num)', 'admin\Articulos::mostrar_compras/$1');
-	$routes->post('nuevo_articulo', 'admin\Articulos::nuevo');
-	$routes->get('editar_articulo/(:num)', 'admin\Articulos::editar/$1');
-	$routes->post('actualizar_articulo', 'admin\Articulos::actualizar');
-	$routes->get('eliminar_articulo/(:num)', 'admin\Articulos::eliminar/$1');
+	$routes->get('articulos', 'Admin\Articulos::index');
+	$routes->get('mostrar_articulos', 'Admin\Articulos::mostrar');
+	$routes->get('mostrar_articulos_compras/(:num)', 'Admin\Articulos::mostrar_compras/$1');
+	$routes->post('nuevo_articulo', 'Admin\Articulos::nuevo');
+	$routes->get('editar_articulo/(:num)', 'Admin\Articulos::editar/$1');
+	$routes->post('actualizar_articulo', 'Admin\Articulos::actualizar');
+	$routes->get('eliminar_articulo/(:num)', 'Admin\Articulos::eliminar/$1');
 
 	/*Cotizaciones*/
 	$routes->get('cotizaciones', 'admin\Cotizaciones::index');

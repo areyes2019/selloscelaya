@@ -10,7 +10,7 @@
 		  	<div class="col-md-6">
 		    	<label for="inputEmail4" class="form-label">Nombre</label>
 		    	<input type="text" class="my-input shadow-none form-control p-1"  value="<?php echo $articulo['nombre'] ?>" name="nombre">
-		    	<input type="hidden" value="<?php echo $articulo['idArticulo']?>" name="idarticulo">
+		    	<input type="hidden" value="<?php echo $articulo['id_articulo']?>" name="idarticulo">
 		 	</div>
 			<div class="col-md-6">
 			    <label for="inputPassword4" class="form-label">Modelo</label>
@@ -31,7 +31,7 @@
 			<div class="col-md-3">
 			    <label for="inputState" class="form-label">En Stok</label>
 			    <select id="inputState" class="form-select my-input shadow-none form-control p-1" name="stock">
-			      <option selected>Escoge una opción...</option>
+			      <option value="" disabled selected hidden>Escoge una opción...</option>
 			      <option value="1">Sí</option>
 			      <option value="0">No</option>
 			    </select>
