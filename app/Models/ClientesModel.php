@@ -5,7 +5,7 @@ use CodeIgniter\Model;
 
 class ClientesModel extends Model
 {
-    protected $table = 'sellos_clientes';
+    protected $table = 'sellopro_clientes';
     protected $primaryKey = 'idCliente';
     protected $allowedFields = [
         'nombre',
@@ -14,5 +14,6 @@ class ClientesModel extends Model
         'telefono',
         'ciudad',
         'estado',
+        'descuento'
     ];
 }

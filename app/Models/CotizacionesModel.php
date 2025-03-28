@@ -5,14 +5,17 @@ use CodeIgniter\Model;
 
 class CotizacionesModel extends Model
 {
-    protected $table = 'sellos_clientes';
-    protected $primaryKey = 'idCliente';
+    protected $table = 'sellopro_cotizaciones';
+    protected $primaryKey = 'idQt';
     protected $allowedFields = [
-        'nombre',
-        'correo',
-        'direccion',
-        'telefono',
-        'ciudad',
-        'estado',
+        'slug',
+        'cliente',
+        'fecha',
+        'caduca',
+        'total',
+        'anticipo',
+        'descuento',
+        'pago',
+        'entregada',
     ];
 }

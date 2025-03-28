@@ -5,7 +5,7 @@ use CodeIgniter\Model;
 
 class ArticulosModel extends Model
 {
-    protected $table = 'sellos_articulos';
+    protected $table = 'sellopro_articulos';
     protected $primaryKey = 'idArticulo';
     protected $allowedFields = [
         'nombre',
