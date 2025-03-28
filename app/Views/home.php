@@ -11,7 +11,7 @@
                         <div class="container">
                             <div class="row align-items-center justify-content-center justify-content-lg-start">
                                 <div class="col-10 col-lg-7 text-center text-lg-start">
-                                    <h4 class="text-white text-uppercase mb-3 animated slideInDown">// Marca tu mundoooooo con //</h4>
+                                    <h4 class="text-white text-uppercase mb-3 animated slideInDown">// Marca tu mundo con //</h4>
                                     <h1 class="display-3 text-white mb-4 pb-3 animated slideInDown">Sellos Celaya</h1>
                                     <h3 class="display-3 text-white mb-4 pb-3 animated slideInDown">Creando impresiones que duran</h3>
                                     <a href="tel:4613581090" class="btn btn-primary py-3 px-5 animated slideInDown">Quiero información<i class="fa fa-arrow-right ms-3"></i></a>
