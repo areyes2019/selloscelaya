@@ -20,7 +20,7 @@ $routes->post('contacto', 'Home::contacto');
 $routes->get('login', 'Admin::login');
 
 $routes->group('',static function($routes){
-	$routes->get('admin', 'admin\Admin::index');
+	$routes->get('admin', 'Admin\Admin::index');
 	
 	/*Clientes*/
 	$routes->get('clientes', 'admin\Clientes::index');
