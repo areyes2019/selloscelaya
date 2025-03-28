@@ -5,7 +5,7 @@
         <div class="row column_title">
             <div class="col-md-12">
                 <div class="page_title">
-                    <h2>Clientes</h2>
+                    <h2>Clientest</h2>
                 </div>
             </div>
         </div>
