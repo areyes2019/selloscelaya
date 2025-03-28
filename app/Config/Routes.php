@@ -23,11 +23,11 @@ $routes->group('',static function($routes){
 	$routes->get('admin', 'Admin\Admin::index');
 	
 	/*Clientes*/
-	$routes->get('clientes', 'admin\Clientes::index');
-	$routes->post('nuevo_cliente', 'admin\Clientes::nuevo');
-	$routes->get('editar_cliente/(:num)', 'admin\Clientes::editar/$1');
-	$routes->post('actualizar_cliente', 'admin\Clientes::actualizar');
-	$routes->get('eliminar_cliente/(:num)', 'admin\Clientes::eliminar/$1');
+	$routes->get('clientes', 'Admin\Clientes::index');
+	$routes->post('nuevo_cliente', 'Admin\Clientes::nuevo');
+	$routes->get('editar_cliente/(:num)', 'Admin\Clientes::editar/$1');
+	$routes->post('actualizar_cliente', 'Admin\Clientes::actualizar');
+	$routes->get('eliminar_cliente/(:num)', 'Admin\Clientes::eliminar/$1');
 	
 	/*Proveedores*/
 	$routes->get('proveedores', 'admin\Proveedores::index');
