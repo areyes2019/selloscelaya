@@ -5,7 +5,7 @@
         <div class="row column_title">
             <div class="col-md-12">
                 <div class="page_title">
-                    <h2>Clientes</h2>
+                    <h2>Clientest</h2>
                 </div>
             </div>
         </div>
@@ -67,8 +67,8 @@
                                         <td><?php echo $cliente['correo'] ?></td>
                                         <?php endif; ?>
                                         <td>
-                                            <a href="eliminar_cliente/<?php echo $cliente['id_cliente']  ?>" onclick="return confirm('¿Seguro que quieres eliminar este registro?')">Eliminar</a>
-                                            <a href="editar_cliente/<?php echo $cliente['id_cliente'] ?>">Editar</a>
+                                            <a href="eliminar_cliente/<?php echo $cliente['idCliente']  ?>" onclick="return confirm('¿Seguro que quieres eliminar este registro?')">Eliminar</a>
+                                            <a href="editar_cliente/<?php echo $cliente['idCliente'] ?>">Editar</a>
                                         </td>
                                     </tr>
                                     <?php endforeach;?>
