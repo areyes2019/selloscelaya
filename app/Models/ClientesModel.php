@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 class ClientesModel extends Model
 {
     protected $table = 'sellopro_clientes';
-    protected $primaryKey = 'idCliente';
+    protected $primaryKey = 'id_cliente';
     protected $allowedFields = [
         'nombre',
         'correo',

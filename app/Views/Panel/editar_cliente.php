@@ -10,7 +10,7 @@
 		  	<div class="col-md-6">
 		    	<label for="inputEmail4" class="form-label">Nombre</label>
 		    	<input type="text" class="my-input shadow-none form-control p-1"  value="<?php echo $cliente['nombre'] ?>" name="nombre">
-		    	<input type="hidden" value="<?php echo $cliente['idCliente']?>" name="idcliente">
+		    	<input type="hidden" value="<?php echo $cliente['id_cliente']?>" name="idcliente">
 		 	</div>
 			<div class="col-md-6">
 			    <label for="inputPassword4" class="form-label">Correo</label>
