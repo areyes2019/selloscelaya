@@ -1950,3 +1950,47 @@ WHERE `sellopro_articulos`.`id_articulo` IN :sellopro_articulos.id_articulo:', [
 10 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Articulos))
 11 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
 12 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-28 14:04:11 --> ErrorException: Undefined array key "idCliente"
+in APPPATH\Views\Panel\cotizaciones.php on line 73.
+ 1 APPPATH\Views\Panel\cotizaciones.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "idCliente"', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php', 73)
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/cotizaciones', [], true)
+ 5 APPPATH\Controllers\Admin\Cotizaciones.php(17): view('Panel/cotizaciones', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-28 14:04:48 --> ErrorException: Undefined array key "idCliente"
+in APPPATH\Views\Panel\cotizaciones.php on line 73.
+ 1 APPPATH\Views\Panel\cotizaciones.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "idCliente"', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php', 73)
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/cotizaciones', [], true)
+ 5 APPPATH\Controllers\Admin\Cotizaciones.php(17): view('Panel/cotizaciones', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-28 14:05:12 --> ErrorException: Undefined array key "idCliente"
+in APPPATH\Views\Panel\cotizaciones.php on line 73.
+ 1 APPPATH\Views\Panel\cotizaciones.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "idCliente"', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php', 73)
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/cotizaciones', [], true)
+ 5 APPPATH\Controllers\Admin\Cotizaciones.php(17): view('Panel/cotizaciones', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-28 14:05:37 --> ErrorException: Undefined array key "idCliente"
+in APPPATH\Views\Panel\cotizaciones.php on line 73.
+ 1 APPPATH\Views\Panel\cotizaciones.php(73): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "idCliente"', 'C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php', 73)
+ 2 SYSTEMPATH\View\View.php(228): include('C:\\laragon\\www\\selloscelaya\\app\\Views\\Panel\\cotizaciones.php')
+ 3 SYSTEMPATH\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1178): CodeIgniter\View\View->render('Panel/cotizaciones', [], true)
+ 5 APPPATH\Controllers\Admin\Cotizaciones.php(17): view('Panel/cotizaciones', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(941): App\Controllers\Admin\Cotizaciones->index()
+ 7 SYSTEMPATH\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Cotizaciones))
+ 8 SYSTEMPATH\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(79): CodeIgniter\CodeIgniter->run()
