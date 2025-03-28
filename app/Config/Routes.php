@@ -48,22 +48,22 @@ $routes->group('',static function($routes){
 	$routes->get('eliminar_articulo/(:num)', 'Admin\Articulos::eliminar/$1');
 
 	/*Cotizaciones*/
-	$routes->get('cotizaciones', 'admin\Cotizaciones::index');
-	$routes->get('nueva_cotizacion/(:num)', 'admin\Cotizaciones::nueva/$1');
-	$routes->get('pagina_cotizador/(:any)', 'admin\Cotizaciones::pagina/$1');
-	$routes->get('editar_cotizacion/(:num)', 'admin\Cotizaciones::editar/$1');
-	$routes->get('actualizar_cotizacion/(:num)', 'admin\Cotizaciones::actualizar/$1');
-	$routes->get('eliminar_cotizacion/(:num)', 'admin\Cotizaciones::eliminar/$1');
-	$routes->post('agregar_articulo', 'admin\Cotizaciones::agregar');
-	$routes->post('agregar_articulo_ind', 'admin\Cotizaciones::agregar_ind');
-	$routes->get('mostrar_detalles/(:num)', 'admin\Cotizaciones::mostrar_detalles/$1');
-	$routes->get('borrar_linea/(:num)', 'admin\Cotizaciones::borrar_linea/$1');
-	$routes->get('descargar_cotizacion/(:num)', 'admin\Cotizaciones::cotizacion_pdf/$1');
-	$routes->get('enviar', 'admin\Cotizaciones::enviar');
-	$routes->get('enviar_pdf/(:num)', 'admin\Cotizaciones::enviar_pdf/$1');
-	$routes->post('pago', 'admin\Cotizaciones::pago');
-	$routes->post('modificar_cantidad', 'admin\Cotizaciones::modificar_cantidad');
-	$routes->post('marcar_entregado', 'admin\Cotizaciones::entregado');
+	$routes->get('cotizaciones', 'Admin\Cotizaciones::index');
+	$routes->get('nueva_cotizacion/(:num)', 'Admin\Cotizaciones::nueva/$1');
+	$routes->get('pagina_cotizador/(:any)', 'Admin\Cotizaciones::pagina/$1');
+	$routes->get('editar_cotizacion/(:num)', 'Admin\Cotizaciones::editar/$1');
+	$routes->get('actualizar_cotizacion/(:num)', 'Admin\Cotizaciones::actualizar/$1');
+	$routes->get('eliminar_cotizacion/(:num)', 'Admin\Cotizaciones::eliminar/$1');
+	$routes->post('agregar_articulo', 'Admin\Cotizaciones::agregar');
+	$routes->post('agregar_articulo_ind', 'Admin\Cotizaciones::agregar_ind');
+	$routes->get('mostrar_detalles/(:num)', 'Admin\Cotizaciones::mostrar_detalles/$1');
+	$routes->get('borrar_linea/(:num)', 'Admin\Cotizaciones::borrar_linea/$1');
+	$routes->get('descargar_cotizacion/(:num)', 'Admin\Cotizaciones::cotizacion_pdf/$1');
+	$routes->get('enviar', 'Admin\Cotizaciones::enviar');
+	$routes->get('enviar_pdf/(:num)', 'Admin\Cotizaciones::enviar_pdf/$1');
+	$routes->post('pago', 'Admin\Cotizaciones::pago');
+	$routes->post('modificar_cantidad', 'Admin\Cotizaciones::modificar_cantidad');
+	$routes->post('marcar_entregado', 'Admin\Cotizaciones::entregado');
 
 	/*Compras*/
 	$routes->get('compras', 'admin\Compras::index');
