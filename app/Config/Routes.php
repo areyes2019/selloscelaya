@@ -30,13 +30,13 @@ $routes->group('',static function($routes){
 	$routes->get('eliminar_cliente/(:num)', 'Admin\Clientes::eliminar/$1');
 	
 	/*Proveedores*/
-	$routes->get('proveedores', 'admin\Proveedores::index');
-	$routes->post('nuevo_proveedor', 'admin\Proveedores::nuevo');
-	$routes->get('editar_proveedor/(:num)', 'admin\Proveedores::editar/$1');
-	$routes->post('actualizar_proveedor', 'admin\Proveedores::actualizar');
-	$routes->get('eliminar_proveedor/(:num)', 'admin\Proveedores::eliminar/$1');
-	$routes->get('mostrar_familias/(:num)', 'admin\Proveedores::mostrar_familias/$1');
-	$routes->post('agregar_familia', 'admin\Proveedores::agregar_familia');
+	$routes->get('proveedores', 'Admin\Proveedores::index');
+	$routes->post('nuevo_proveedor', 'Admin\Proveedores::nuevo');
+	$routes->get('editar_proveedor/(:num)', 'Admin\Proveedores::editar/$1');
+	$routes->post('actualizar_proveedor', 'Admin\Proveedores::actualizar');
+	$routes->get('eliminar_proveedor/(:num)', 'Admin\Proveedores::eliminar/$1');
+	$routes->get('mostrar_familias/(:num)', 'Admin\Proveedores::mostrar_familias/$1');
+	$routes->post('agregar_familia', 'Admin\Proveedores::agregar_familia');
 
 	/*Articulos*/
 	$routes->get('articulos', 'admin\Articulos::index');
