@@ -137,27 +137,7 @@ body {
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     margin-bottom: 20px;
 }
-/*Botones*/
-.btn-con-icono {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 18px;
-    background-color: black;
-    color: white;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
 
-.btn-con-icono:hover {
-    background-color: #2d3436;
-}
-
-.btn-con-icono .icono {
-    margin-right: 10px;
-    opacity: 0.8; /* Hace el icono más tenue */
-}
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
