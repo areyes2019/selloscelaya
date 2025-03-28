@@ -27,7 +27,7 @@ class Clientes extends BaseController
 	{
 
 		$model = new ClientesModel();
-		$resultado = $model->where('idCliente',$id)->findAll();
+		$resultado = $model->where('id_cliente',$id)->findAll();
 		$nombre = $resultado[0]['nombre'];
 		$data = ['clientes'=>$resultado,'nombre'=>$nombre];
 		return view('Panel/editar_cliente',$data);
