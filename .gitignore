@@ -15,5 +15,5 @@ App/Config/*
 .gitignore
 robots.txt
 sitemap.xml
-writable/logs/*
+Writable/logs/*
 .phpintel
