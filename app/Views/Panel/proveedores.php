@@ -16,7 +16,7 @@
             <div class="white_shd full margin_bottom_30">
                 <div class="full graph_head">
                     <div class="heading1 margin_0 mb-2">
-                        <button class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#nuevo_cliente">
+                        <button class="btn btn-primary btn-icon-split" data-bs-toggle="modal" data-bs-target="#nuevo_cliente">
                             <span class="icon text-white-50">
                                 <i class="fas fa-flag"></i>
                             </span>
