@@ -16,8 +16,7 @@
                 <div class="white_shd full margin_bottom_30">
                     <div class="full graph_head">
                         <div class="heading1 margin_0">
-                            <h2>Lista de Clientes</h2>
-                            <button class="btn btn-danger rounded-0" data-bs-toggle="modal" data-bs-target="#nuevo_cliente">Nuevo Cliente</button>
+                            <button class="btn-con-icono mb-2" data-bs-toggle="modal" data-bs-target="#nuevo_cliente"><span class="bi bi-person"></span> Nuevo Cliente</button>
                         </div>
                         <div class="modal fade" id="nuevo_cliente">
                           <div class="modal-dialog">
@@ -34,12 +33,14 @@
                                     <input type="text" class="my-input w-100" name="nombre">
                                     <label for="">Numero WhatsApp</label>
                                     <input type="text" class="my-input w-100" name="telefono">
-                                    <input type="submit" value="Guardar" class="my-btn-primary p-2 mt-2 w-100">
+                                    <button class="btn-con-icono mt-2">
+                                        <span class="bi bi-save icono"></span>
+                                        Guardar
+                                    </button>
                                 </form>
                               </div>
                               <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
+                                <button type="button" class="btn-con-icono" data-bs-dismiss="modal"><span class="bi bi-x-square-fill icono"></span>Cerrar</button>
                               </div>
                             </div>
                           </div>
@@ -67,8 +68,8 @@
                                         <td><?php echo $cliente['correo'] ?></td>
                                         <?php endif; ?>
                                         <td>
-                                            <a href="eliminar_cliente/<?php echo $cliente['idCliente']  ?>" onclick="return confirm('¿Seguro que quieres eliminar este registro?')">Eliminar</a>
-                                            <a href="editar_cliente/<?php echo $cliente['idCliente'] ?>">Editar</a>
+                                            <a href="eliminar_cliente/<?php echo $cliente['id_cliente']  ?>" onclick="return confirm('¿Seguro que quieres eliminar este registro?')">Eliminar</a>
+                                            <a href="editar_cliente/<?php echo $cliente['id_cliente'] ?>">Editar</a>
                                         </td>
                                     </tr>
                                     <?php endforeach;?>
