@@ -1,0 +1,5 @@
+[27-Mar-2025 23:06:05 America/Mexico_City] PHP Warning:  require(/home2/sellopro/public_html/./app/Config/Paths.php): Failed to open stream: No such file or directory in /home2/sellopro/public_html/index.php on line 34
+[27-Mar-2025 23:06:05 America/Mexico_City] PHP Fatal error:  Uncaught Error: Failed opening required '/home2/sellopro/public_html/./app/Config/Paths.php' (include_path='.:/opt/cpanel/ea-php82/root/usr/share/pear') in /home2/sellopro/public_html/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home2/sellopro/public_html/index.php on line 34
