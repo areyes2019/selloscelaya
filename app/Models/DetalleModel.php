@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 class DetalleModel extends Model
 {
     protected $table = 'sellopro_detalles';
-    protected $primaryKey = 'idDetalle';
+    protected $primaryKey = 'id_detalle';
     protected $allowedFields = [
         'cantidad',
         'id_articulo',

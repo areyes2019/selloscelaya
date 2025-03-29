@@ -55,12 +55,12 @@ class CreateSelloproCotizacionesTable extends Migration
                 'default' => 0
             ],
             'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true
+                'type'    => 'DATETIME',
+                'null'    => true,
             ],
             'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true
+                'type'    => 'DATETIME',
+                'null'    => true,
             ]
         ]);
 

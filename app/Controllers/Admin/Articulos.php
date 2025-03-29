@@ -11,14 +11,33 @@ class Articulos extends BaseController
 		$data['articulos'] = $model->findAll();
 		return view('Panel/articulos', $data);
 	}
+	public function mostrar()
+	{
+		$modelo = new ArticulosModel();
+		$query = $modelo->findAll();
+		return json_encode($query);
+	}
+	public function mostrar_compras($id)
+	{
+
+		$buscar = new ArticulosModel();
+		$buscar->where('id_proveedor',$id);
+		$resultado = $buscar->findAll();
+		return json_encode($resultado);
+	}
 	public function nuevo()
 	{
+		//tenemos que quitarle el iva a el precio
+
+		$precio = $this->request->getPost('precio_pub');
+		//$sin_impuesto = $precio/1.16;
+
 		$model = new ArticulosModel();
 		$data = [
 		    'nombre' => $this->request->getPost('nombre'),
 		    'modelo' => $this->request->getPost('modelo'),
 		    'precio_prov' => $this->request->getPost('precio_prov'),
-		    'precio_pub' => $this->request->getPost('precio_pub')
+		    'precio_pub' => $precio
 		];
 		$model->insert($data);
 		return redirect()->to('/articulos');
@@ -27,7 +46,7 @@ class Articulos extends BaseController
 	{
 
 		$model = new ArticulosModel();
-		$resultado = $model->where('id_articulo',$id)->findAll();
+		$resultado = $model->where('idArticulo',$id)->findAll();
 		$nombre = $resultado[0]['nombre']." - ".$resultado[0]['modelo'];
 		$data = ['articulos'=>$resultado,'nombre'=>$nombre];
 		return view('Panel/editar_articulo',$data);
@@ -36,21 +55,16 @@ class Articulos extends BaseController
 	public function actualizar()
 	{
 		
+		$precio = $this->request->getPost('precio_pub');
+		//$sin_impuesto = $precio/1.16;
 
 		$modelo = new ArticulosModel();
 		$id = $this->request->getPost('idarticulo');
-		if (!empty($this->request->getPost('stock'))) {
-			$stock = $this->request->getPost('stock');
-		}else{
-			$stock = 0;
-		}
 		$data = [
 			'nombre'=> $this->request->getPost('nombre'),
 			'modelo' => $this->request->getPost('modelo'),
 			'precio_prov' => $this->request->getPost('precio_prov'),
-			'precio_pub' => $this->request->getPost('precio_pub'),
-			'minimo' => $this->request->getPost('minimo'),
-			'stock' => $stock,
+			'precio_pub' => $precio,
 		];
 		$modelo->update($id,$data);
 		return redirect()->to('/articulos');

@@ -1,18 +1,22 @@
 <?php echo $this->extend('Panel/panel_template')?>
 <?php echo $this->section('contenido')?>
 <div class="container mt-3">
-	<div class="my-card d-flex justify-content-between">
-		<h2>Lista de Cotizaciones</h2>
+    <div class="my-card d-flex justify-content-between">
+        <h2>Lista de Cotizaciones</h2>
         <!-- Button trigger modal -->
-        <button type="button" class="my-btn-primary p-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Nueva Cotización
+        <button type="button" class="btn btn-primary btn-icon-split" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <span class="icon text-white-50">
+              <i class="bi bi-plus-circle"></i>
+          </span>
+          <span class="text">Nueva Cotización</span>
         </button>
        
-	</div>
-	<div class="my-card mt-3">
-		<table id="example" class="table table-bordered" style="width:100%">
+    </div>
+    <div class="my-card mt-3">
+        <table id="example" class="table table-bordered" style="width:100%">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Nombre</th>
                     <th>Numero WhatsApp</th>
                     <th>Fecha</th>
@@ -21,16 +25,19 @@
                 </tr>
             </thead>
             <tbody>
+                <?php foreach ($cotizaciones as $data): ?>
                 <tr>
-                    <td>Shad Roland</td>
-                    <td>461 256 2563</td>
-                    <td>5 de marzo de 2024</td>
+                    <td><?php echo $data['id_cotizacion'] ?></td>
+                    <td><?php echo $data['nombre'] ?></td>
+                    <td><?php echo $data['telefono'] ?></td>
+                    <td><?php echo $data['created_at'] ?></td>
                     <td>Enviada</td>
                     <td>
-                        <a href="#" class="btn btn-sm rounded-0 my-btn-danger"><span class="bi bi-trash3"></span></a>
-                        <a href="<?php echo base_url('editar_cotizacion'); ?>" class="btn btn-sm rounded-0 my-btn-success"><span class="bi bi-pencil"></span></a>
+                        <a class="btn btn-primary btn-circle btn-sm" href="<?php echo base_url('pagina_cotizador/'.$data['slug']); ?>" class="btn btn-sm rounded-0 my-btn-success"><span class="bi bi-pencil"></span></a>
+                        <a class="btn btn-danger btn-circle btn-sm" href="<?php echo base_url('eliminar_cotizacion/'.$data['id_cotizacion']); ?>" class="btn btn-sm rounded-0 my-btn-danger" onclick="return confirm('Esta eliminación no se puede revertir, ¿Deseas continuar?');"><span class="bi bi-trash3"></span></a>
                     </td>
                 </tr>
+                <?php endforeach ?>
             </tbody>
             <tfoot>
                 <tr>
@@ -42,7 +49,7 @@
                 </tr>
             </tfoot>
         </table>
-	</div>
+    </div>
 </div>
 
 <div id="app"></div>
@@ -56,36 +63,36 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <table id="modal" class="table table-bordered table-responsive" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>WhatsApp</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($clientes as $cliente): ?>
-                    <tr>
-                        <td class="w-50"><?php echo $cliente['nombre'] ?></td>
-                        <td><?php echo $cliente['telefono'] ?></td>
-                        <td>
-                            <a href="/nueva_cotizacion/<?php echo $cliente['idCliente']?>"  class="my-btn-primary p-1"><span class="bi bi-check"></span></a>
-                        </td>
-                    </tr>
-                    <?php endforeach;?>
-                </tbody>
-            </table>
+        <table id="modal" class="table table-bordered w-100">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($clientes as $cliente): ?>
+                <tr class="w-100">
+                    <td><?php echo $cliente['nombre'] ?></td>
+                    <td>
+                        <a class="btn btn-primary btn-circle" href="/nueva_cotizacion/<?php echo $cliente['id_cliente']?>"  class="my-btn-primary p-1"><span class="bi bi-check"></span></a>
+                    </td>
+                </tr>
+                <?php endforeach;?>
+            </tbody>
+        </table>
       </div>
       <div class="modal-footer">
-        <button type="button" class="my-btn-primary p-2">Guardar</button>
         <button type="button" class="my-btn-danger p-2" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
 </div>
 <script>
-    new DataTable('#modal');
+    $( document ).ready(function() {
+        new DataTable('#modal');
+        new DataTable('#example');
+    });
 </script>
 <script type="" src="<?php echo base_url('public/js/cotizaciones.js'); ?>"></script>
 <?php echo $this->endSection(); ?>

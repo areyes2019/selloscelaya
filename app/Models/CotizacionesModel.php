@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 class CotizacionesModel extends Model
 {
     protected $table = 'sellopro_cotizaciones';
-    protected $primaryKey = 'idQt';
+    protected $primaryKey = 'id_cotizacion';
     protected $allowedFields = [
         'slug',
         'cliente',
@@ -18,4 +18,7 @@ class CotizacionesModel extends Model
         'pago',
         'entregada',
     ];
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
 }
