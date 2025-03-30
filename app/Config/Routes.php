@@ -20,7 +20,9 @@ $routes->post('contacto', 'Home::contacto');
 $routes->get('login', 'Admin::login');
 
 $routes->group('',static function($routes){
+	
 	$routes->get('admin', 'Admin\Admin::index');
+	$routes->get('migrar', 'Admin\EjecutarMigraciones::index');
 	
 	/*Clientes*/
 	$routes->get('clientes', 'Admin\Clientes::index');
