@@ -480,7 +480,7 @@ class Cotizaciones extends BaseController
 		$db = \Config\Database::connect();
 		$cliente_query = new CotizacionesModel();
 		$email = \Config\Services::email();
-		
+
 		//datos del cliente
 		$cliente_query->where('id_cotizacion',$id);
 		$resultado_cotizacion = $cliente_query->findAll();
@@ -563,8 +563,7 @@ class Cotizaciones extends BaseController
 
 		}else{
 			// Opcional: guardar el error en logs
-	        log_message('error', 'Error al enviar correo: ' . $email->printDebugger());
-	        return "Error al enviar el correo";
+	        echo 'Error: ' . $email->printDebugger();
 		}
 	}
 	public function pago()
