@@ -34,27 +34,40 @@
 </div>
 <div class="card shadow mb-4 rounded-0">
     <div class="card-body">
-        <button class="btn btn-primary btn-icon-split mb-3 mb-sm-0 mr-2" data-bs-toggle="collapse" data-bs-target="#independiente">
+        <div class="row d-flex align-items-center">
+            <div class="col-md-2">
+                <button class="btn-my" data-bs-toggle="modal" data-bs-target="#agregar_articulo"><span class="btn-icon bi bi-plus-circle"></span>
+                Agregar Artículo</button>
+            </div>
+            <div class="col-md-3">
+                <div class="d-flex align-items-center gap-3">
+                    <label for="">Descuento</label>
+                    <select name="" id="" v-model="descuento" class="form-control-my shadow-none w-50">
+                        <option value="" disabled>Seleccione descuento</option>
+                        <option value="0">0%</option>
+                        <option value="10">10%</option>
+                        <option value="15">15%</option>
+                        <option value="20">20%</option>
+                        <option value="25">25%</option>
+                    </select>
+                    <button class="btn-my" @click = "aplicar_descuento">Ok</button>
+                </div>
+            </div>
+        </div>
+        <!-- <button class="btn btn-primary btn-icon-split mb-3 mb-sm-0 mr-2" data-bs-toggle="collapse" data-bs-target="#independiente">
             <span class="icon text-white-50">
                 <i class="bi bi-cart"></i>
             </span>
             <span class="text">Articulo Independiente</span>
-        </button>
-        <button class="btn btn-primary btn-icon-split" data-bs-toggle="modal" data-bs-target="#agregar_articulo">
-            <span class="icon text-white-50">
-                <i class="bi bi-list-check"></i>
-            </span>
-            <span class="text">Articulo de Lista</span>
-        </button>
+        </button> -->
+        
         <!--  Modal agregar articulos -->  
         <div class="modal fade" id="agregar_articulo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Seleecione un artículo</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <table class="table w-100" id="articulos">
@@ -74,18 +87,16 @@
                                         <input type="number" value="1" min="1" style="width: 50px;" :ref="articulo.id_articulo">
                                     </td>
                                     <td>
-                                        <button class="btn btn-primary btn-circle" @click="add_articulo(articulo.id_articulo)"><span class="bi bi-check"></span></button>
+                                        <button class="btn-my" @click="add_articulo(articulo.id_articulo)"><span class="bi bi-check"></span></button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger btn-icon-split" data-dismiss="modal">
-                            <span class="icon text-white-50">
-                                <i class="bi bi-box-arrow-right"></i>
-                            </span>
-                            <span class="text">Cerrar</span>
+                        <button type="button" class="btn-my" data-bs-dismiss="modal">
+                            <span class="btn-icon bi bi-box-arrow-right"></span>
+                            Cerrar
                         </button>
                     </div>
                 </div>
@@ -138,48 +149,70 @@
               <tr>
                 <th colspan="3"></th>
                 <td><strong>Sub-Total</strong></th>
-                <td>${{sub_total}}</td> 
+                <td>${{totales.sub_total}}</td> 
                 <td></td>
               </tr>
               <tr>
                 <th colspan="3"></th>
                 <td><strong>Descuento</strong></th>
-                <td>${{descuento}}</td>
+                <td>${{totales.descuento}}</td>
                 <td></td>
               </tr>
               <tr>
                 <th colspan="3"></th>
                 <td><strong>IVA</strong></th>
-                <td>${{iva}}</td>
+                <td>${{totales.iva}}</td>
                 <td></td>
               </tr>
               <tr>
                 <th colspan="3"></th>
                 <td><strong>Total</strong></th>
                 <td>
-                    ${{total}}
-                    <button  :class="[display,'btn', 'btn-success', 'btn-sm', 'btn-circle', 'ml-4']" @click="mostrar_collapse()"><span class="bi bi-cash"></span></button>
-                    <div class="collapse mt-2" id="pago">
-                        <input type="text" v-model="anticipo" style="width: 55px;">
-                        <button class="my-btn-primary" @click="agregar_pago()"><span class="bi-check-lg"></span></button>
-                    </div>
+                    ${{totales.total}}
                 </td>
-                <td></td>
+                <td>
+                    
+                </td>
               </tr>
               <tr>
                 <th colspan="3"></th>
-                <td><strong>Pago</strong></th>
-                <td>${{pago}}</td>
-                <td></td>
+                <td>
+                    <strong>Anticipo</strong>
+
+                </th>
+                <td>
+                    ${{totales.anticipo}}
+                    <button v-if="totales.anticipo == 0" class="btn-my bg-success" data-bs-toggle="modal" data-bs-target="#modalPago">
+                        <span class="bi bi-cash"></span>
+                    </button>
+                </td>
+                <td>   
+                </td>
               </tr>
               <tr>
                 <th colspan="3"></th>
                 <td><strong>Saldo</strong></th>
-                <td>${{saldo}}</td>
+                <td>${{totales.saldo}}</td>
                 <td></td>
               </tr>
             </tfoot>
         </table>
+    </div>
+    <!-- Modal Mini pagos-->
+    <div class="modal fade mini-modal" id="modalPago" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered rounded-0">
+            <div class="modal-content rounded-0">
+                <div class="modal-body p-3">
+                    <div class="mb-2">
+                        <input type="text" class="w-100" placeholder="Monto" required autofocus v-model="anticipo">
+                        <div ref="errorFeedback" class="text-danger d-none mb-2"></div>
+                    </div>
+                    <button type="btn" class="btn-my w-100" @click.prevent="agregar_pago">
+                        <i class="bi bi-check-circle"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </div>

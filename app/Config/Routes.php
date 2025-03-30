@@ -64,6 +64,8 @@ $routes->group('',static function($routes){
 	$routes->post('pago', 'Admin\Cotizaciones::pago');
 	$routes->post('modificar_cantidad', 'Admin\Cotizaciones::modificar_cantidad');
 	$routes->post('marcar_entregado', 'Admin\Cotizaciones::entregado');
+	$routes->get('totales/(:num)', 'Admin\Cotizaciones::totales/$1');
+	$routes->post('descuento', 'Admin\Cotizaciones::descuento');
 
 	/*Compras*/
 	$routes->get('compras', 'admin\Compras::index');

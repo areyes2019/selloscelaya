@@ -41,11 +41,11 @@ class CreateSelloproCotizacionesTable extends Migration
             ],
             'descuento' => [
                 'type' => 'DECIMAL',
-                'constraint' => '5,2',
+                'constraint' => '10,2',
                 'default' => 0.00
             ],
             'pago' => [
-                'type' => 'VARCHAR',
+                'type' => 'DECIMAL',
                 'constraint' => 50,
                 'null' => true
             ],

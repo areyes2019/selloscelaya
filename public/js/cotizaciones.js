@@ -22,7 +22,8 @@ const { createApp, ref } = Vue
         cantidad_ind:"",
         precio_ind:"",
         descuento:"",
-        disabled:0
+        disabled:0,
+        totales:""
       }
     },
     methods:{
@@ -51,6 +52,7 @@ const { createApp, ref } = Vue
               alert('Este producto ya agregado')
             }else{
               this.mostrar_lineas();
+              this.mostrar_totales();
             }
         })
       },
@@ -94,44 +96,61 @@ const { createApp, ref } = Vue
       mostrar_lineas(){
         var cotizacion = this.$refs.id_cotizacion.innerHTML;
         axios.get('/mostrar_detalles/'+cotizacion).then((response)=> {
-            
-            this.independiente = response.data['independiente'];
-            this.articulos = response.data['articulo'];
-            this.sub_total = response.data['sub_total'];
-            this.iva = response.data['iva'];
-            this.total = response.data['total'];
-            this.pago = response.data['abono'];
-            this.saldo = response.data['saldo'];
-            this.sugerido = response.data['sugerido'];
-            this.utilidad = response.data['utilidad'];
-            this.descuento = response.data['descuento'];
-            if (response.data['debe'] === 2) {
-              this.display = "d-none";
-              this.disabled = 1;
-              this.mostrar_lineas();
-            }
-
+            this.articulos = response.data;
+        })
+      },
+      mostrar_totales(){
+        var cotizacion = this.$refs.id_cotizacion.innerHTML;
+        axios.get('/totales/'+ cotizacion).then((response)=>{
+           this.totales = response.data;
         })
       },
       borrar_linea(data){
         if (window.confirm("¿Realmente quieres borrar esta linea?")) {
             axios.get('/borrar_linea/'+data).then((response)=> {
               this.mostrar_lineas();
+              this.mostrar_totales();
             })
         }
       },
+      isValidCurrency(value) {
+          // Elimina espacios en blanco al inicio/final
+          const trimmedValue = String(value).trim();
+          // Regex para moneda (ej: $1,000.00 | 100,50 | €500)
+          const currencyPattern = /^\d+(\.\d{1,2})?$/;
+          return currencyPattern.test(trimmedValue);
+      },
       agregar_pago(){
-        var me = this;
+        //comprobamos si lo que viene en el input tiene el formato correcto
+        if (!this.isValidCurrency(this.anticipo)) {
+            this.$refs.errorFeedback.textContent = "Formato inválido. Use: 1000.00";
+            this.$refs.errorFeedback.classList.remove('d-none');
+            return;
+        }
         var cotizacion = this.$refs.id_cotizacion.innerHTML;
         axios.post('/pago',{
-          'pago':me.anticipo,
+          'pago':this.anticipo,
           'id':cotizacion
-        }).then(function (response){
-            me.mostrar_lineas();
-            me.anticipo = "";
+        }).then((response)=>{
+          if (response.data.flag == 1) {
+            $('#modalPago').modal('hide');
+            this.mostrar_lineas();
+            this.anticipo = "";
+          }
         })
-        $("#pago").collapse('hide');
+        $("#pagoModal").modal('hide');
 
+      },
+      aplicar_descuento(){
+        axios.post('/descuento',{
+          'id_cotizacion':this.$refs.id_cotizacion.innerHTML,
+          'descuento':this.descuento
+        }).then((response)=>{
+          if (response.data.flag == 1) {
+            this.mostrar_lineas();
+            this.mostrar_totales();
+          }
+        })  
       },
       descargar_img(){
         var cotizacion = this.$refs.id_cotizacion.innerHTML;
@@ -160,6 +179,7 @@ const { createApp, ref } = Vue
     },
     mounted(){
       this.mostrar_lineas();
+      this.mostrar_totales();
       this.mostrar_articulos();
     }
 }).mount('#app')

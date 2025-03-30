@@ -238,6 +238,43 @@ class Cotizaciones extends BaseController
 		$total->update($request->getvar('id_cotizacion'),$datos);
 
 	}
+	public function calcularTotales($id_cotizacion)
+	{
+	    $totalModel = new CotizacionesModel();
+	    $totalModel->where('id_cotizacion', $id_cotizacion);
+	    $suma_total = $totalModel->findAll();
+	    
+	    if (empty($suma_total)) {
+	        return null;
+	    }
+
+	    $porcentaje = 16;
+	    $monto = $suma_total[0]['total'];
+	    $iva = $monto * ($porcentaje / 100);
+	    $pago_total = $monto + $iva;
+	    
+	    $debe = 0;
+	    if ($suma_total[0]['pago'] < 0) {
+	        $debe = 1;
+	    } elseif ($suma_total[0]['pago'] > $suma_total[0]['total']) {
+	        $debe = 2;
+	    }
+
+	    $saldo = $pago_total - $suma_total[0]['pago'];
+
+	    return [
+	        'sub_total' => number_format($monto, 2),
+	        'descuento' => number_format($suma_total[0]['descuento'], 2),
+	        'iva' => number_format($iva, 2),
+	        'total' => number_format($pago_total, 2),
+	        'abono' => number_format($suma_total[0]['pago'], 2),
+	        'saldo' => number_format($saldo, 2),
+	        'debe' => $debe,
+	        'sugerido' => number_format($pago_total / 2, 2),
+	        'monto_sin_formato' => $monto, // Guardamos el valor sin formato para cálculos
+	        'pago_total_sin_formato' => $pago_total
+	    ];
+	}
 	public function mostrar_detalles($id)
 	{
 		//encontrar el articulo completo
@@ -247,57 +284,74 @@ class Cotizaciones extends BaseController
 		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles.id_articulo');
 		$resultado = $builder->get()->getResultArray();
 
+		/*$data={
+			'cantidad'=>$resultado[0][''],
+			'nombre'=>$resultado[0][''],
+			'modelo'=>$resultado[0][''],
+			'p_unitario'=>$resultado[0][''],
+			'descripcion'=>$resultado[0][''],
+		}*/
 
-		//Mostrar articulos independientes
-		$query = new DetalleModel();
-		$query->where('id_cotizacion',$id);
-		$query->where('id_articulo',0);
-		$independiente = $query->findAll();
+		return json_encode($resultado);
 		
-		//mostrar totales
-		$total = new CotizacionesModel();
-		$total->where('id_cotizacion',$id);
-		$suma_total = $total->findAll();
-		$porcenteje = 16;
-		$monto = $suma_total[0]['total'];
-		$abono = $suma_total[0]['pago'];
-		$iva = $monto*($porcenteje/100);
-		$pago_total = $monto + $iva;
-		$debe = 0;
-		if ($suma_total[0]['pago'] < 0) {
-			$debe = 1;
-		}else if($suma_total[0]['pago'] > $suma_total[0]['total']){
-			$debe = 2;
+	}
+	public function totales($id)
+	{
+	    $cotizacion = new CotizacionesModel();
+	    $resultado = $cotizacion->where('id_cotizacion', $id)->findAll();
+	    
+	    if (empty($resultado)) {
+	        return json_encode(['error' => 'Cotización no encontrada']);
+	    }
+
+	    $total = (float)$resultado[0]['total'];
+	    $descuento = (float)$resultado[0]['descuento'];
+	    $anticipo = (float)$resultado[0]['anticipo'];
+	    	   
+
+	    $totalConDescuento = $total - $descuento;
+	    $iva = $totalConDescuento * 0.16; // IVA del 16%
+	    $totalConIva = $totalConDescuento + $iva;
+	    $saldo = $totalConIva - $anticipo;
+
+	    $data = [
+	        'sub_total' => number_format($total, 2),
+	        'descuento' => number_format($descuento, 2),
+	        'iva' => number_format($iva, 2),
+	        'total' => number_format($totalConIva, 2),
+	        'anticipo' => number_format($anticipo, 2),
+	        'saldo' => number_format($saldo, 2),
+	        // Datos sin formato por si necesitas hacer más cálculos:
+	        'raw' => [
+	            'sub_total' => $total,
+	            'total_con_iva' => $totalConIva
+	        ]
+	    ];
+
+	    return json_encode($data);
+	}
+	public function descuento()
+	{
+		$request = \Config\Services::Request();
+		$cotizacion = new CotizacionesModel();
+
+		$id_cotizacion = $request->getVar('id_cotizacion');
+		$descuento = $request->getVar('descuento');
+		$resultado = $cotizacion->select('total')
+					->where('id_cotizacion',$id_cotizacion)
+					->first();
+		$total = $resultado ? $resultado['total'] : 0;
+		$valorDescuento = $total * ($descuento / 100);
+		$data['descuento'] = $valorDescuento;
+		$update = $cotizacion->update($id_cotizacion,$data);
+		if ($update==true){
+		    return $this->response->setJSON([
+		        'status'=>'success',
+		        'message'=>'Se acutalizo el descuento',
+		        'flag'=> 1
+		    ]);
 		}
 
-		$saldo = $pago_total - $suma_total[0]['pago'];
-
-		//mostramos el beneficio
-		$beneficio = new DetalleModel();
-		$beneficio->where('id_cotizacion',$id);
-		$beneficio->selectSum('inversion');
-		$beneficio->selectSum('total');
-		$inversion = $beneficio->findAll();
-
-		$gasto = $inversion[0]['inversion'];
-		$cobro = $inversion[0]['total'];
-		$utilidad = $cobro - $gasto;
-		
-		$data=[
-			'independiente'=>$independiente,
-			'articulo'=>$resultado,
-			'sub_total'=> number_format($monto,2),
-			'descuento'=> number_format($suma_total[0]['descuento'],2),
-			'iva'=> number_format($iva,2),
-			'total'=>number_format($pago_total,2),
-			'abono'=>number_format($suma_total[0]['pago'],2),
-			'saldo'=>number_format($saldo,2),
-			'debe'=>$debe,
-			'sugerido'=>number_format($pago_total / 2,2),
-			'utilidad'=>number_format($utilidad,2)
-		];
-
-		return json_encode($data);
 		
 	}
 	public function borrar_linea($id)
@@ -369,17 +423,17 @@ class Cotizaciones extends BaseController
 
 		//datos del cliente
 		$cliente_query = new CotizacionesModel();
-		$cliente_query->where('idQt',$id);
+		$cliente_query->where('id_cotizacion',$id);
 		$resultado_cotizacion = $cliente_query->findAll();
 
 		$cliente = new ClientesModel();
-		$cliente->where('idCliente',$resultado_cotizacion[0]['cliente']);
+		$cliente->where('id_cliente',$resultado_cotizacion[0]['cliente']);
 		$resultado = $cliente->findAll();
 
 		//mostrar los articulos
 		$builder = $db->table('sellopro_detalles');
 		$builder->where('id_cotizacion',$id);
-		$builder->join('sellopro_articulos','sellopro_articulos.idArticulo = sellopro_detalles.id_articulo');
+		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles.id_articulo');
 		$resultado_lineas = $builder->get()->getResultArray();
 
 		//mostrar independientes
@@ -480,32 +534,37 @@ class Cotizaciones extends BaseController
 	}
 	public function pago()
 	{
-		//Traemos lo que viene en el input
 		$request = \Config\Services::Request();
+		$query = new CotizacionesModel();
+		
+		//Traemos lo que viene en el input
 		$id_cotizacion = $request->getvar('id');
 		$monto = $request->getvar('pago');
 		
-
 		//verifciamos si hay dinero en el campo pago
-		$query = new CotizacionesModel();
-		$query->where('idQt',$id_cotizacion);
+		$query->where('id_cotizacion',$id_cotizacion);
 		$resultado = $query->findAll();
-		$hay_pago = $resultado[0]['pago'];
-
-		//return json_encode($monto);
+		$hay_pago = $resultado[0]['anticipo'];
 
 		if ($hay_pago == 0) {
 			$data=[
-				'pago'=>$monto,
+				'anticipo'=>$monto,
 			];
-			$query->update($id_cotizacion,$data);
+			$update = $query->update($id_cotizacion,$data);
+			if ($update == true) {
+				return $this->response->setJSON([
+			        'status'=>'success',
+			        'message'=>'Se inserto el anticipo',
+			        'flag'=> 1
+			    ]);
+			}
 			
 		}else{
-			$abono = $hay_pago + $monto;
-			$data=[
-				'pago'=>$abono,
-			];
-			$query->update($id_cotizacion,$data);
+		    return $this->response->setJSON([
+		        'status'=>'error',
+		        'message'=>'Ya se habia hecho un anticipo',
+		        'flag'=> 0
+		    ]);
 		}
 
 	}

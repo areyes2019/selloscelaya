@@ -137,7 +137,38 @@ body {
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     margin-bottom: 20px;
 }
-
+/*botonoes*/
+.btn-my{
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+}
+.btn-my .btn-icon{
+    color: white;
+    opacity: 0.7;
+}
+.btn-my:hover{
+    opacity: 0.8;
+}
+.input-flotante {
+    position: absolute;
+    display: none; /* Inicialmente oculto */
+    background: white;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000 !important; /* Para que aparezca encima de otros elementos */
+}
+.mini-modal .modal-dialog {
+    max-width: 150px;
+    margin: 1rem auto;
+}
+.form-control-my{
+    padding: 5px;
+    border-radius: 0px;
+}
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
