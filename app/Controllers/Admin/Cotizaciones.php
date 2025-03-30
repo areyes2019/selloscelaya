@@ -479,7 +479,8 @@ class Cotizaciones extends BaseController
 	{
 		$db = \Config\Database::connect();
 		$cliente_query = new CotizacionesModel();
-
+		$email = \Config\Services::email();
+		
 		//datos del cliente
 		$cliente_query->where('id_cotizacion',$id);
 		$resultado_cotizacion = $cliente_query->findAll();
