@@ -33,8 +33,10 @@
                     <td><?php echo $data['created_at'] ?></td>
                     <td>Enviada</td>
                     <td>
-                        <a class="btn btn-primary btn-circle btn-sm" href="<?php echo base_url('pagina_cotizador/'.$data['slug']); ?>" class="btn btn-sm rounded-0 my-btn-success"><span class="bi bi-pencil"></span></a>
-                        <a class="btn btn-danger btn-circle btn-sm" href="<?php echo base_url('eliminar_cotizacion/'.$data['id_cotizacion']); ?>" class="btn btn-sm rounded-0 my-btn-danger" onclick="return confirm('Esta eliminación no se puede revertir, ¿Deseas continuar?');"><span class="bi bi-trash3"></span></a>
+                        <a class="btn-my" href="<?php echo base_url('pagina_cotizador/'.$data['slug']); ?>" class="btn btn-sm rounded-0 my-btn-success"><span class="bi bi-pencil btn-icon"></span></a>
+                        <a class="btn-my" href="<?php echo base_url('eliminar_cotizacion/'.$data['id_cotizacion']); ?>" class="btn btn-sm rounded-0 my-btn-danger" onclick="return confirm('Esta eliminación no se puede revertir, ¿Deseas continuar?');"><span class="bi bi-trash3 btn-icon"></span></a>
+                         <a class="btn-my" href="<?php echo base_url('enviar_pdf/'.$data['id_cotizacion']); ?>" onclick="return confirm('¿Deseas enviar esta cotización?');"><span class="bi bi-send btn-icon"></span></a>
+                        
                     </td>
                 </tr>
                 <?php endforeach ?>
