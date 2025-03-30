@@ -47,7 +47,7 @@ class Articulos extends BaseController
 	{
 
 		$model = new ArticulosModel();
-		$resultado = $model->where('idArticulo',$id)->findAll();
+		$resultado = $model->where('id_articulo',$id)->findAll();
 		$nombre = $resultado[0]['nombre']." - ".$resultado[0]['modelo'];
 		$data = ['articulos'=>$resultado,'nombre'=>$nombre];
 		return view('Panel/editar_articulo',$data);
