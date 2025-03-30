@@ -478,43 +478,51 @@ class Cotizaciones extends BaseController
 	public function enviar_pdf($id)
 	{
 		$db = \Config\Database::connect();
+		$cliente_query = new CotizacionesModel();
 
 		//datos del cliente
-		$cliente_query = new CotizacionesModel();
-		$cliente_query->where('idQt',$id);
+		$cliente_query->where('id_cotizacion',$id);
 		$resultado_cotizacion = $cliente_query->findAll();
+
 		$cliente = new ClientesModel();
-		$cliente->where('idCliente',$resultado_cotizacion[0]['cliente']);
+		$cliente->where('id_cliente',$resultado_cotizacion[0]['cliente']);
 		$resultado = $cliente->findAll();
 
 		//mostrar los articulos
 		$builder = $db->table('sellopro_detalles');
 		$builder->where('id_cotizacion',$id);
-		$builder->join('sellopro_articulos','sellopro_articulos.idArticulo = sellopro_detalles.id_articulo');
+		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles.id_articulo');
 		$resultado_lineas = $builder->get()->getResultArray();
+
+		//mostrar independientes
+		//Mostrar articulos independientes
+		$query = new DetalleModel();
+		$query->where('id_cotizacion',$id);
+		$query->where('id_articulo',0);
+		$independiente = $query->findAll();
 
 		//sacamos los totales 
 
-		//actualizamos el total
-		$sum = $db->table('sellopro_detalles');
-		$sum->where('id_cotizacion',$id);
-		$sum->selectSum('total');
-		$result = $sum->get()->getResultArray();
-		$total_sum = $result[0]['total'];
-		$porcenteje = 16;
-		$iva = $total_sum*($porcenteje/100);
-		$total = $total_sum + $iva;	
-			
+		$total = (float)$resultado_cotizacion[0]['total'];
+	    $descuento = (float)$resultado_cotizacion[0]['descuento'];
+	    $anticipo = (float)$resultado_cotizacion[0]['anticipo'];
+	    	   
 
-		$data = [
-			'cliente'=>$resultado,
-			'id_cotizacion'=>$resultado_cotizacion,
+	    $totalConDescuento = $total - $descuento;
+	    $iva = $totalConDescuento * 0.16; // IVA del 16%
+	    $totalConIva = $totalConDescuento + $iva;
+	    $saldo = $totalConIva - $anticipo;
+
+	    $data = [
+	    	'cliente'=>$resultado,
+	    	'id_cotizacion'=>$resultado_cotizacion,
 			'detalles'=>$resultado_lineas,
-			'sub_total'=>$total_sum,
-			'descuento'=>$resultado_cotizacion[0]['descuento'],
-			'iva'=>$iva,
-			'total'=>$total,
-		];
+	        'sub_total' => number_format($total, 2),
+	        'descuento' => number_format($descuento, 2),
+	        'iva' => number_format($iva, 2),
+	        'total' => number_format($totalConIva, 2),
+	    ];
+
 		//return view('Panel/PDF',$data);
 		$doc = new Dompdf();
 		$html = view('Panel/PDF',$data);
@@ -522,15 +530,41 @@ class Cotizaciones extends BaseController
 		$doc->loadHTML($html);
 		$doc->setPaper('A4','portrait');
 		$doc->render();
-		$salida = $doc->output();
 		$nombre = "QT-".$id.".pdf";
+		$rutaTemporal = WRITEPATH.'uploads/temp/'.$nombre;
+		// Crear directorio si no existe
+	    if (!is_dir(dirname($rutaTemporal))) {
+	        mkdir(dirname($rutaTemporal), 0777, true);
+	    }
+	    file_put_contents($rutaTemporal, $doc->output());
+
 		$email = \Config\Services::email();
 		$email->setFrom('ventas@sellopronto.com.mx','Sello Pronto');
 		$email->setTo('reyesabdias@gmail.com');
-		$email->setSubject('Cusrsos');
-		$email->setMessage('Este es un mensaje de prueba');
-		$email->attach('img/40.png');
-		$email->send();
+		$email->setSubject('Su cotizacion '.$nombre);
+
+		$imagePath = FCPATH . '/public/img/logo2.png'; // Ruta absoluta a la imagen
+    	$email->attach($imagePath, 'inline'); // 'inline' para incrustar
+    	$cid = $email->setAttachmentCID($imagePath); // Genera el CID
+
+    	// 2. Pasar el CID a la vista del correo
+	    $dataEmail = [
+	        'id' => $id,
+	        'cid_logo' => $cid // Pasamos el CID a la vista
+	    ];
+
+		$email->setMessage(view('Emails/cotizacion', $dataEmail));
+		$email->attach($rutaTemporal);
+		if ($email->send()) {
+			// code...
+			unlink($rutaTemporal);
+        	return redirect()->to('/cotizaciones');
+
+		}else{
+			// Opcional: guardar el error en logs
+	        log_message('error', 'Error al enviar correo: ' . $email->printDebugger());
+	        return "Error al enviar el correo";
+		}
 	}
 	public function pago()
 	{
