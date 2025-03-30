@@ -16,6 +16,11 @@
                 <a class = "dropdown-item"  href="#" @click.prevent="entregada('<?php echo $id_cotizacion ?>')"><span class="bi bi-truck"></span> Marcar Entregado</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="<?php echo base_url('/eliminar_cotizacion/'.$id_cotizacion); ?>" onclick="return confirm('¿Estas seguro de querer eliminar esta cotización?');"><span class="bi bi-trash3"></span> Eliminar Cotización</a>
+                <?php if ($factura == 0): ?>    
+                <a href="#" class="dropdown-item" @click.prevent = "generar_factura">
+                    <span class="bi bi-filetype-pdf">Facturar</span>
+                </a>
+                <?php endif ?>
             </div>
         </div>
     </div>
@@ -35,6 +40,7 @@
 <div class="card shadow mb-4 rounded-0">
     <div class="card-body">
         <div class="row d-flex align-items-center">
+            <?php if ($factura == 0): ?>
             <div class="col-md-2">
                 <button class="btn-my" data-bs-toggle="modal" data-bs-target="#agregar_articulo"><span class="btn-icon bi bi-plus-circle"></span>
                 Agregar Artículo</button>
@@ -53,6 +59,7 @@
                     <button class="btn-my" @click = "aplicar_descuento">Ok</button>
                 </div>
             </div>
+            <?php endif ?>
         </div>
         <!-- <button class="btn btn-primary btn-icon-split mb-3 mb-sm-0 mr-2" data-bs-toggle="collapse" data-bs-target="#independiente">
             <span class="icon text-white-50">
@@ -130,7 +137,12 @@
                 <td>{{dato.nombre}}</td>
                 <td>{{dato.modelo}}</td>
                 <td>
+                    <?php if ($factura == 0): ?>
                     <input type="number" min="1" :value="dato.cantidad" style="width:50px" @change="modificar_cantidad(dato.idDetalle)" :ref="dato.idDetalle" :disabled="disabled">
+                    <?php else: ?>    
+                    {{dato.cantidad}}
+                    <?php endif ?>
+
                 </td>
                 <td>${{dato.p_unitario}}</td>
                 <td>${{dato.total}}</td>

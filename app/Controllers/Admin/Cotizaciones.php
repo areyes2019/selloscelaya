@@ -47,6 +47,7 @@ class Cotizaciones extends BaseController
 		$cliente->where('slug',$slug);
 		$resultado = $cliente->findAll();
 		$cotizacion = $resultado[0]['id_cotizacion'];
+		$facturada = $resultado[0]['entregada'];
 
 		//buscamos los ariticulos
 		$articulos = new ArticulosModel();
@@ -58,6 +59,7 @@ class Cotizaciones extends BaseController
 		$query['cliente'] = $builder->get()->getResultArray();
 		$query['id_cotizacion']= $cotizacion;
 		$query['articulo'] = $articulos->findAll();
+		$query['factura'] = $facturada;
 
 		return view('Panel/nueva_cotizacion', $query);
 		

@@ -160,6 +160,19 @@ const { createApp, ref } = Vue
         });
         });
       },
+      generar_factura(){
+
+        if (confirm('¿Deseas generar esta factura')== true) { 
+          axios.post('/facturar_cotizacion',{
+            'id_cotizacion':this.$refs.id_cotizacion.innerHTML
+          }).then((response)=>{
+            if (response.data.factura == 1) {
+              alert("Esta cotizacion ya se facturo");
+            }
+            window.location.href = '/cotizaciones';
+          })
+        }
+      },
       entregada(data){
         var title = "Hecho";
         var message = "Se ha realizado la accion";
