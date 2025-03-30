@@ -540,7 +540,7 @@ class Cotizaciones extends BaseController
 
 		$email = \Config\Services::email();
 		$email->setFrom('ventas@sellopronto.com.mx','Sello Pronto');
-		$email->setTo('reyesabdias@gmail.com');
+		$email->setTo($resultado[0]['correo']);
 		$email->setSubject('Su cotizacion '.$nombre);
 
 		$imagePath = FCPATH . '/public/img/logo2.png'; // Ruta absoluta a la imagen
