@@ -14,5 +14,6 @@ class ArticulosModel extends Model
         'precio_pub',
         'minimo',
         'stock',
+        'clave_producto'
     ];
 }

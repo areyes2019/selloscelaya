@@ -25,8 +25,12 @@
 			    <input type="text" class="my-input shadow-none form-control p-1"  value="<?php echo $articulo['precio_pub'] ?>" name="precio_pub">
 			</div>
 			<div class="col-md-4">
-			    <label for="inputCity" class="form-label">Minimoa para reorden</label>
+			    <label for="inputCity" class="form-label">Minimo para reorden</label>
 			    <input type="number" class="my-input shadow-none form-control p-1" min="0" name="minimo" value="<?php echo $articulo['minimo'] ?>">
+			</div>
+			<div class="col-md-4">
+			    <label for="inputCity" class="form-label">Clave del producto</label>
+			    <input type="text" class="my-input shadow-none form-control p-1" min="0" name="minimo" value="<?php echo $articulo['clave_producto'] ?>">
 			</div>
 			<div class="col-md-3">
 			    <label for="inputState" class="form-label">En Stok</label>
