@@ -420,9 +420,9 @@ class Cotizaciones extends BaseController
 	public function cotizacion_pdf($id)
 	{
 		$db = \Config\Database::connect();
+		$cliente_query = new CotizacionesModel();
 
 		//datos del cliente
-		$cliente_query = new CotizacionesModel();
 		$cliente_query->where('id_cotizacion',$id);
 		$resultado_cotizacion = $cliente_query->findAll();
 
@@ -445,27 +445,27 @@ class Cotizaciones extends BaseController
 
 		//sacamos los totales 
 
-		//actualizamos el total
-		$sum = $db->table('sellopro_detalles');
-		$sum->where('id_cotizacion',$id);
-		$sum->selectSum('total');
-		$result = $sum->get()->getResultArray();
-		$total_sum = $result[0]['total'];
-		$porcenteje = 16;
-		$iva = $total_sum*($porcenteje/100);
-		$total = $total_sum + $iva;	
-			
+		$total = (float)$resultado_cotizacion[0]['total'];
+	    $descuento = (float)$resultado_cotizacion[0]['descuento'];
+	    $anticipo = (float)$resultado_cotizacion[0]['anticipo'];
+	    	   
 
-		$data = [
-			'cliente'=>$resultado,
-			'id_cotizacion'=>$resultado_cotizacion,
+	    $totalConDescuento = $total - $descuento;
+	    $iva = $totalConDescuento * 0.16; // IVA del 16%
+	    $totalConIva = $totalConDescuento + $iva;
+	    $saldo = $totalConIva - $anticipo;
+
+	    $data = [
+	    	'cliente'=>$resultado,
+	    	'id_cotizacion'=>$resultado_cotizacion,
 			'detalles'=>$resultado_lineas,
-			'detalles_ind'=>$independiente,
-			'sub_total'=>$total_sum,
-			'descuento'=>$resultado_cotizacion[0]['descuento'],
-			'iva'=>$iva,
-			'total'=>$total,
-		];
+	        'sub_total' => number_format($total, 2),
+	        'descuento' => number_format($descuento, 2),
+	        'iva' => number_format($iva, 2),
+	        'total' => number_format($totalConIva, 2),
+	    ];
+
+		
 		//return view('Panel/PDF',$data);
 		$doc = new Dompdf();
 		$html = view('Panel/PDF',$data);
