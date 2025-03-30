@@ -46,7 +46,7 @@ $routes->group('',static function($routes){
 	$routes->get('editar_articulo/(:num)', 'Admin\Articulos::editar/$1');
 	$routes->post('actualizar_articulo', 'Admin\Articulos::actualizar');
 	$routes->get('eliminar_articulo/(:num)', 'Admin\Articulos::eliminar/$1');
-
+	$routes->post('import_masivo', 'Admin\Articulos::importArticulos');
 	/*Cotizaciones*/
 	$routes->get('cotizaciones', 'Admin\Cotizaciones::index');
 	$routes->get('nueva_cotizacion/(:num)', 'Admin\Cotizaciones::nueva/$1');

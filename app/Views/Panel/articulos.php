@@ -5,8 +5,15 @@
         <div class="row column_title">
             <div class="col-md-12">
                 <div class="page_title">
-                    <h2>Artículos</h2>
+                    <h2>Lista de precios</h2>
                 </div>
+                <!-- Mensajes Flash -->
+                <?php if (session()->getFlashdata('success')): ?>
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <?= session()->getFlashdata('success') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
         <!-- row -->
@@ -16,9 +23,16 @@
                 <div class="white_shd full margin_bottom_30">
                     <div class="full graph_head">
                         <div class="heading1 margin_0">
-                            <h2>Lista de Precios</h2>
                             <button class="btn btn-danger rounded-0" data-bs-toggle="modal" data-bs-target="#nuevo_cliente">Nuevo Artículo</button>
                         </div>
+                        <form class="mb-3" action="<?= site_url('import_masivo') ?>" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="archivo_excel" class="form-label">Importar Masivo</label>
+                                <input class="form-control" type="file" id="archivo_excel" name="archivo_excel" accept=".xlsx,.xls" required>
+                                <div class="form-text">El archivo debe tener las columnas: Nombre, Modelo, Precio Proveedor, Precio Público, Mínimo, Stock y clave de producto</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Importar</button>
+                        </form>
                         <div class="modal fade" id="nuevo_cliente">
                           <div class="modal-dialog">
                             <div class="modal-content">
@@ -94,4 +108,9 @@
             </div>
         </div>
     </div>
+    <script>
+    $( document ).ready(function() {
+        new DataTable('#example');
+    });
+    </script>
 <?php echo $this->endSection()?>

@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\ArticulosModel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 class Articulos extends BaseController
 {
 	public function index()
@@ -76,4 +77,62 @@ class Articulos extends BaseController
 		return redirect()->to('/articulos');
 
 	}
+	public function importArticulos()
+	{
+	    $file = $this->request->getFile('archivo_excel');
+	    
+	    // Validaciones básicas
+	    if (!$file || !$file->isValid() || !in_array($file->getExtension(), ['xlsx', 'xls'])) {
+	        return redirect()->back()->with('error', 'Archivo no válido. Sube un archivo Excel (.xlsx o .xls)');
+	    }
+
+	    try {
+	        $spreadsheet = IOFactory::load($file->getPathname());
+	        $rows = $spreadsheet->getActiveSheet()->toArray();
+	        
+	        // Eliminar encabezados si existen
+	        if (isset($rows[0]) && is_string($rows[0][0])) {
+	            array_shift($rows);
+	        }
+
+	        $articulosModel = new ArticulosModel();
+	        $imported = 0;
+	        $errors = [];
+
+	        foreach ($rows as $index => $row) {
+	            // Saltar filas vacías
+	            if (empty(array_filter($row))) continue;
+
+	            $data = [
+	                'nombre'       => $row[0] ?? '',
+	                'modelo'       => !empty($row[1]) ? $row[1] : null,
+	                'precio_prov' => is_numeric($row[2] ?? 0) ? (float)$row[2] : 0.00,
+	                'precio_pub'   => is_numeric($row[3] ?? 0) ? (float)$row[3] : 0.00,
+	                'minimo'       => is_numeric($row[4] ?? 0) ? (int)$row[4] : 0,
+	                'stock'        => is_numeric($row[5] ?? 0) ? (int)$row[5] : 0,
+	                'clave_producto' => $row[6] ?? '', // Nueva columna
+	                'created_at'   => date('Y-m-d H:i:s'),
+	                'updated_at'   => date('Y-m-d H:i:s')
+	            ];
+
+	            if ($articulosModel->insert($data)) {
+	                $imported++;
+	            } else {
+	                $errors[] = "Fila {$index}: " . implode(', ', $articulosModel->errors());
+	            }
+	        }
+
+	        $message = "Importación completada: {$imported} artículos importados";
+	        if (!empty($errors)) {
+	            $message .= ". Errores: " . implode('; ', $errors);
+	            return redirect()->back()->with('warning', $message);
+	        }
+
+	        return redirect()->back()->with('success', $message);
+
+	    } catch (\Exception $e) {
+	        return redirect()->back()->with('error', 'Error al procesar el archivo: ' . $e->getMessage());
+	    }
+	}
+
 }
