@@ -387,6 +387,7 @@ class ComposerStaticInit6a20fb108d65fe0aefff5a842ecb0ed4
         'App\\Controllers\\Admin\\Articulos' => __DIR__ . '/../..' . '/app/Controllers/Admin/Articulos.php',
         'App\\Controllers\\Admin\\Clientes' => __DIR__ . '/../..' . '/app/Controllers/Admin/Clientes.php',
         'App\\Controllers\\Admin\\Cotizaciones' => __DIR__ . '/../..' . '/app/Controllers/Admin/Cotizaciones.php',
+        'App\\Controllers\\Admin\\EjecutarMigraciones' => __DIR__ . '/../..' . '/app/Controllers/Admin/EjecutarMigraciones.php',
         'App\\Controllers\\Admin\\FacturaController' => __DIR__ . '/../..' . '/app/Controllers/Admin/FacturaController.php',
         'App\\Controllers\\Admin\\Proveedores' => __DIR__ . '/../..' . '/app/Controllers/Admin/Proveedores.php',
         'App\\Controllers\\Admin\\Ventas' => __DIR__ . '/../..' . '/app/Controllers/Admin/Ventas.php',

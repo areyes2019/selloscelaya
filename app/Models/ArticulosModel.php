@@ -14,6 +14,10 @@ class ArticulosModel extends Model
         'precio_pub',
         'minimo',
         'stock',
+        'precio_dist',
         'clave_producto'
     ];
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
 }

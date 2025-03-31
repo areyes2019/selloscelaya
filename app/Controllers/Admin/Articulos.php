@@ -108,9 +108,10 @@ class Articulos extends BaseController
 	                'modelo'       => !empty($row[1]) ? $row[1] : null,
 	                'precio_prov' => is_numeric($row[2] ?? 0) ? (float)$row[2] : 0.00,
 	                'precio_pub'   => is_numeric($row[3] ?? 0) ? (float)$row[3] : 0.00,
-	                'minimo'       => is_numeric($row[4] ?? 0) ? (int)$row[4] : 0,
-	                'stock'        => is_numeric($row[5] ?? 0) ? (int)$row[5] : 0,
-	                'clave_producto' => $row[6] ?? '', // Nueva columna
+	                'precio_dist'   => is_numeric($row[4] ?? 0) ? (float)$row[3] : 0.00,
+	                'minimo'       => is_numeric($row[5] ?? 0) ? (int)$row[4] : 0,
+	                'stock'        => is_numeric($row[6] ?? 0) ? (int)$row[5] : 0,
+	                'clave_producto' => $row[7] ?? '', // Nueva columna
 	                'created_at'   => date('Y-m-d H:i:s'),
 	                'updated_at'   => date('Y-m-d H:i:s')
 	            ];
