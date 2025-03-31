@@ -68,6 +68,7 @@
                             <table id="example" class="table table-bordered" style="width:100%">
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Nombre</th>
                                         <th>Modelo</th>
                                         <th>Costo</th>
@@ -80,6 +81,7 @@
                                 <tbody>
                                     <?php foreach ($articulos as $articulo): ?>
                                     <tr>
+                                        <td><?= $articulo['id_articulo'];?></td>
                                         <td><?= $articulo['nombre'];?></td>
                                         <td><?= $articulo['modelo'];?></td>
                                         <td>$<?= $articulo['precio_prov'];?></td>
