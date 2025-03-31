@@ -12,6 +12,12 @@ class InventarioModel extends Model
         'cantidad',
         'total',
     ];
+
+    // Habilitar timestamps
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+
     public function obtenerProducto($id_articulo)
     {
         return $this->where('id_articulo', $id_articulo)->first();

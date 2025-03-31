@@ -11,9 +11,8 @@
     <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.0.3/datatables.min.css" rel="stylesheet">
     <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.0.3/datatables.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
-    <link href="<?php echo base_url('public/css/toaster.css'); ?>" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-    <script src="<?php echo base_url('public/js/html2Canvas.js'); ?>"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -37,6 +36,11 @@
             <li>
                 <a href="<?php echo base_url('admin')?>"><i class="fas fa-home"></i>
                 <span>Inicio</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo base_url('pedidos/pos')?>"><i class="bi bi-cash-coin"></i>
+                <span>POS</span>
                 </a>
             </li>
             <li>

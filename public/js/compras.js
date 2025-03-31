@@ -42,22 +42,17 @@ const { createApp, ref } = Vue
           console.error(error);
         });
       },
-      add_articulo(data){    
-        var me = this;
-        var cantidad = this.$refs[data][0].value;
-        var articulo = data //this.$refs.articulo.value;
+      add_articulo(data){
         var pedido = this.$refs.pedido.innerHTML;
-        console.log(pedido);
         //var descuento = this.$refs.descuento.innerHTML;
         axios.post('/agregar_articulo_compras',{
-          'id_articulo':articulo,
-          'cantidad':cantidad,
+          'id_articulo':data,
           'pedidos_id':pedido,
-        }).then(function (response){
+        }).then((response)=>{
             if (response.data == 1) {
               alert('Este producto ya agregado')
             }else{
-              me.mostrar_lineas();
+              this.mostrar_lineas();
             }
         })
       },
@@ -73,17 +68,16 @@ const { createApp, ref } = Vue
         })
       },
       mostrar_lineas(){
-        var me = this;
         var pedido = this.$refs.pedido.innerHTML;
-        axios.get('/mostrar_detalles_compras/'+pedido).then(function (response) {
-            me.articulos = response.data['articulo'];
-            me.sub_total = response.data['sub_total'];
-            me.iva = response.data['iva'];
-            me.total = response.data['total'];
-            me.pago = response.data['abono'];
-            me.saldo = response.data['saldo'];
-            me.sugerido = response.data['sugerido'];
-            me.descuento = response.data['descuento'];
+        axios.get('/mostrar_detalles_compras/'+pedido).then((response)=>{
+            this.articulos = response.data['articulo'];
+            this.sub_total = response.data['sub_total'];
+            this.iva = response.data['iva'];
+            this.total = response.data['total'];
+            this.pago = response.data['abono'];
+            this.saldo = response.data['saldo'];
+            this.sugerido = response.data['sugerido'];
+            this.descuento = response.data['descuento'];
             
         })
       },
@@ -155,7 +149,7 @@ const { createApp, ref } = Vue
     },
     mounted(){
       this.mostrar_lineas();
-      this.mostrar_articulos();
+      //this.mostrar_articulos();
       this.display();
     }
 }).mount('#app')

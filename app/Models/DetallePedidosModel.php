@@ -6,12 +6,17 @@ use CodeIgniter\Model;
 class DetallePedidosModel extends Model
 {
     protected $table = 'sellopro_detalles_pedido';
-    protected $primaryKey = 'pedido_detalle_id';
+    protected $primaryKey = 'id_detalle_pedido';
     protected $allowedFields = [
-        'id_articulo',
         'cantidad',
+        'id_articulo',
+        'descripcion',
         'p_unitario',
         'total',
-        'pedido_id',
+        'id_pedido',
     ];
+    // Habilitar timestamps
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
 }

@@ -124,6 +124,27 @@ $routes->group('',static function($routes){
 	$routes->get('cotizaciones', 'admin\Cotizaciones::index');
 	$routes->get('editar_cotizacion', 'admin\Cotizaciones::editar');
 	$routes->get('nueva_cotizacion', 'admin\Cotizaciones::nueva');
+
+
+
+	// Rutas para el módulo de Pedidos POS
+	$routes->group('pedidos', static function ($routes) {
+	    $routes->get('pos', 'Admin\PedidosController::index');          // Listar pedidos (historial)
+	    $routes->get('new', 'Admin\PedidosController::new');         // Mostrar formulario POS
+	    $routes->post('create', 'Admin\PedidosController::create');    // Procesar nuevo pedido
+	    $routes->get('show/(:num)', 'Admin\PedidosController::show/$1'); // Ver detalle pedido
+	    $routes->get('ticket/(:num)', 'Admin\PedidosController::ticket/$1'); // Ver vista de ticket post-creación
+	    $routes->get('download/(:num)', 'Admin\PedidosController::downloadTicket/$1'); // Descargar ticket
+	    $routes->get('edit/(:num)', 'Admin\PedidosController::edit/$1');   // (Opcional) Mostrar form edición
+	    $routes->post('update/(:num)', 'Admin\PedidosController::update/$1'); // (Opcional) Procesar edición
+	    $routes->get('delete/(:num)', 'Admin\PedidosController::delete/$1'); // Eliminar pedido (GET para simplicidad, POST/DELETE es mejor)
+	    // Si usas resource, ajusta o añade las personalizadas
+	    // $routes->resource('pedidos', ['controller' => 'PedidosController']);
+	    // $routes->get('pedidos/download/(:num)', 'PedidosController::downloadTicket/$1');
+	});
+
+
+
 });
 
 
