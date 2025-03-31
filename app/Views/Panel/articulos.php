@@ -70,7 +70,8 @@
                                     <tr>
                                         <th>Nombre</th>
                                         <th>Modelo</th>
-                                        <th>Precio Proveedor</th>
+                                        <th>Costo</th>
+                                        <th>Precio Distribuidor</th>
                                         <th>Precio Público</th>
                                         <th>Beneficio</th>
                                         <th>Acción</th>
@@ -82,6 +83,7 @@
                                         <td><?= $articulo['nombre'];?></td>
                                         <td><?= $articulo['modelo'];?></td>
                                         <td>$<?= $articulo['precio_prov'];?></td>
+                                        <td><strong class="text-primary">$<?= $articulo['precio_dist'];?></strong></td>
                                         <td><strong>$<?= $articulo['precio_pub'];?></strong></td>
                                         <td>$<?= $articulo['precio_pub'] - $articulo['precio_prov'];?></td>
                                         <td>
