@@ -11,7 +11,7 @@ class PedidoModel extends Model
     protected $useAutoIncrement = true;
     protected $useSoftDeletes   = true; // Habilitar soft deletes si la columna deleted_at existe
     protected $protectFields    = true;
-    protected $allowedFields    = ['cliente_nombre', 'cliente_telefono', 'total', 'estado'];
+    protected $allowedFields    = ['cliente_nombre', 'cliente_telefono', 'total', 'estado','anticipo'];
 
     // Dates
     protected $useTimestamps = true;

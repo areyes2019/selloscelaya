@@ -60,7 +60,8 @@ class PedidosController extends BaseController
             'detalle' => 'required', // Asegura que al menos haya un item
             'detalle.*.descripcion' => 'required|max_length[255]',
             'detalle.*.cantidad' => 'required|numeric|greater_than[0]',
-            'detalle.*.precio_unitario' => 'required|numeric|greater_than_equal_to[0]'
+            'detalle.*.precio_unitario' => 'required|numeric|greater_than_equal_to[0]',
+            'anticipo' => 'permit_empty|numeric|greater_than_equal_to[0]'
         ];
 
         if (!$this->validate($rules)) {
@@ -76,8 +77,10 @@ class PedidosController extends BaseController
             $pedidoData = [
                 'cliente_nombre' => $this->request->getPost('cliente_nombre'),
                 'cliente_telefono' => $this->request->getPost('cliente_telefono'),
-                'estado' => 'completado', // O el estado inicial que definas
-                'total' => 0, // Se calculará después
+                'estado' => 'completado',
+                'total' => 0,
+                'anticipo' => $this->request->getPost('anticipo') ?? 0, // Nuevo campo
+                'saldo' => 0 // Se calculará después
             ];
 
             $pedidoId = $this->pedidoModel->insert($pedidoData, true); // true para retornar ID
@@ -111,7 +114,12 @@ class PedidosController extends BaseController
             }
 
             // 3. Actualizar el Total del Pedido Principal
-            $this->pedidoModel->update($pedidoId, ['total' => $granTotal]);
+            $anticipo = (float)($this->request->getPost('anticipo') ?? 0);
+            $this->pedidoModel->update($pedidoId, [
+                'total' => $granTotal,
+                'anticipo' => $anticipo,
+                'saldo' => $granTotal - $anticipo
+            ]);
 
             $this->db->transComplete(); // Finalizar transacción (Commit o Rollback)
 

@@ -108,6 +108,35 @@
                     </tr>
                 </tfoot>
             </table>
+            <!-- En la sección del formulario, después de la tabla de items -->
+            <div class="row mt-3">
+                <div class="col-md-6 offset-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Resumen de Pago</h5>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>Total:</strong></div>
+                                <div class="col-6 text-end" id="resumen-total">0.00</div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="anticipo" class="form-label"><strong>Anticipo:</strong></label>
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" step="0.01" min="0" class="form-control" id="anticipo" name="anticipo" value="<?= old('anticipo', 0) ?>">
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>Saldo:</strong></div>
+                                <div class="col-6 text-end" id="resumen-saldo">0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <input type="hidden" name="total_final_hidden" id="total_final_hidden" value="0">
 
              <button type="submit" class="btn btn-success btn-lg" id="btn-finalizar">Finalizar Venta</button>
@@ -149,119 +178,11 @@
         </div>
     </div>
 </form>
-
-
 <!-- Incluye jQuery si no lo tienes globalmente -->
 <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-
 <script>
-$(document).ready(function() {
-    let itemIndex = <?= old('detalle') ? count(old('detalle')) : 0 ?>; // Para nombres de campo únicos
-
-    // Actualizar previsualización del ticket al cargar (si hay datos 'old')
-    updateTicketPreview();
-
-    // Añadir Item
-    $('#btn-add-item').on('click', function() {
-        const descripcion = $('#item_descripcion').val().trim();
-        const cantidad = parseInt($('#item_cantidad').val());
-        const precio = parseFloat($('#item_precio').val());
-
-        if (!descripcion || isNaN(cantidad) || cantidad <= 0 || isNaN(precio) || precio < 0) {
-            alert('Por favor, complete la descripción, cantidad válida y precio válido.');
-            return;
-        }
-
-        const subtotal = (cantidad * precio).toFixed(2);
-        const precioFormatted = precio.toFixed(2);
-
-        const newRow = `
-            <tr class="item-row">
-                <td>
-                    ${descripcion}
-                    <input type="hidden" name="detalle[${itemIndex}][descripcion]" value="${descripcion}">
-                </td>
-                <td class="cantidad">
-                    ${cantidad}
-                     <input type="hidden" name="detalle[${itemIndex}][cantidad]" value="${cantidad}">
-                </td>
-                <td class="precio-unitario">
-                    ${precioFormatted}
-                    <input type="hidden" name="detalle[${itemIndex}][precio_unitario]" value="${precio}">
-                 </td>
-                <td class="subtotal">${subtotal}</td>
-                <td><button type="button" class="btn btn-danger btn-sm btn-remove-item">Quitar</button></td>
-            </tr>
-        `;
-
-        $('#items-list').append(newRow);
-        itemIndex++;
-
-        // Limpiar campos de añadir item
-        $('#item_descripcion').val('');
-        $('#item_cantidad').val('1');
-        $('#item_precio').val('');
-        $('#item_descripcion').focus(); // Poner foco de nuevo en descripción
-
-        updateTotal();
-        updateTicketPreview();
-    });
-
-    // Quitar Item
-    $('#items-table').on('click', '.btn-remove-item', function() {
-        $(this).closest('tr').remove();
-        updateTotal();
-        updateTicketPreview();
-        // Nota: No reindexamos aquí para simplificar, el backend manejará los índices que lleguen.
-    });
-
-    // Actualizar Total
-    function updateTotal() {
-        let total = 0;
-        $('#items-list tr').each(function() {
-            const subtotalText = $(this).find('.subtotal').text().replace(',', ''); // Quita comas si las hubiera
-            const subtotal = parseFloat(subtotalText);
-            if (!isNaN(subtotal)) {
-                total += subtotal;
-            }
-        });
-        $('#total-display').html(`<strong>${total.toFixed(2)}</strong>`);
-        $('#total_final_hidden').val(total.toFixed(2)); // Campo oculto por si acaso
-    }
-
-     // --- Funciones para actualizar la previsualización del Ticket ---
-    function updateTicketPreview() {
-        $('#ticket-cliente-nombre').text($('#cliente_nombre').val() || '[Cliente no ingresado]');
-        $('#ticket-cliente-tel').text($('#cliente_telefono').val() || '');
-
-        const itemsHtml = [];
-        $('#items-list tr').each(function() {
-            const desc = $(this).find('td:nth-child(1)').text().trim();
-            const cant = $(this).find('.cantidad').text().trim();
-            const pu = $(this).find('.precio-unitario').text().trim();
-            const subt = $(this).find('.subtotal').text().trim();
-
-             // Estilo simple para ticket de texto
-             const itemLine = `
-                <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 2px; word-break: break-word;">
-                     <span style="width: 15%; text-align: right;">${cant}</span>
-                     <span style="width: 45%; padding-left: 5px;">${desc}</span>
-                     <span style="width: 20%; text-align: right;">${pu}</span>
-                     <span style="width: 20%; text-align: right;">${subt}</span>
-                 </div>`;
-            itemsHtml.push(itemLine);
-        });
-        $('#ticket-items-list').html(itemsHtml.join(''));
-
-        $('#ticket-total').text($('#total-display').text());
-        $('#ticket-fecha').text(new Date().toLocaleString('es-VE')); // O tu formato local
-    }
-
-    // Actualizar previsualización cuando cambian los datos del cliente
-    $('#cliente_nombre, #cliente_telefono').on('input', updateTicketPreview);
-
-    // Calcular total inicial si hay items 'old'
-    updateTotal();
-});
+    // Primero define la variable con PHP
+    const initialItemIndex = <?= old('detalle') ? count(old('detalle')) : 0 ?>;
 </script>
+<script type="" src="<?php echo base_url('public/js/ticket.js'); ?>"></script>
 <?= $this->endSection() ?>

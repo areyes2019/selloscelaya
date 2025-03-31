@@ -22,6 +22,6 @@ class AgregarCamposArticulos extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('sellopro_clientes', ['clave_producto']);
+        $this->forge->dropColumn('sellopro_articulos', ['clave_producto']);
     }
 }

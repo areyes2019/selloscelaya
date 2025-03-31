@@ -22,6 +22,6 @@ class AgregarMontoFactura extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('sellopro_clientes', ['monto']);
+        $this->forge->dropColumn('sellopro_facturas', ['monto']);
     }
 }

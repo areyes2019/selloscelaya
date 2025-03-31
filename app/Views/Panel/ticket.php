@@ -96,18 +96,18 @@
 <script>
 // Función global accesible desde onclick
 async function copyToWhatsApp() {
-    alert('Función ejecutándose'); // Primera verificación
+    //alert('Función ejecutándose'); // Primera verificación
     
     try {
         const ticketContainer = document.querySelector('.ticket-container');
-        alert('Elemento encontrado'); // Segunda verificación
+        //alert('Elemento encontrado'); // Segunda verificación
         
         // Convertir a imagen
         const canvas = await html2canvas(ticketContainer, {
             scale: 2,
             logging: true // Para ver el proceso en consola
         });
-        alert('Canvas creado'); // Tercera verificación
+        //alert('Canvas creado'); // Tercera verificación
         
         // Copiar al portapapeles
         canvas.toBlob(async function(blob) {

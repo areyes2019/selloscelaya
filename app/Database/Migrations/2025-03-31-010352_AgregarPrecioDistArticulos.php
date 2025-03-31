@@ -22,6 +22,6 @@ class AgregarPrecioDistArticulos extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('sellopro_clientes', ['precio_dist']);
+        $this->forge->dropColumn('sellopro_articulos', ['precio_dist']);
     }
 }

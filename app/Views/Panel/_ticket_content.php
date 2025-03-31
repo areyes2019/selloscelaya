@@ -2,7 +2,12 @@
 helper('number'); ?>
 
 <div class="ticket-header">
-    <strong>Sello Pronto</strong><br> <!-- Usa una configuración o pon tu nombre -->
+    <!-- Logo centrado -->
+    <div class="text-center mb-2">
+        <img src="<?= base_url('public/img/logo2.png') ?>" alt="Logo Sello Pronto" style="max-height: 80px; max-width: 100%;">
+    </div>
+    
+    <strong>Sello Pronto</strong><br>
     Real del Seminario # 122<br>
     Valle del Real, Celaya Gto  461 358 1090<br>
     <hr>
@@ -35,7 +40,18 @@ helper('number'); ?>
 </div>
 <hr>
 <div class="ticket-total">
-    TOTAL: <?= number_format($pedido['total'], 2) ?>
+    <div class="ticket-total-line">
+        <span>TOTAL:</span>
+        <span><?= number_format($pedido['total'], 2) ?></span>
+    </div>
+    <div class="ticket-total-line">
+        <span>ANTICIPO:</span>
+        <span><?= number_format($pedido['anticipo'], 2) ?></span>
+    </div>
+    <div class="ticket-total-line">
+        <span>SALDO:</span>
+        <span><?= number_format($pedido['total'] - $pedido['anticipo'], 2) ?></span>
+    </div>
 </div>
 <hr>
 <div class="ticket-footer">
