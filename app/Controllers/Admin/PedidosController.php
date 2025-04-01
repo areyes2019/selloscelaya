@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\PedidoModel;
 use App\Models\DetallePedidoModel;
+use App\Models\ArticulosModel;
 use CodeIgniter\API\ResponseTrait; // Para respuestas JSON si usas AJAX
 use CodeIgniter\Database\Exceptions\DataException;
 
@@ -28,7 +29,6 @@ class PedidosController extends BaseController
      */
     public function index()
     {
-
         $data['pedidos'] = $this->pedidoModel->orderBy('created_at', 'DESC')->paginate(15);
         $data['pager'] = $this->pedidoModel->pager;
         $data['title'] = 'Punto de venta';
@@ -41,6 +41,8 @@ class PedidosController extends BaseController
      */
     public function new()
     {
+        $articuloModel = new ArticulosModel(); // Asegúrate de tener este modelo
+        $data['articulos'] = $articuloModel->select('id_articulo, modelo, precio_pub')->findAll();
         $data['title'] = 'Nuevo Pedido POS';
         // Puedes pasar datos iniciales si es necesario, ej: lista de productos
         return view('Panel/new', $data);
@@ -51,6 +53,7 @@ class PedidosController extends BaseController
      */
     public function create()
     {
+        
         $validation = \Config\Services::validation();
 
         // --- Validación ---

@@ -46,8 +46,8 @@
             <h3>Añadir Productos/Servicios</h3>
             <div class="row g-3 align-items-end mb-3" id="add-item-section">
                 <div class="col-md-5">
-                    <label for="item_descripcion" class="form-label">Descripción:</label>
-                    <input type="text" class="form-control" id="item_descripcion">
+                    <!-- HTML -->
+                    <input type="text" class="form-control" id="item_descripcion" autocomplete="off">
                 </div>
                 <div class="col-md-2">
                     <label for="item_cantidad" class="form-label">Cantidad:</label>
@@ -183,6 +183,27 @@
 <script>
     // Primero define la variable con PHP
     const initialItemIndex = <?= old('detalle') ? count(old('detalle')) : 0 ?>;
+    $(document).ready(function() {
+    const articulos = [
+        <?php foreach ($articulos as $articulo): ?>
+        {
+            id: <?= $articulo['id_articulo'] ?>,
+            nombre: '<?= addslashes($articulo['modelo']) ?>',
+            precio: <?= $articulo['precio_pub'] ?>
+        },
+        <?php endforeach; ?>
+    ];
+    
+    $('#item_descripcion').typeahead({
+        source: articulos,
+        displayText: function(item) {
+            return item.nombre + ' - $' + item.precio.toFixed(2);
+        },
+        afterSelect: function(item) {
+            $('#item_precio').val(item.precio).trigger('change');
+        }
+    });
+});
 </script>
 <script type="" src="<?php echo base_url('public/js/ticket.js'); ?>"></script>
 <?= $this->endSection() ?>

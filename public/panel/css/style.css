@@ -228,7 +228,20 @@ body {
 .advanced-responsive-table button:hover {
     transform: scale(1.1);
 }
+/* Estilo para el input con datalist */
+input[list] {
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 30px;
+    background-size: 16px;
+}
 
+/* Estilo para las opciones del datalist (no todos los navegadores soportan esto) */
+#listaArticulos option {
+    padding: 5px;
+    cursor: pointer;
+}
 /* Estilos responsivos - Conversión a tarjetas en móviles */
 @media screen and (max-width: 768px) {
     .advanced-responsive-table {

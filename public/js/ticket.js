@@ -170,4 +170,19 @@ $(document).ready(function() {
 
     // Inicialización correcta
     updateTicketItems();
+
+});
+$(document).ready(function() {
+    // Cuando seleccionas un artículo del datalist
+    $('#item_descripcion').on('input', function() {
+        const inputVal = $(this).val();
+        const option = $(`#listaArticulos option[value="${inputVal}"]`);
+        
+        if (option.length) {
+            const precio = option.data('precio');
+            $('#item_precio').val(precio).trigger('change');
+        }
+    });
+
+    // Resto de tu código JavaScript actual...
 });
