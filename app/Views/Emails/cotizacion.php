@@ -70,8 +70,8 @@
             <h3 style="margin-top:0;">Datos Bancarios:</h3>
             <p><strong>Banco:</strong> BBVA</p>
             <p><strong>Beneficiario:</strong>Abdias Reyes Reyna</p>
-            <p><strong>CLABE:</strong> 0123 4567 8910 1112 13</p>
-            <p><strong>Cuenta:</strong> 1234567890</p>
+            <p><strong>CLABE:</strong> 012 1800 1423 6669 805</p>
+            <p><strong>Cuenta:</strong> 1423666980</p>
             <p><strong>Referencia:</strong> QT-<?= esc($id) ?></p>
         </div>
         

@@ -18,6 +18,7 @@
      <a href="<?= site_url('pedidos/pos') ?>" class="btn btn-secondary"><i class="bi bi-list-ul"></i> Ver Historial</a>
      <button onclick="window.print();" class="btn btn-info"><i class="bi bi-printer"></i> Imprimir</button>
      <button onclick="copyToWhatsApp()" class="btn btn-warning"><i class="bi bi-whatsapp"></i> Copiar para WhatsApp</button>
+     <a href="<?= site_url('ordenes/new/' . $pedido['id']) ?>" class="btn btn-warning"><i class="bi bi-clipboard-plus"></i> Crear Orden de Trabajo</a>
 </div>
 
 
