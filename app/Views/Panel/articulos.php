@@ -23,45 +23,28 @@
                 <div class="white_shd full margin_bottom_30">
                     <div class="full graph_head">
                         <div class="heading1 margin_0">
-                            <button class="btn btn-danger rounded-0" data-bs-toggle="modal" data-bs-target="#nuevo_cliente">Nuevo Artículo</button>
+                            <a class="btn btn-danger rounded-0" href="<?php echo base_url('nuevo_art_vista'); ?>">Agregar Articulo</a>
+                            <button class="btn btn-danger rounded-0" data-bs-toggle="modal" data-bs-target="#nuevo_cliente">Nuevo Artículo Rápido</button>
                         </div>
-                        <form class="mb-3" action="<?= site_url('import_masivo') ?>" method="post" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="archivo_excel" class="form-label">Importar Masivo</label>
-                                <input class="form-control" type="file" id="archivo_excel" name="archivo_excel" accept=".xlsx,.xls" required>
-                                <div class="form-text">El archivo debe tener las columnas: Nombre, Modelo, Precio Proveedor, Precio Público, Mínimo, Stock y clave de producto</div>
+                        <h4 class="mt-3">Importacion maisva</h4>
+                        <form action="<?= base_url('import_masivo') ?>" method="post" enctype="multipart/form-data">
+        
+                            <div class="drop-zone mb-3" id="dropZone">
+                                <p id="dropZoneText">Arrastra y suelta tu archivo aquí o haz clic para seleccionarlo</p>
+                                <input type="file" name="archivo_excel" class="d-none" id="fileInput" accept=".xlsx,.xls" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Importar</button>
+
+                            <div id="filePreview" class="text-success fw-bold"></div>
+
+                            <small class="form-text text-muted d-block mb-3">
+                                Debe contener exactamente 8 columnas en este orden:<br>
+                                Nombre, Modelo, Precio Proveedor, Mínimo, Stock, Clave, Nombre Imagen, Disponible
+                            </small>
+
+                            <!-- Botón alineado a la izquierda -->
+                            <button type="submit" class="btn btn-primary mt-3">Importar</button>
                         </form>
-                        <div class="modal fade" id="nuevo_cliente">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                                </button>
-                              </div>
-                              <div class="modal-body">
-                                <form action="<?php echo base_url('nuevo_articulo'); ?>" method="post">
-                                    <label for="">Nombre</label>
-                                    <input type="text" class="my-input w-100" name="nombre">
-                                    <label for="">Modelo</label>
-                                    <input type="text" class="my-input w-100" name="modelo">
-                                    <label for="">Precio Proveedor</label>
-                                    <input type="text" class="my-input w-100" name="precio_prov">
-                                    <label for="">Precio Público</label>
-                                    <input type="text" class="my-input w-100" name="precio_pub">
-                                    <input type="submit" value="Guardar" class="my-btn-primary p-2 mt-2 w-100">
-                                </form>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+
                     </div>
                     <div class="table_section padding_infor_info">
                         <div class="table-responsive-sm">
@@ -69,6 +52,7 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Img</th>
                                         <th>Nombre</th>
                                         <th>Modelo</th>
                                         <th>Costo</th>
@@ -82,6 +66,7 @@
                                     <?php foreach ($articulos as $articulo): ?>
                                     <tr>
                                         <td><?= $articulo['id_articulo'];?></td>
+                                        <td><img src="<?= base_url('ver_imagen/'.$articulo['img']) ?>" alt="Imagen" width="30"></td>
                                         <td><?= $articulo['nombre'];?></td>
                                         <td><?= $articulo['modelo'];?></td>
                                         <td>$<?= $articulo['precio_prov'];?></td>
@@ -112,9 +97,11 @@
             </div>
         </div>
     </div>
-    <script>
-    $( document ).ready(function() {
-        new DataTable('#example');
-    });
-    </script>
+</div>
+<script>
+$( document ).ready(function() {
+    new DataTable('#example');
+});
+</script>
+<script type="text/javascript" src="<?php echo base_url('public/js/drag.js'); ?>"></script>
 <?php echo $this->endSection()?>

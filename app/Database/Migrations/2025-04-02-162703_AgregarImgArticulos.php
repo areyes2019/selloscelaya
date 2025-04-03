@@ -15,6 +15,12 @@ class AgregarImgArticulos extends Migration
                 'null'      => true,
                 'after'     => 'stock' // Opcional: especificar después de qué campo
             ],
+            'venta' => [ //esto es el rfc del cliente
+                'type'       => 'INT',
+                'constraint' => 10,
+                'null'      => true,
+                'after'     => 'img' // Opcional: especificar después de qué campo
+            ],
         ];
         
         $this->forge->addColumn('sellopro_articulos', $fields);
@@ -22,6 +28,6 @@ class AgregarImgArticulos extends Migration
 
     public function down()
     {
-        $this->forge->dropColumn('sellopro_articulos', ['img']);
+        $this->forge->dropColumn('sellopro_articulos', ['img','venta']);
     }
 }

@@ -238,9 +238,34 @@ input[list] {
 }
 
 /* Estilo para las opciones del datalist (no todos los navegadores soportan esto) */
-#listaArticulos option {
-    padding: 5px;
+.drop-zone {
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
     cursor: pointer;
+    background-color: #f8f9fa;
+    transition: 0.3s;
+}
+.drop-zone:hover {
+    background-color: #e2e6ea;
+}
+.drop-zone.dragover {
+    background-color: #cce5ff;
+}
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    .modern-drop-zone {
+        padding: 1.5rem;
+    }
+    
+    .modern-drop-zone h5 {
+        font-size: 1.1rem;
+    }
+    
+    .modern-drop-zone .icon-container {
+        font-size: 2rem;
+    }
 }
 /* Estilos responsivos - Conversión a tarjetas en móviles */
 @media screen and (max-width: 768px) {

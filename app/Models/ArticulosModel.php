@@ -14,6 +14,8 @@ class ArticulosModel extends Model
         'precio_pub',
         'minimo',
         'stock',
+        'img',
+        'venta',
         'precio_dist',
         'clave_producto'
     ];
