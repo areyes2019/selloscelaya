@@ -24,7 +24,6 @@
                     <div class="full graph_head">
                         <div class="heading1 margin_0">
                             <a class="btn btn-danger rounded-0" href="<?php echo base_url('nuevo_art_vista'); ?>">Agregar Articulo</a>
-                            <button class="btn btn-danger rounded-0" data-bs-toggle="modal" data-bs-target="#nuevo_cliente">Nuevo Artículo Rápido</button>
                         </div>
                         <h4 class="mt-3">Importacion maisva</h4>
                         <form action="<?= base_url('import_masivo') ?>" method="post" enctype="multipart/form-data">

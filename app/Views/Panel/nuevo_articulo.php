@@ -72,9 +72,9 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="img">Imagen del Artículo*</label>
+                    <label for="img">Imagen del Artículo</label>
                     <div class="custom-file">
-                        <input type="file" name="img" id="img" class="custom-file-input" required>
+                        <input type="file" name="img" id="img" class="custom-file-input">
                         <label class="custom-file-label rounded-0" for="img">Seleccionar imagen</label>
                     </div>
                     <small class="text-muted">Tamaño máximo: 2MB (JPG, PNG, GIF)</small>

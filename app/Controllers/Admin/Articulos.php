@@ -53,8 +53,8 @@ class Articulos extends BaseController
 
 	    // Cálculo de precios automáticos
 	    $precio_prov = (float)$this->request->getPost('precio_prov');
-	    $precio_pub = $precio_prov * $porcentaje_venta_publico;
-	    $precio_dist = $precio_prov * $porcentaje_venta_distribuidor;
+	    $precio_pub = round($precio_prov * $porcentaje_venta_publico);
+	    $precio_dist = round($precio_prov * $porcentaje_venta_distribuidor);
 
 	    $model = new ArticulosModel();
 	    $data = [
@@ -159,8 +159,8 @@ class Articulos extends BaseController
 
 	            // Calcular precios automáticamente
 	            $precio_prov = is_numeric($row[2] ?? 0) ? (float)$row[2] : 0.00;
-	            $precio_pub = $precio_prov * $porcentaje_publico;
-	            $precio_dist = $precio_prov * $porcentaje_distribuidor;
+	            $precio_pub = round($precio_prov * $porcentaje_publico);
+	            $precio_dist = round($precio_prov * $porcentaje_distribuidor);
 
 	            $data = [
 	                'nombre'        => trim($row[0]),
