@@ -6,43 +6,41 @@
 	</div>
 	<div class="my-card mt-3">
 		<?php foreach ($articulos as $articulo): ?>
-		<form class="row g-3" action="<?php echo base_url('actualizar_articulo'); ?>" method="post">
-		  	<div class="col-md-6">
-		    	<label for="inputEmail4" class="form-label">Nombre</label>
-		    	<input type="text" class="my-input shadow-none form-control p-1"  value="<?php echo $articulo['nombre'] ?>" name="nombre">
-		    	<input type="hidden" value="<?php echo $articulo['id_articulo']?>" name="idarticulo">
-		 	</div>
-			<div class="col-md-6">
-			    <label for="inputPassword4" class="form-label">Modelo</label>
-			    <input type="text" class="my-input shadow-none form-control p-1" name="modelo" value="<?php echo $articulo['modelo'] ?>">
-			</div>
-			<div class="col-md-4">
-			    <label for="inputAddress" class="form-label">Precio Proveedor</label>
-			    <input type="text" class="my-input shadow-none form-control p-1" name="precio_prov" value="<?php echo $articulo['precio_prov'] ?>">
-			</div>
-			<div class="col-md-4">
-			    <label for="inputAddress2" class="form-label">Precio Púbico</label>
-			    <input type="text" class="my-input shadow-none form-control p-1"  value="<?php echo $articulo['precio_pub'] ?>" name="precio_pub">
-			</div>
-			<div class="col-md-4">
-			    <label for="inputCity" class="form-label">Minimo para reorden</label>
-			    <input type="number" class="my-input shadow-none form-control p-1" min="0" name="minimo" value="<?php echo $articulo['minimo'] ?>">
-			</div>
-			<div class="col-md-4">
-			    <label for="inputCity" class="form-label">Clave del producto</label>
-			    <input type="text" class="my-input shadow-none form-control p-1" min="0" name="minimo" value="<?php echo $articulo['clave_producto'] ?>">
-			</div>
-			<div class="col-md-3">
-			    <label for="inputState" class="form-label">En Stok</label>
-			    <select id="inputState" class="form-select my-input shadow-none form-control p-1" name="stock">
-			      <option value="" disabled selected hidden>Escoge una opción...</option>
-			      <option value="1">Sí</option>
-			      <option value="0">No</option>
-			    </select>
-			</div>
-			<div class="col-12">
-			    <button type="submit" class="my-btn-primary p-3"><span class="bi bi-save"></span> Guardar</button>
-			</div>
+		<form method="post" action="<?= base_url('actualizar_articulo') ?>" enctype="multipart/form-data">
+		    <input type="hidden" name="idarticulo" value="<?= $articulo['id_articulo'] ?>">
+		    <input type="hidden" name="imagen_actual" value="<?= $articulo['img'] ?>">
+		    
+		    <!-- Campos del formulario -->
+		    <div class="form-group">
+		        <label>Nombre</label>
+		        <input type="text" name="nombre" class="form-control" value="<?= $articulo['nombre'] ?>" required>
+		    </div>
+		    
+		    <div class="form-group">
+		        <label>Precio Proveedor</label>
+		        <input type="number" step="0.01" name="precio_prov" class="form-control" value="<?= $articulo['precio_prov'] ?>" required>
+		    </div>
+		    
+		    <!-- Mostrar precios calculados (solo lectura) -->
+		    <div class="form-group">
+		        <label>Precio Público</label>
+		        <input type="text" class="form-control" value="<?= $articulo['precio_pub'] ?>" readonly>
+		    </div>
+		    
+		    <div class="form-group">
+		        <label>Precio Distribuidor</label>
+		        <input type="text" class="form-control" value="<?= $articulo['precio_dist'] ?>" readonly>
+		    </div>
+		    
+		    <div class="form-group">
+		        <label>Imagen Actual</label>
+		        <?php if ($articulo['img']): ?>
+		            <img src="<?= base_url('articulos/verImagen/'.$articulo['img']) ?>" class="img-thumbnail mb-2" width="100">
+		        <?php endif; ?>
+		        <input type="file" name="img" class="form-control-file">
+		    </div>
+		    
+		    <button type="submit" class="btn btn-primary">Actualizar Artículo</button>
 		</form>
 		<?php endforeach; ?>
 	</div>

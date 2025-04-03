@@ -95,20 +95,52 @@ class Articulos extends BaseController
 	}
 	public function actualizar()
 	{
-		
-		$precio = $this->request->getPost('precio_pub');
-		//$sin_impuesto = $precio/1.16;
+	    // Obtener porcentajes desde la base de datos
+	    $descuentosModel = new DescuentosModel();
+	    $porcentajes_publico = $descuentosModel->find('1');
+	    $porcentajes_dist = $descuentosModel->find('2');
+	    
+	    // Convertir porcentajes enteros a multiplicadores (ej: 30 → 1.30)
+	    $porcentaje_venta_publico = 1 + ($porcentajes_publico['descuento'] / 100);
+	    $porcentaje_venta_distribuidor = 1 + ($porcentajes_dist['descuento'] / 100);
 
-		$modelo = new ArticulosModel();
-		$id = $this->request->getPost('idarticulo');
-		$data = [
-			'nombre'=> $this->request->getPost('nombre'),
-			'modelo' => $this->request->getPost('modelo'),
-			'precio_prov' => $this->request->getPost('precio_prov'),
-			'precio_pub' => $precio,
-		];
-		$modelo->update($id,$data);
-		return redirect()->to('/articulos');
+	    // Procesamiento de la imagen (si se sube una nueva)
+	    $img = $this->request->getPost('imagen_actual'); // Mantener la imagen actual por defecto
+	    $file = $this->request->getFile('img');
+	    
+	    if ($file && $file->isValid() && !$file->hasMoved()) {
+	        // Eliminar la imagen anterior si existe
+	        $imagenAnterior = $this->request->getPost('imagen_actual');
+	        if ($imagenAnterior && file_exists(WRITEPATH . 'uploads/articulos/' . $imagenAnterior)) {
+	            unlink(WRITEPATH . 'uploads/articulos/' . $imagenAnterior);
+	        }
+	        
+	        // Subir la nueva imagen
+	        $newName = $file->getRandomName();
+	        $file->move(WRITEPATH . 'uploads/articulos', $newName);
+	        $img = $newName;
+	    }
+
+	    // Cálculo de precios automáticos
+	    $precio_prov = (float)$this->request->getPost('precio_prov');
+	    $precio_pub = round($precio_prov * $porcentaje_venta_publico);
+	    $precio_dist = round($precio_prov * $porcentaje_venta_distribuidor);
+
+	    $modelo = new ArticulosModel();
+	    $id = $this->request->getPost('idarticulo');
+	    
+	    $data = [
+	        'nombre' => $this->request->getPost('nombre'),
+	        'modelo' => $this->request->getPost('modelo'),
+	        'precio_prov' => $precio_prov,
+	        'precio_pub' => $precio_pub,
+	        'precio_dist' => $precio_dist,
+	        'venta' => $this->request->getPost('venta') ? 1 : 0,
+	        'img' => $img
+	    ];
+	    
+	    $modelo->update($id, $data);
+	    return redirect()->to('/articulos')->with('success', 'Artículo actualizado correctamente');
 	}
 	public function eliminar($id)
 	{
