@@ -6,7 +6,7 @@
 	</div>
 	<div class="my-card mt-3">
 	    <?php foreach ($articulos as $articulo): ?>
-	    <form class="row g-3" action="<?= base_url('articulos/actualizar') ?>" method="post" enctype="multipart/form-data">
+	    <form class="row g-3" action="<?= base_url('actualizar_articulo') ?>" method="post" enctype="multipart/form-data">
 	        <input type="hidden" name="idarticulo" value="<?= $articulo['id_articulo'] ?>">
 	        <input type="hidden" name="imagen_actual" value="<?= $articulo['img'] ?>">
 	        
