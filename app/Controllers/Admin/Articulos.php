@@ -33,13 +33,11 @@ class Articulos extends BaseController
 	}
 	public function nuevo()
 	{
-	    // Obtener porcentajes desde la base de datos
+	    // Obtener porcentajes desde la base de datos (solo para distribuidor)
 	    $model = new DescuentosModel();
-	    $porcentajes_publico = $model->find('1');
 	    $porcentajes_dist = $model->find('2');
 	    
-	    // Convertir porcentajes enteros a multiplicadores (ej: 30 → 1.30)
-	    $porcentaje_venta_publico = 1 + ($porcentajes_publico['descuento'] / 100);
+	    // Convertir porcentaje entero a multiplicador (ej: 30 → 1.30)
 	    $porcentaje_venta_distribuidor = 1 + ($porcentajes_dist['descuento'] / 100);
 
 	    // Procesamiento de la imagen
@@ -51,9 +49,9 @@ class Articulos extends BaseController
 	        $img = $newName;
 	    }
 
-	    // Cálculo de precios automáticos
+	    // Cálculo de precio distribuidor
 	    $precio_prov = (float)$this->request->getPost('precio_prov');
-	    $precio_pub = round($precio_prov * $porcentaje_venta_publico);
+	    $precio_pub = (float)$this->request->getPost('precio_pub');
 	    $precio_dist = round($precio_prov * $porcentaje_venta_distribuidor);
 
 	    $model = new ArticulosModel();
