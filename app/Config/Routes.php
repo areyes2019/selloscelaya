@@ -156,6 +156,16 @@ $routes->group('',static function($routes){
 	    $routes->get('delete/(:num)', 'OrdenTrabajoController::delete/$1'); // (Futuro) Eliminar
 	    $routes->get('imagen/(:segment)', 'OrdenTrabajoController::serveImage/$1', ['as' => 'orden_imagen']); // Ruta para servir imágenes
 	});
+	//gastos
+	$routes->group('gastos',static function($routes) {
+	    $routes->get('inicio', 'Admin\GastosController::index');
+	    $routes->get('nuevo', 'Admin\GastosController::nuevo');
+	    $routes->post('guardar', 'Admin\GastosController::guardar');
+	    $routes->get('mostrar/(:num)', 'Admin\GastosController::mostrar/$1');
+	    $routes->get('editar/(:num)', 'Admin\GastosController::editar/$1');
+	    $routes->post('actualizar/(:num)', 'Admin\GastosController::actualizar/$1');
+	    $routes->post('eliminar/(:num)', 'Admin\GastosController::eliminar/$1');
+	});
 
 
 

@@ -48,25 +48,25 @@
             </li>
             <li>
                 <a href="<?php echo base_url('clientes'); ?>">
-                <i class="fas fa-users"></i>
+                <i class="bi bi-person"></i>
                 <span>Clientes</span>
                 </a>
             </li>
             <li>
                 <a href="<?php echo base_url('proveedores'); ?>">
-                <i class="fas fa-users"></i>
+                <i class="bi bi-people"></i>
                 <span>Proveedores</span>
                 </a>
             </li>
             <li>
                 <a href="<?php echo base_url('articulos'); ?>">
-                <i class="fas fa-box"></i>
+                <i class="bi bi-box2"></i>
                 <span>Articulos</span>
                 </a>
             </li>
             <li>
                 <a href="<?php echo base_url('cotizaciones'); ?>">
-                <i class="fas fa-file"></i>
+                <i class="bi bi-file-earmark-bar-graph"></i>
                 <span>Cotizaciones</span>
                 </a>
             </li>
@@ -82,6 +82,13 @@
                 <span>Existencias</span>
                 </a>
             </li>
+            <li>
+                <a href="<?php echo base_url('gastos/inicio'); ?>">
+                <i class="bi bi-cash-coin"></i>
+                <span>Gastos</span>
+                </a>
+            </li>
+            
             
         </ul>
     </nav>
