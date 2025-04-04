@@ -95,15 +95,6 @@ class Articulos extends BaseController
 	}
 	public function actualizar()
 	{
-	    // Obtener porcentajes desde la base de datos
-	    $descuentosModel = new DescuentosModel();
-	    $porcentajes_publico = $descuentosModel->find('1');
-	    $porcentajes_dist = $descuentosModel->find('2');
-	    
-	    // Convertir porcentajes enteros a multiplicadores (ej: 30 → 1.30)
-	    $porcentaje_venta_publico = 1 + ($porcentajes_publico['descuento'] / 100);
-	    $porcentaje_venta_distribuidor = 1 + ($porcentajes_dist['descuento'] / 100);
-
 	    // Procesamiento de la imagen (si se sube una nueva)
 	    $img = $this->request->getPost('imagen_actual'); // Mantener la imagen actual por defecto
 	    $file = $this->request->getFile('img');
@@ -121,20 +112,18 @@ class Articulos extends BaseController
 	        $img = $newName;
 	    }
 
-	    // Cálculo de precios automáticos
-	    $precio_prov = (float)$this->request->getPost('precio_prov');
-	    $precio_pub = round($precio_prov * $porcentaje_venta_publico);
-	    $precio_dist = round($precio_prov * $porcentaje_venta_distribuidor);
-
 	    $modelo = new ArticulosModel();
 	    $id = $this->request->getPost('idarticulo');
 	    
 	    $data = [
 	        'nombre' => $this->request->getPost('nombre'),
 	        'modelo' => $this->request->getPost('modelo'),
-	        'precio_prov' => $precio_prov,
-	        'precio_pub' => $precio_pub,
-	        'precio_dist' => $precio_dist,
+	        'precio_prov' => (float)$this->request->getPost('precio_prov'),
+	        'precio_pub' => (float)$this->request->getPost('precio_pub'),
+	        'precio_dist' => (float)$this->request->getPost('precio_dist'),
+	        'minimo' => (int)$this->request->getPost('minimo'),
+	        'clave_producto' => $this->request->getPost('clave_producto'),
+	        'stock' => (int)$this->request->getPost('stock'),
 	        'venta' => $this->request->getPost('venta') ? 1 : 0,
 	        'img' => $img
 	    ];
