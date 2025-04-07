@@ -1,4 +1,4 @@
-<?= $this->extend('Panel/panel_template') ?> <!-- Asume que tienes un layout base -->
+<?= $this->extend('Panel/panel_template') ?>
 
 <?= $this->section('contenido') ?>
 <h1><?= esc($title) ?></h1>
@@ -21,7 +21,6 @@
 <?php if (session()->has('error')): ?>
     <div class="alert alert-danger"><?= session('error') ?></div>
 <?php endif; ?>
-
 
 <form action="<?= site_url('pedidos/create') ?>" method="post" id="pos-form">
     <?= csrf_field() ?>
@@ -46,8 +45,8 @@
             <h3>Añadir Productos/Servicios</h3>
             <div class="row g-3 align-items-end mb-3" id="add-item-section">
                 <div class="col-md-5">
-                    <!-- HTML -->
                     <input type="text" class="form-control" id="item_descripcion" autocomplete="off">
+                    <input type="hidden"  id="item_articulo_id">
                 </div>
                 <div class="col-md-2">
                     <label for="item_cantidad" class="form-label">Cantidad:</label>
@@ -76,13 +75,13 @@
                     </tr>
                 </thead>
                 <tbody id="items-list">
-                    <!-- Las filas de items se añadirán aquí con JS -->
-                     <?php if (old('detalle')): // Repoblar si hay error de validación ?>
+                    <?php if (old('detalle')): ?>
                         <?php foreach (old('detalle') as $key => $item): ?>
                             <tr class="item-row">
                                 <td>
                                     <?= esc($item['descripcion']) ?>
                                     <input type="hidden" name="detalle[<?= $key ?>][descripcion]" value="<?= esc($item['descripcion']) ?>">
+                                    <input type="hidden" name="detalle[<?= $key ?>][id_articulo]" value="<?= esc($item['id_articulo'] ?? '') ?>">
                                 </td>
                                 <td class="cantidad">
                                     <?= esc($item['cantidad']) ?>
@@ -94,7 +93,7 @@
                                 </td>
                                 <td class="subtotal">
                                     <?= number_format($item['cantidad'] * $item['precio_unitario'], 2) ?>
-                                 </td>
+                                </td>
                                 <td><button type="button" class="btn btn-danger btn-sm btn-remove-item">Quitar</button></td>
                             </tr>
                         <?php endforeach; ?>
@@ -108,7 +107,7 @@
                     </tr>
                 </tfoot>
             </table>
-            <!-- En la sección del formulario, después de la tabla de items -->
+
             <div class="row mt-3">
                 <div class="col-md-6 offset-md-6">
                     <div class="card">
@@ -139,8 +138,7 @@
             </div>
             <input type="hidden" name="total_final_hidden" id="total_final_hidden" value="0">
 
-             <button type="submit" class="btn btn-success btn-lg" id="btn-finalizar">Finalizar Venta</button>
-
+            <button type="submit" class="btn btn-success btn-lg" id="btn-finalizar">Finalizar Venta</button>
         </div>
 
         <!-- Columna Derecha: Previsualización Ticket -->
@@ -161,49 +159,49 @@
                 <div style="margin-bottom: 5px;">
                     <span>Cant.</span> | <span>Descripción</span> | <span>P.U.</span> | <span>Subt.</span>
                 </div>
-                 <hr style="border-top: 1px dashed #ccc;">
+                <hr style="border-top: 1px dashed #ccc;">
                 <div id="ticket-items-list" style="min-height: 50px;">
                     <!-- Items del ticket se añadirán aquí -->
                 </div>
-                 <hr style="border-top: 1px dashed #ccc;">
+                <hr style="border-top: 1px dashed #ccc;">
                 <div style="text-align: right; font-weight: bold;">
                     TOTAL: <span id="ticket-total">0.00</span>
                 </div>
-                 <hr style="border-top: 1px dashed #ccc;">
-                 <div style="text-align: center; margin-top: 10px; font-size: 0.9em;">
-                     ¡Gracias por su compra!
-                 </div>
+                <hr style="border-top: 1px dashed #ccc;">
+                <div style="text-align: center; margin-top: 10px; font-size: 0.9em;">
+                    ¡Gracias por su compra!
+                </div>
             </div>
-             <!-- El botón de descarga aparecerá en la vista del ticket generado -->
         </div>
     </div>
 </form>
-<!-- Incluye jQuery si no lo tienes globalmente -->
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
 <script>
     // Primero define la variable con PHP
     const initialItemIndex = <?= old('detalle') ? count(old('detalle')) : 0 ?>;
     $(document).ready(function() {
-    const articulos = [
-        <?php foreach ($articulos as $articulo): ?>
-        {
-            id: <?= $articulo['id_articulo'] ?>,
-            nombre: '<?= addslashes($articulo['modelo']) ?>',
-            precio: <?= $articulo['precio_pub'] ?>
-        },
-        <?php endforeach; ?>
-    ];
-    
-    $('#item_descripcion').typeahead({
-        source: articulos,
-        displayText: function(item) {
-            return item.nombre + ' - $' + item.precio.toFixed(2);
-        },
-        afterSelect: function(item) {
-            $('#item_precio').val(item.precio).trigger('change');
-        }
+        const articulos = [
+            <?php foreach ($articulos as $articulo): ?>
+            {
+                id: <?= $articulo['id_articulo'] ?>,
+                nombre: '<?= addslashes($articulo['modelo']) ?>',
+                precio: <?= $articulo['precio_pub'] ?>
+            },
+            <?php endforeach; ?>
+        ];
+        
+        $('#item_descripcion').typeahead({
+            source: articulos,
+            displayText: function(item) {
+                return item.nombre + ' - $' + item.precio.toFixed(2);
+            },
+            afterSelect: function(item) {
+                $('#item_articulo_id').val(item.id);
+                $('#item_precio').val(item.precio).trigger('change');
+            }
+        });
     });
-});
 </script>
 <script type="" src="<?php echo base_url('public/js/ticket.js'); ?>"></script>
+
 <?= $this->endSection() ?>

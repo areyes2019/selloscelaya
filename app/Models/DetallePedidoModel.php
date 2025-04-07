@@ -10,7 +10,14 @@ class DetallePedidoModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['pedido_id', 'descripcion', 'cantidad', 'precio_unitario', 'subtotal'];
+    protected $allowedFields = [
+        'pedido_id',
+        'id_articulo', // Asegúrate que esté este campo
+        'descripcion',
+        'cantidad',
+        'precio_unitario',
+        'subtotal'
+    ];
 
     // Dates (opcional para detalles)
     protected $useTimestamps = true;

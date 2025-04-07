@@ -317,7 +317,66 @@ input[list] {
         display: none;
     }
 }
-
+/* Estilos exclusivos para la paginación */
+    .pagination-container {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        gap: 8px;
+    }
+    
+    .pagination li {
+        margin: 0;
+    }
+    
+    .pagination li a, 
+    .pagination li span {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 1px solid #e0e0e0;
+        color: #4a5568;
+    }
+    
+    .pagination li a:hover {
+        background-color: #f0f4f8;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .pagination li.active a,
+    .pagination li.active span {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 2px 5px rgba(102, 126, 234, 0.3);
+    }
+    
+    .pagination li.disabled span {
+        color: #a0aec0;
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+    }
+    
+    /* Opcional: Iconos para anterior/siguiente */
+    .pagination li:first-child a::before {
+        content: "←";
+        margin-right: 5px;
+    }
+    
+    .pagination li:last-child a::after {
+        content: "→";
+        margin-left: 5px;
+    }
 /* Mejoras para pantallas muy pequeñas */
 
 @media (max-width: 768px) {

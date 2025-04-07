@@ -140,6 +140,7 @@ $routes->group('',static function($routes){
 	    $routes->get('edit/(:num)', 'Admin\PedidosController::edit/$1');   // (Opcional) Mostrar form edición
 	    $routes->post('update/(:num)', 'Admin\PedidosController::update/$1'); // (Opcional) Procesar edición
 	    $routes->get('delete/(:num)', 'Admin\PedidosController::delete/$1'); // Eliminar pedido (GET para simplicidad, POST/DELETE es mejor)
+	    $routes->post('pagar/(:num)', 'Admin\PedidosController::pagar/$1');
 	    // Si usas resource, ajusta o añade las personalizadas
 	    // $routes->resource('pedidos', ['controller' => 'PedidosController']);
 	    // $routes->get('pedidos/download/(:num)', 'PedidosController::downloadTicket/$1');
@@ -163,9 +164,12 @@ $routes->group('',static function($routes){
 	    $routes->post('guardar', 'Admin\GastosController::guardar');
 	    $routes->get('mostrar/(:num)', 'Admin\GastosController::mostrar/$1');
 	    $routes->get('editar/(:num)', 'Admin\GastosController::editar/$1');
+	    $routes->get('reporte', 'Admin\GastosController::reporteFinanciero');
 	    $routes->post('actualizar/(:num)', 'Admin\GastosController::actualizar/$1');
 	    $routes->post('eliminar/(:num)', 'Admin\GastosController::eliminar/$1');
 	});
+
+
 
 
 

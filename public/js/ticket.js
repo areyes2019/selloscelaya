@@ -5,14 +5,16 @@ $(document).ready(function() {
     updateTotal();
     updateTicketPreview();
 
-    // Añadir Item
+    // Añadir Item - Función modificada
     $('#btn-add-item').on('click', function() {
         const descripcion = $('#item_descripcion').val().trim();
         const cantidad = parseInt($('#item_cantidad').val());
         const precio = parseFloat($('#item_precio').val());
+        const articuloId = $('#item_articulo_id').val();
 
-        if (!descripcion || isNaN(cantidad) || cantidad <= 0 || isNaN(precio) || precio < 0) {
-            alert('Por favor, complete la descripción, cantidad válida y precio válido.');
+        // Validación más estricta que incluye el ID del artículo
+        if (!descripcion || isNaN(cantidad) || cantidad <= 0 || isNaN(precio) || precio < 0 || !articuloId) {
+            alert('Por favor, complete todos los campos correctamente y seleccione un artículo válido.');
             return;
         }
 
@@ -24,6 +26,7 @@ $(document).ready(function() {
                 <td>
                     ${descripcion}
                     <input type="hidden" name="detalle[${itemIndex}][descripcion]" value="${descripcion}">
+                    <input type="hidden" name="detalle[${itemIndex}][id_articulo]" value="${articuloId}">
                 </td>
                 <td class="cantidad">
                     ${cantidad}
@@ -43,6 +46,7 @@ $(document).ready(function() {
 
         // Limpiar campos
         $('#item_descripcion').val('');
+        $('#item_articulo_id').val('');
         $('#item_cantidad').val('1');
         $('#item_precio').val('');
         $('#item_descripcion').focus();
@@ -51,14 +55,14 @@ $(document).ready(function() {
         updateTicketPreview();
     });
 
-    // Quitar Item
+    // Quitar Item (sin cambios)
     $('#items-table').on('click', '.btn-remove-item', function() {
         $(this).closest('tr').remove();
         updateTotal();
         updateTicketPreview();
     });
 
-    // Actualizar Total y Saldo
+    // Actualizar Total y Saldo (sin cambios)
     function updateTotal() {
         let total = 0;
         $('#items-list tr').each(function() {
@@ -78,17 +82,14 @@ $(document).ready(function() {
         $('#resumen-saldo').text(saldo.toFixed(2));
     }
 
-    // Actualizar Ticket Preview
+    // Actualizar Ticket Preview (sin cambios)
     function updateTicketPreview() {
-        // Actualizar solo información del cliente
         $('#ticket-cliente-nombre').text($('#cliente_nombre').val() || '[Cliente no ingresado]');
         $('#ticket-cliente-tel').text($('#cliente_telefono').val() || '');
-        
-        // Actualizar fecha
         $('#ticket-fecha').text(new Date().toLocaleString('es-VE'));
     }
 
-    // Actualizar Items del Ticket (función separada)
+    // Actualizar Items del Ticket (sin cambios)
     function updateTicketItems() {
         const itemsHtml = [];
         $('#items-list tr').each(function() {
@@ -109,7 +110,6 @@ $(document).ready(function() {
         
         $('#ticket-items-list').html(itemsHtml.join(''));
         
-        // Actualizar totales en el ticket
         const total = parseFloat($('#total-display').text().replace(/[^0-9.]/g, '')) || 0;
         const anticipo = parseFloat($('#anticipo').val()) || 0;
         const saldo = Math.max(0, total - anticipo);
@@ -134,55 +134,39 @@ $(document).ready(function() {
         $('#ticket-items-list').after(`<div class="pagos-section">${pagosHtml}</div>`);
     }
 
-    // Event listeners modificados
+    // Event listeners (con mejora en el autocompletado)
     $('#cliente_nombre, #cliente_telefono').on('input', function() {
-        // Solo actualiza la información del cliente, no los items
         $('#ticket-cliente-nombre').text($('#cliente_nombre').val() || '[Cliente no ingresado]');
         $('#ticket-cliente-tel').text($('#cliente_telefono').val() || '');
     });
 
     $('#anticipo').on('input', function() {
         updateTotal();
-        // Actualizar solo la sección de pagos del ticket
-        const total = parseFloat($('#total-display').text().replace(/[^0-9.]/g, '')) || 0;
-        const anticipo = parseFloat($(this).val()) || 0;
-        const saldo = Math.max(0, total - anticipo);
-        
-        const pagosHtml = `
-            <hr style="border-top: 1px dashed #ccc;">
-            <div style="display: flex; justify-content: space-between;">
-                <span><strong>Total:</strong></span>
-                <span>${total.toFixed(2)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span><strong>Anticipo:</strong></span>
-                <span>${anticipo.toFixed(2)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span><strong>Saldo:</strong></span>
-                <span>${saldo.toFixed(2)}</span>
-            </div>
-        `;
-        
-        $('#ticket-preview').find('.pagos-section').remove();
-        $('#ticket-items-list').after(`<div class="pagos-section">${pagosHtml}</div>`);
+        updateTicketItems();
     });
 
-    // Inicialización correcta
-    updateTicketItems();
-
-});
-$(document).ready(function() {
-    // Cuando seleccionas un artículo del datalist
+    // Manejo mejorado del autocompletado
     $('#item_descripcion').on('input', function() {
         const inputVal = $(this).val();
         const option = $(`#listaArticulos option[value="${inputVal}"]`);
         
         if (option.length) {
             const precio = option.data('precio');
+            const articuloId = option.data('id');
+            
+            if (!articuloId || articuloId <= 0) {
+                alert('El artículo seleccionado no tiene un ID válido');
+                return;
+            }
+            
             $('#item_precio').val(precio).trigger('change');
+            $('#item_articulo_id').val(articuloId);
+        } else {
+            $('#item_articulo_id').val('');
+            $('#item_precio').val('');
         }
     });
 
-    // Resto de tu código JavaScript actual...
+    // Inicialización
+    updateTicketItems();
 });

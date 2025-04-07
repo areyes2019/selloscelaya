@@ -85,7 +85,7 @@
             <li>
                 <a href="<?php echo base_url('gastos/inicio'); ?>">
                 <i class="bi bi-cash-coin"></i>
-                <span>Gastos</span>
+                <span>Finansas</span>
                 </a>
             </li>
             

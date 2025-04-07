@@ -29,10 +29,40 @@ class PedidosController extends BaseController
      */
     public function index()
     {
-        $data['pedidos'] = $this->pedidoModel->orderBy('created_at', 'DESC')->paginate(15);
-        $data['pager'] = $this->pedidoModel->pager;
-        $data['title'] = 'Punto de venta';
-
+        // Obtener la fecha actual
+        $hoy = date('Y-m-d');
+        $inicioSemana = date('Y-m-d', strtotime('monday this week'));
+        $inicioMes = date('Y-m-01');
+        
+        // Consultas para los resúmenes (solo ventas pagadas)
+        $resumenDia = $this->pedidoModel
+            ->select('COUNT(*) as total_ventas, SUM(total) as monto_total')
+            ->where('DATE(created_at)', $hoy)
+            ->where('estado', 'pagado') // Solo ventas pagadas
+            ->first();
+        
+        $resumenSemana = $this->pedidoModel
+            ->select('COUNT(*) as total_ventas, SUM(total) as monto_total')
+            ->where('created_at >=', $inicioSemana)
+            ->where('estado', 'pagado') // Solo ventas pagadas
+            ->first();
+        
+        $resumenMes = $this->pedidoModel
+            ->select('COUNT(*) as total_ventas, SUM(total) as monto_total')
+            ->where('created_at >=', $inicioMes)
+            ->where('estado', 'pagado') // Solo ventas pagadas
+            ->first();
+        
+        // Datos para la vista (paginación muestra todos los pedidos)
+        $data = [
+            'pedidos' => $this->pedidoModel->orderBy('created_at', 'DESC')->paginate(10),
+            'pager' => $this->pedidoModel->pager,
+            'title' => 'Punto de venta',
+            'resumenDia' => $resumenDia,
+            'resumenSemana' => $resumenSemana,
+            'resumenMes' => $resumenMes
+        ];
+        
         return view('Panel/pos', $data);
     }
 
@@ -53,7 +83,6 @@ class PedidosController extends BaseController
      */
     public function create()
     {
-        
         $validation = \Config\Services::validation();
 
         // --- Validación ---
@@ -64,16 +93,16 @@ class PedidosController extends BaseController
             'detalle.*.descripcion' => 'required|max_length[255]',
             'detalle.*.cantidad' => 'required|numeric|greater_than[0]',
             'detalle.*.precio_unitario' => 'required|numeric|greater_than_equal_to[0]',
+            'detalle.*.id_articulo' => 'permit_empty|numeric', // Validación opcional para el ID
             'anticipo' => 'permit_empty|numeric|greater_than_equal_to[0]'
         ];
 
         if (!$this->validate($rules)) {
-            // Vuelve al formulario con errores y datos antiguos
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
 
         // --- Procesamiento ---
-        $this->db->transStart(); // Iniciar transacción
+        $this->db->transStart();
 
         try {
             // 1. Crear el Pedido Principal
@@ -82,11 +111,11 @@ class PedidosController extends BaseController
                 'cliente_telefono' => $this->request->getPost('cliente_telefono'),
                 'estado' => 'completado',
                 'total' => 0,
-                'anticipo' => $this->request->getPost('anticipo') ?? 0, // Nuevo campo
-                'saldo' => 0 // Se calculará después
+                'anticipo' => $this->request->getPost('anticipo') ?? 0,
+                'saldo' => 0
             ];
 
-            $pedidoId = $this->pedidoModel->insert($pedidoData, true); // true para retornar ID
+            $pedidoId = $this->pedidoModel->insert($pedidoData, true);
 
             if (!$pedidoId) {
                 throw new DataException('No se pudo crear el registro principal del pedido.');
@@ -104,43 +133,52 @@ class PedidosController extends BaseController
 
                 $detalleData = [
                     'pedido_id' => $pedidoId,
+                    'id_articulo' => !empty($item['id_articulo']) ? $item['id_articulo'] : null, // Añadido
                     'descripcion' => trim($item['descripcion']),
                     'cantidad' => $cantidad,
                     'precio_unitario' => $precioUnitario,
                     'subtotal' => $subtotal,
                 ];
 
-                if (!$this->detallePedidoModel->insert($detalleData)) {
-                     // Si falla un detalle, la transacción hará rollback
-                     throw new DataException('Error al guardar un detalle del pedido.');
+                // Debug: Registrar datos antes de insertar
+                log_message('debug', 'Intentando insertar detalle: '.print_r($detalleData, true));
+
+                $insertResult = $this->detallePedidoModel->insert($detalleData);
+                
+                if (!$insertResult) {
+                    // Obtener errores específicos de la base de datos
+                    $error = $this->db->error();
+                    log_message('error', 'Error DB: '.print_r($error, true));
+                    throw new DataException('Error al guardar detalle: '.$error['message']);
                 }
             }
 
             // 3. Actualizar el Total del Pedido Principal
             $anticipo = (float)($this->request->getPost('anticipo') ?? 0);
-            $this->pedidoModel->update($pedidoId, [
+            $updateData = [
                 'total' => $granTotal,
                 'anticipo' => $anticipo,
                 'saldo' => $granTotal - $anticipo
-            ]);
+            ];
 
-            $this->db->transComplete(); // Finalizar transacción (Commit o Rollback)
-
-            if ($this->db->transStatus() === false) {
-                 // La transacción falló (Rollback automático)
-                 log_message('error', 'Fallo en la transacción al crear pedido.');
-                 return redirect()->back()->withInput()->with('error', 'Ocurrió un error al guardar el pedido. Inténtalo de nuevo.');
+            if (!$this->pedidoModel->update($pedidoId, $updateData)) {
+                throw new DataException('Error al actualizar el total del pedido.');
             }
 
-            // Éxito
-            return redirect()->to('/pedidos/ticket/' . $pedidoId) // Redirige a ver el ticket
+            $this->db->transComplete();
+
+            if ($this->db->transStatus() === false) {
+                log_message('error', 'Fallo en la transacción al crear pedido.');
+                return redirect()->back()->withInput()->with('error', 'Ocurrió un error al guardar el pedido. Inténtalo de nuevo.');
+            }
+
+            return redirect()->to('/pedidos/ticket/' . $pedidoId)
                              ->with('success', 'Pedido creado con éxito.');
 
-
         } catch (\Exception $e) {
-            $this->db->transRollback(); // Asegurar rollback en caso de excepción
+            $this->db->transRollback();
             log_message('error', 'Error al crear pedido: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Ocurrió un error inesperado: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Ocurrió un error: ' . $e->getMessage());
         }
     }
 
@@ -166,6 +204,21 @@ class PedidosController extends BaseController
         return view('Panel/show', $data); // Vista que muestra los detalles (puede ser el ticket)
     }
 
+    public function pagar($id)
+    {
+        $pedido = $this->pedidoModel->find($id);
+        
+        if (!$pedido) {
+            return redirect()->back()->with('error', 'Pedido no encontrado');
+        }
+
+        $this->pedidoModel->update($id, [
+            'anticipo' => $pedido['total'],
+            'estado' => 'pagado'
+        ]);
+
+        return redirect()->back()->with('success', 'Pedido marcado como pagado correctamente');
+    }
      /**
      * Muestra una vista específica para el ticket (puede ser la misma que show o una simplificada)
      * Esta función es llamada después de crear el pedido.
