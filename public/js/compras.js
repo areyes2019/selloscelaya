@@ -144,19 +144,21 @@ const { createApp, ref } = Vue
         }
       },
       agregar_pago(){
-        var me = this;
-        var pedido = this.$refs.pedido.innerHTML;
-        if (window.confirm("¿Quieres marcar como pagado?")){
-          axios.post('/pago_compras',{
-            'id':pedido
-          }).then(function (response){
-            me.mostrar_lineas();
-            me.display();
-          })
+            var pedido = this.$refs.pedido.innerHTML;
+            var monto_total = this.$refs.monto_total.innerHTML; // Asegúrate de tener esta referencia
 
-        }
-
-      },
+            if (window.confirm("¿Realmente quieres marcar este pedido como pagado?")){
+                axios.post('/pago_compras',{
+                    'id': pedido,
+                    'monto_total': monto_total
+                }).then((response)=>{
+                    if (response.data.flag == 1) {
+                        this.mostrar_lineas();
+                        notify('Pagado');
+                    }
+                })
+            }
+        },
       descargar_img(){
         var pedido = this.$refs.pedidos_id.innerHTML;
         html2canvas(document.querySelector("#ticket")).then(canvas => {

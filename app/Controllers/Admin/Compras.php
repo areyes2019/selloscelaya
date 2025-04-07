@@ -6,6 +6,7 @@ use App\Models\PedidosModel;
 use App\Models\ProveedoresModel;
 use App\Models\ArticulosModel;
 use App\Models\DetallePedidosModel;
+use App\Models\GastosModel;
 use App\Models\InventarioModel;
 use Dompdf\Dompdf;
 class Compras extends BaseController
@@ -83,7 +84,8 @@ class Compras extends BaseController
 			'proveedor' => $resultado_proveedor, 
 			'articulos' => $modal,
 			'detalles'  => $detalles,
-			'pedidos_id'=> $resultado[0]['id_pedido']
+			'pedidos_id'=> $resultado[0]['id_pedido'],
+            'suma_total'=> $resultado[0]['total']
 		];
 		return view('Panel/nueva_compra', $data);
 
@@ -367,20 +369,41 @@ class Compras extends BaseController
 		$email->send();
 	}
 	public function pago()
-	{
-		$request = \Config\Services::Request();
-		$pedido = $request->getvar('id');
-		$pago = 1;
-		$query = new PedidosModel();
-		$query->where('pedidos_id',$pedido);
-		$data['pagado'] = $pago;
-		$query->update($pedido,$data);
-		if ($query) {
-			return 1;
-		}else{
-			return 0;
-		}
-	}
+    {
+        $request = \Config\Services::request();
+        $pedido = $request->getVar('id');
+        $monto_total = $request->getVar('monto_total');
+        
+        // Actualizar el estado de pago en la tabla pedidos
+        $pedidosModel = new PedidosModel();
+        $pedidosModel->where('id_pedido', $pedido);
+        $data['pagado'] = 1;
+        $pedidosModel->update($pedido, $data);
+        
+        // Insertar el gasto en la tabla de gastos
+        $gastosModel = new GastosModel();
+        $gastoData = [
+            'descripcion' => 'Compra de suministros',
+            'monto' => $monto_total,
+            'fecha_gasto' => date('Y-m-d') // Fecha actual
+        ];
+        
+        $gastosModel->insert($gastoData);
+        
+        if ($pedidosModel && $gastosModel){
+            return $this->response->setJSON([
+                'status'=>'error',
+                'message'=>'Se hizo la insersion',
+                'flag'=>1
+            ]);
+        }else{
+            return $this->response->setJSON([
+                'status'=>'error',
+                'message'=>'No se hizo la opercion',
+                'flag'=>0
+            ]);
+        }
+    }
 	public function recibida()
 	{
 		$request = \Config\Services::Request();

@@ -14,10 +14,6 @@ class GastosModel extends Model
 
     protected $allowedFields = ['descripcion', 'monto', 'fecha_gasto'];
 
-    protected $useTimestamps = false;
-    protected $createdField  = '';
-    protected $updatedField  = '';
-    protected $deletedField  = '';
 
     protected $validationRules    = [
         'descripcion' => 'required|min_length[3]|max_length[255]',

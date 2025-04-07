@@ -13,6 +13,7 @@ class PedidosModel extends Model
         'caduca',
         'total',
         'entregada',
+        'pagado',
     ];
 
     // Habilitar timestamps
