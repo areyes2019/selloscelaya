@@ -14,4 +14,4 @@ const {createApp, ref} = Vue
 		mounted(){
 
 		}
-	}).mount('#app')
+}).mount('#app')

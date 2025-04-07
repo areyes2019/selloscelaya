@@ -6,7 +6,7 @@
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between rounded-0">
         <h6 class="m-0 font-weight-bold text-primary">Orden de Compra: <span ref="pedido"><?php echo $pedidos_id?></span></h6>
         <div class="dropdown no-arrow">
-            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style="">
@@ -17,6 +17,15 @@
                 <a :class="['dropdown-item']" v-if="display_recibido == 0" href="#" @click.prevent="recibida('<?php echo $pedidos_id ?>')"><span class="bi bi-truck"></span> Marcar Recibido </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="<?php echo base_url('/eliminar_cotizacion/'.$pedidos_id); ?>" onclick="return confirm('¿Estas seguro de querer eliminar esta cotización?');"><span class="bi bi-trash3"></span> Eliminar Cotización</a>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow mb-4 rounded-0" v-if="mostrarConfirmacionInventario">
+    <div class="card-body">
+            <div class="alert alert-warning">
+                <p>¿Deseas agregar los artículos de este pedido al inventario?</p>
+                <button class="btn btn-success btn-sm" @click="confirmarAgregarInventario">Sí, agregar al inventario</button>
+                <button class="btn btn-secondary btn-sm" @click="cancelarAgregarInventario">No, gracias</button>
             </div>
         </div>
     </div>
@@ -35,13 +44,81 @@
 </div>
 <div class="card shadow mb-4 rounded-0">
     <div class="card-body" v-if="display_pagado == 0">
-        <button :class="['btn btn-primary', 'btn-icon-split']" data-bs-toggle="modal" data-bs-target="#agregar_articulo">
+        <!-- <button :class="['btn btn-primary', 'btn-icon-split']" data-bs-toggle="modal" data-bs-target="#agregar_articulo">
             <span class="icon text-white-50">
                 <i class="bi bi-list-check"></i>
             </span>
             <span class="text">Articulo de Lista</span>
-        </button>
-        <!--  Modal agregar articulos -->  
+        </button> -->
+        <div class="row">
+            <div class="col-md-6">      
+                <p class="mb-2">Agregar Artículos</p>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <select id="selectElement" class="form-control" placeholder="Seleccione un articulo" v-model="selectedArticulo">
+                        <option value="" disabled selected>Seleccione un artículo</option>
+                        <?php foreach ($articulos as $articulo): ?>
+                        <option value="<?= $articulo['id_articulo'] ?>">
+                            <?= $articulo['nombre'] ?> - <?= $articulo['modelo'] ?>
+                        </option>
+                        <?php endforeach ?>
+                    </select>
+                    <input type="number" class="form-control w-25" v-model="cantidad" min="1">
+                    <button class="btn btn-primary rounded-0 btn-sm" @click="agregarArticulo">OK</button>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+<div class="card shadow mb-4 rounded-0">
+    <div class="card-body">
+        <table class="table mt-4">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Modelo</th>
+                <th>Cantidad</th>
+                <th>PU</th>
+                <th>Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for = "dato in articulos ">
+                <td>{{dato.nombre}}</td>
+                <td>{{dato.modelo}}</td>
+                <td v-if="display_pagado==0">
+                    <input type="number" min="1" :value="dato.cantidad" style="width:90px" @change="modificar_cantidad(dato.id_detalle_pedido, $event)">
+                </td>
+                <td v-else>
+                    {{dato.cantidad}}
+                </td>
+                <td>${{dato.p_unitario}}</td>
+                <td>${{dato.total}}</td>
+                <td><a v-if="display_pagado==0" href="#" @click.prevent="borrar_linea(dato.id_detalle_pedido)"><span class="bi bi-x-lg"></span></a></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="3"></th>
+                <td><strong>Sub-Total</strong></th>
+                <td>${{sub_total}}</td> 
+                <td></td>
+              </tr>
+              <tr>
+                <th colspan="3"></th>
+                <td><strong>IVA</strong></th>
+                <td>${{iva}}</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th colspan="3"></th>
+                <td><strong>Total</strong></th>
+                <td>${{total}}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+        </table>
+         <!--  Modal agregar articulos -->  
         <div class="modal fade" id="agregar_articulo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content rounded-0">
@@ -85,62 +162,7 @@
         </div>
     </div>
 </div>
-<div class="card shadow mb-4 rounded-0">
-    <div class="card-body">
-        <table class="table mt-4">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Modelo</th>
-                <th>Cantidad</th>
-                <th>PU</th>
-                <th>Total</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for = "dato in articulos ">
-                <td>{{dato.nombre}}</td>
-                <td>{{dato.modelo}}</td>
-                <td v-if="display_pagado==0">
-                    <input type="number" min="1" :value="dato.cantidad" style="width:90px" @change="modificar_cantidad(dato.id_detalle_pedido)" :ref="dato.pedido_detalle_id" :disabled="disabled">
-                </td>
-                <td v-else>
-                    {{dato.cantidad}}
-                </td>
-                <td>${{dato.p_unitario}}</td>
-                <td>${{dato.total}}</td>
-                <td><a v-if="display_pagado==0" href="#" @click.prevent="borrar_linea(dato.pedido_detalle_id)"><span class="bi bi-x-lg"></span></a></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <th colspan="3"></th>
-                <td><strong>Sub-Total</strong></th>
-                <td>${{sub_total}}</td> 
-                <td></td>
-              </tr>
-              <tr>
-                <th colspan="3"></th>
-                <td><strong>IVA</strong></th>
-                <td>${{iva}}</td>
-                <td></td>
-              </tr>
-              <tr>
-                <th colspan="3"></th>
-                <td><strong>Total</strong></th>
-                <td>${{total}}</td>
-                <td></td>
-              </tr>
-            </tfoot>
-        </table>
-    </div>
 </div>
-</div>
-<script>
-    $( document ).ready(function() {
-        new DataTable('#example');
-    });
-</script>
 <script src="<?php echo base_url('public/js/compras.js');?>"></script> 
+<script src="<?php echo base_url('public/js/select.js');?>"></script> 
 <?php echo $this->endSection()?>

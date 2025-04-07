@@ -23,7 +23,7 @@ class Compras extends BaseController
 		$data['proveedor'] = $proveedor->findAll();
 		$data['pedidos'] = $pedidos;
 
-		return view('Panel/pedidos',$data);
+		return view('Panel/compras',$data);
 
 	}
 	
@@ -90,58 +90,73 @@ class Compras extends BaseController
 
 		
 	}
-	public function agregar()
-	{
-		$db = \Config\Database::connect();
-		$query = new ArticulosModel();
-		$model = new DetallePedidosModel();
+	
+    public function agregar()
+    {
+        $db = \Config\Database::connect();
+        $query = new ArticulosModel();
+        $model = new DetallePedidosModel();
 
-		$request = \Config\Services::Request();
-		$articulo = $request->getVar('id_articulo');
-		$cantidad = 1;
-		$pedido = (int)$request->getVar('pedidos_id');
-		//verificamos si el producto ya esta agregado
-		$doble = $db->table('sellopro_detalles_pedido');
-		$doble->where('id_pedido',$pedido);
-		$doble->where('id_articulo',$articulo);
-		$es_duplicado = $doble->countAllResults();
+        $request = \Config\Services::request();
+        
+        // Obtener parámetros con validación básica
+        $articulo = $request->getVar('id_articulo');
+        $pedido = (int)$request->getVar('pedidos_id');
+        $cantidad = (int)$request->getVar('cantidad') ?: 1; // Si no viene cantidad, default 1
+        
+        // Validar cantidad mínima
+        if ($cantidad <= 0) {
+            return "2"; // Podrías usar códigos diferentes para distintos errores
+        }
 
-		//return json_encode($es_duplicado);
-		
-		if ($es_duplicado > 0) {
-			//esta duplicado
-			return "1";
-		}else{
+        // Verificar si el producto ya está agregado
+        $doble = $db->table('sellopro_detalles_pedido');
+        $doble->where('id_pedido', $pedido);
+        $doble->where('id_articulo', $articulo);
+        $es_duplicado = $doble->countAllResults();
+        
+        if ($es_duplicado > 0) {
+            return "1"; // Está duplicado
+        }
 
-			//sacar el precio
-			$query->where('id_articulo',$articulo);
-			$resultado = $query->findAll();
+        // Obtener información del artículo
+        $query->where('id_articulo', $articulo);
+        $resultado = $query->findAll();
 
-			$precio = $resultado[0]['precio_prov'];
-			$total = $precio * $cantidad;
-			
-			$data = [
-			    'id_articulo' => $request->getvar('id_articulo'),
-			    'p_unitario'=>$precio,
-			    'cantidad'=>$cantidad,
-			    'total'=>$total,
-			    'id_pedido'=>$pedido,
-			];
-			$model->insert($data);
+        if (empty($resultado)) {
+            return "3"; // Artículo no encontrado
+        }
 
-			//actualizamos el total
-			$builder = $db->table('sellopro_detalles_pedido');
-			$builder->where('id_pedido',$pedido);
-			$builder->selectSum('total');
-			$sum = $builder->get()->getResultArray();
-			$suma_total = $sum[0]['total'];
-			$total = new PedidosModel();
-			$datos=[
-				'total'=>$suma_total,
-			];
-			$total->update($pedido,$datos);
-		}
-	}
+        $precio = $resultado[0]['precio_prov'];
+        $total = $precio * $cantidad;
+        
+        // Preparar datos para inserción
+        $data = [
+            'id_articulo' => $articulo,
+            'p_unitario'  => $precio,
+            'cantidad'    => $cantidad,
+            'total'       => $total,
+            'id_pedido'   => $pedido,
+        ];
+
+        // Insertar en la base de datos
+        if (!$model->insert($data)) {
+            return "4"; // Error al insertar
+        }
+
+        // Actualizar el total del pedido
+        $builder = $db->table('sellopro_detalles_pedido');
+        $builder->where('id_pedido', $pedido);
+        $builder->selectSum('total');
+        $sum = $builder->get()->getResultArray();
+        $suma_total = $sum[0]['total'];
+
+        $totalModel = new PedidosModel();
+        $datos = ['total' => $suma_total];
+        $totalModel->update($pedido, $datos);
+
+        return "0"; // Éxito
+    }
 	public function mostrar_detalles($id)
 	{
 		//encontrar el articulo completo
@@ -164,7 +179,7 @@ class Compras extends BaseController
 		$data=[
 			'articulo'=>$resultado,
 			'sub_total'=> number_format($monto,2),
-			'iva'=> $iva,
+			'iva'=> number_format($iva,2),
 			'total'=>number_format($pago_total,2),
 		];
 
@@ -176,9 +191,9 @@ class Compras extends BaseController
 		
 		$modelo = new DetallePedidosModel();
 		//sacamos el numero de cotizacion
-		$modelo->where('pedido_detalle_id',$id);
+		$modelo->where('id_detalle_pedido',$id);
 		$ver_modelo = $modelo->findAll();
-		$numero = $ver_modelo[0]['pedido_id'];
+		$numero = $ver_modelo[0]['id_pedido'];
 		$modelo->delete($id);
 
 		$fun = $this->totales($numero);
@@ -189,7 +204,7 @@ class Compras extends BaseController
 	{
 		$db = \Config\Database::connect();
 		$builder = $db->table('sellopro_detalles_pedido');
-		$builder->where('pedido_id',$numero);
+		$builder->where('id_pedido',$numero);
 		$builder->selectSum('total');
 		$sum = $builder->get()->getResultArray();
 
@@ -201,27 +216,36 @@ class Compras extends BaseController
 		$total->update($numero,$datos);
 	}
 	public function modificar_cantidad()
-	{
-		$db = \Config\Database::connect();
-		$request = \Config\Services::Request();
-		$id = $request->getvar('id');
-		$cant = $request->getvar('cantidad');
-		
-		//sacamos el precio del articulo
-		$linea = new DetallePedidosModel();
-		$linea->where('pedido_detalle_id',$request->getvar('id'));
-		$resultado = $linea->findAll();
-		$numero = $resultado[0]['pedido_id'];
-		$precio = $resultado[0]['p_unitario'];
+    {
+      $request = \Config\Services::request();
+      $id = $request->getVar('id'); // Mejor usar getPost para datos POST
+      $cantidad = $request->getVar('cantidad');
+      
+      if (!$id || !$cantidad) {
+        return $this->response->setJSON(['error' => 'Datos incompletos']);
+      }
 
-		$datos['cantidad'] = $cant;
-		$datos['total'] = $precio * $cant;
-		$linea->update($id,$datos);
+      $lineaModel = new DetallePedidosModel();
+      
+      // Obtener la línea actual
+      $linea = $lineaModel->find($id);
+      if (!$linea) {
+        return $this->response->setJSON(['error' => 'Línea no encontrada']);
+      }
 
-		$fun = $this->totales($numero);
-		return $fun;
+      // Actualizar datos
+      $datos = [
+        'cantidad' => $cantidad,
+        'total' => $linea['p_unitario'] * $cantidad
+      ];
 
-	}
+      if (!$lineaModel->update($id, $datos)) {
+        return $this->response->setJSON(['error' => 'Error al actualizar']);
+      }
+
+      // Recalcular totales
+      return $this->totales($linea['id_pedido']);
+    }
 	public function eliminar($id)
 	{
 		$db = \Config\Database::connect();

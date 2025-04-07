@@ -116,7 +116,6 @@ $routes->group('',static function($routes){
 	$routes->post('pago_pedido', 'admin\Pedidos::pago');
 
 	/*Existencias*/
-	$routes->get('existencias', 'admin\Existencias::index');
 	$routes->get('nueva_existencia/(:num)', 'admin\Existencias::nuevo/$1');
 	$routes->get('editar_existencia/(:num)', 'admin\Existencias::editar/$1');
 	$routes->post('actualizar_existencia', 'admin\Existencias::actualizar');
@@ -168,6 +167,19 @@ $routes->group('',static function($routes){
 	    $routes->post('actualizar/(:num)', 'Admin\GastosController::actualizar/$1');
 	    $routes->post('eliminar/(:num)', 'Admin\GastosController::eliminar/$1');
 	});
+
+	//existenias
+	$routes->group('existencias',static function($routes) {
+		$routes->get('existencias_admin', 'admin\Existencias::index');
+	    // Rutas para el CRUD de Existencias/Inventario
+	    $routes->get('existencias', 'Admin\Existencias::index');
+	    $routes->get('nuevo', 'Admin\Existencias::nuevo');         // Muestra form para crear
+	    $routes->post('crear', 'Admin\Existencias::crear');        // Procesa creación (POST)
+	    $routes->get('editar/(:num)', 'Admin\Existencias::editar/$1'); // Muestra form para editar
+	    $routes->post('actualizar/(:num)', 'Admin\Existencias::actualizar/$1'); // Procesa actualización (POST)
+	    $routes->post('eliminar/(:num)', 'Admin\Existencias::eliminar/$1');  // Procesa eliminación (POST)
+	});
+	
 
 
 

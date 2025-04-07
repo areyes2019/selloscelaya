@@ -3,6 +3,8 @@ const { createApp, ref } = Vue
   createApp({
     data() {
       return {
+        selectedArticulo: null,
+        cantidadArticulo: 1,
         articulos:[],
         compras:[],
         lista:[],
@@ -28,21 +30,51 @@ const { createApp, ref } = Vue
       }
     },
     methods:{
-      mostrar_articulos(){
-        var me = this;
-        var id = this.$refs.proveedor.innerHTML;
-        var url = '/mostrar_articulos_compras/'+id;
-        //console.log(pedido);
-        axios.get(url)
-          .then(response => {
-            me.lista = response.data;
-            me.tabla();
-        })
+        mostrar_articulos(){
+            var id = this.$refs.proveedor.innerHTML;
+            var url = '/mostrar_articulos_compras/'+id;
+            //console.log(pedido);
+            axios.get(url)
+              .then(response => {
+                this.lista = response.data;
+                this.tabla();
+            })
           .catch(error => {
           console.error(error);
         });
       },
-      add_articulo(data){
+      agregarArticulo() {
+            if (!this.selectedArticulo) {
+                alert('Por favor seleccione un artículo');
+                return;
+            }
+            
+            if (!this.cantidad || this.cantidad <= 0) {
+                alert('Por favor ingrese una cantidad válida');
+                return;
+            }
+            
+            var pedido = this.$refs.pedido.innerHTML;
+            
+            axios.post('/agregar_articulo_compras', {
+                'id_articulo': this.selectedArticulo,
+                'pedidos_id': pedido,
+                'cantidad': this.cantidad // Agregamos la cantidad al request
+            }).then((response) => {
+                if (response.data == 1) {
+                    alert('Este producto ya fue agregado');
+                } else {
+                    this.mostrar_lineas();
+                    // Opcional: resetear los campos después de agregar
+                    this.selectedArticulo = '';
+                    this.cantidad = 1;
+                }
+            }).catch(error => {
+                console.error('Error al agregar artículo:', error);
+                alert('Ocurrió un error al agregar el artículo');
+            });
+        },
+        add_articulo(data){
         var pedido = this.$refs.pedido.innerHTML;
         //var descuento = this.$refs.descuento.innerHTML;
         axios.post('/agregar_articulo_compras',{
@@ -56,17 +88,22 @@ const { createApp, ref } = Vue
             }
         })
       },
-      modificar_cantidad(data){
-        var me = this;
-        var url = "/modificar_cantidad_compras";
-        var cantidad = this.$refs[data][0].value;
-        axios.post(url,{
-          'id':data,
-          'cantidad':cantidad,
-        }).then(function (response){
-          me.mostrar_lineas();
-        })
-      },
+      modificar_cantidad(data) {
+          const url = "/modificar_cantidad_compras";
+          const cantidad = event.target.value;
+          console.log(data);
+          axios.post(url, {
+            id: data,
+            cantidad: cantidad,
+          })
+          .then(response => {
+            this.mostrar_lineas(); // Usamos arrow function para mantener el contexto de 'this'
+          })
+          .catch(error => {
+            console.error("Error al modificar cantidad:", error);
+            // Podrías añadir aquí un mensaje de error al usuario
+          });
+        },
       mostrar_lineas(){
         var pedido = this.$refs.pedido.innerHTML;
         axios.get('/mostrar_detalles_compras/'+pedido).then((response)=>{
@@ -97,20 +134,19 @@ const { createApp, ref } = Vue
 
       },
       borrar_linea(data){
-        
+        console.log(data);
         //console.log(data);
 
-        var me = this;
         if (window.confirm("¿Realmente quieres borrar esta linea?")) {
-            axios.get('/borrar_linea_compras/'+data).then(function (response) {
-                me.mostrar_lineas();
+            axios.get('/borrar_linea_compras/'+data).then((response)=>{
+                this.mostrar_lineas();
             })
         }
       },
       agregar_pago(){
         var me = this;
         var pedido = this.$refs.pedido.innerHTML;
-        if (window.confirm("¿Realmente quieres borrar esta linea?")){
+        if (window.confirm("¿Quieres marcar como pagado?")){
           axios.post('/pago_compras',{
             'id':pedido
           }).then(function (response){
