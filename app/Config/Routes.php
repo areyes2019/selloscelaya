@@ -89,7 +89,7 @@ $routes->group('',static function($routes){
 	$routes->get('enviar_orden', 'admin\Compras::enviar');
 	$routes->get('enviar_pdf_orden/(:num)', 'admin\Compras::enviar_pdf/$1');
 	$routes->post('pago_compras', 'admin\Compras::pago');
-	$routes->post('compra_recibida', 'admin\Compras::recibida');
+	$routes->post('recibido_compras', 'Admin\Compras::recibida');
 	$routes->post('modificar_cantidad_compras', 'admin\Compras::modificar_cantidad');
 
 	/*Cuentas*/

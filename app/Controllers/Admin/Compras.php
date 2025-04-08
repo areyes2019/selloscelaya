@@ -9,9 +9,11 @@ use App\Models\DetallePedidosModel;
 use App\Models\GastosModel;
 use App\Models\InventarioModel;
 use Dompdf\Dompdf;
+use CodeIgniter\API\ResponseTrait;
 class Compras extends BaseController
 {
-	public function index()
+	use ResponseTrait;
+    public function index()
 	{
 		$db= \Config\Database::connect();
 		$proveedor = new ProveedoresModel();
@@ -393,7 +395,7 @@ class Compras extends BaseController
         if ($pedidosModel && $gastosModel){
             return $this->response->setJSON([
                 'status'=>'error',
-                'message'=>'Se hizo la insersion',
+                'message'=>'Sa marco esta Orden de Compra como pagada',
                 'flag'=>1
             ]);
         }else{
@@ -404,46 +406,86 @@ class Compras extends BaseController
             ]);
         }
     }
+    
 	public function recibida()
-	{
-		$request = \Config\Services::Request();
-		/*$detalles = new DetallePedidosModel();
-		$resultado = $detalles->select(['id_articulo','cantidad'])
-		->where('pedido_id',$request->getvar('pedido'))
-		->findAll();*/
+    {
+        $request = \Config\Services::request();
+        
+        // Validación del ID de pedido
+        $pedidoId = $request->getVar('pedido');
+        if(!$pedidoId) {
+            return $this->response->setJSON(['error' => 'ID de pedido no proporcionado'])->setStatusCode(400);
+        }
 
-		$db = \Config\Database::connect();
-		$builder = $db->table('sellopro_detalles_pedido');
-		$builder->where('pedido_id',$request->getvar('pedido'));
-		$builder->join('sellopro_articulos','sellopro_articulos.idArticulo = sellopro_detalles_pedido.id_articulo');
-		$resultado = $builder->get()->getResultArray();
+        // Inicialización de modelos
+        $db = \Config\Database::connect();
+        $pedidosModel = new PedidosModel();
+        $inventarioModel = new InventarioModel();
+        $detallesPedidoModel = new DetallePedidosModel();
 
-		$modelo = new InventarioModel();
+        // 1. Verificar que el pedido existe
+        $pedido = $pedidosModel->find($pedidoId);
+        if(!$pedido) {
+            return $this->response->setJSON(['error' => 'Pedido no encontrado'])->setStatusCode(404);
+        }
+        
+        // Verificar si ya está recibido
+        if($pedido['entregada'] == 1) {
+            return $this->response->setJSON(['error' => 'El pedido ya fue marcado como recibido'])->setStatusCode(400);
+        }
 
-		foreach ($resultado as $articulo) {
-			$existencia = $modelo->obtenerProducto($articulo['id_articulo']);
-			if ($existencia) {
-				//si el producto ya existe solo incrementa la cantidad
-				$modelo->incrementarCantidad($existencia['id_entrada'],$articulo['cantidad'],$articulo['precio_prov']);
-			}else{
-				
-				//si el producto no existe, crea uno nuevo
-				//$modelo->save($articulo);
+        // 2. Obtener artículos del pedido
+        $articulosPedido = $detallesPedidoModel
+            ->select('sellopro_detalles_pedido.id_articulo, sellopro_detalles_pedido.cantidad, sellopro_articulos.precio_prov')
+            ->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo')
+            ->where('id_pedido', $pedidoId)
+            ->findAll();
 
-				// Si el producto no existe, crea uno nuevo y calcula el precio total
-                $producto['id_articulo'] = $articulo['id_articulo'];
-                $producto['cantidad'] = $articulo['cantidad'];
-                $producto['total'] = $articulo['precio_prov'] * $articulo['cantidad'];
-                unset($articulo['precio_prov']);
-                $modelo->save($producto);
-			}
-		}
+        if(empty($articulosPedido)) {
+            return $this->response->setJSON(['error' => 'No se encontraron artículos para este pedido'])->setStatusCode(404);
+        }
 
-		$actualizar_pedido = new PedidosModel();
-		$actualizar_pedido->where('pedidos_id',$request->getvar('pedido'))->findAll();
-		$recibido['recibido'] = 1;
-		$actualizar_pedido->update($request->getvar('pedido'),$recibido);
-
-
-	}
+        // 3. Procesar en transacción
+        $db->transStart();
+        
+        try {
+            // Actualizar estado del pedido
+            $pedidosModel->update($pedidoId, ['entregada' => 1]);
+            
+           foreach ($articulosPedido as $articulo) {
+                $idArticulo = $articulo['id_articulo'];
+                $cantidad = $articulo['cantidad'];
+                
+                // Buscar si ya existe el artículo en inventario
+                $existencia = $inventarioModel->where('id_articulo', $idArticulo)->first();
+                
+                if($existencia) {
+                    // Si existe, actualizamos la cantidad sumando la nueva
+                    $nuevaCantidad = $existencia['cantidad'] + $cantidad;
+                    $inventarioModel->update($existencia['id_entrada'], [
+                        'cantidad' => $nuevaCantidad
+                    ]);
+                } else {
+                    // Si no existe, creamos un nuevo registro
+                    $inventarioModel->insert([
+                        'id_articulo' => $idArticulo,
+                        'cantidad' => $cantidad,
+                    ]);
+                }
+            }
+            
+            $db->transComplete();
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Pedido marcado como recibido e inventario actualizado',
+                'flag' => 1
+            ]);
+            
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Error al procesar pedido: '.$e->getMessage());
+            return $this->response->setJSON(['error' => 'Error al procesar el pedido'])->setStatusCode(500);
+        }
+    }
 }
