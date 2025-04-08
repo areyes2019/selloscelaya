@@ -25,8 +25,8 @@ const { createApp, ref } = Vue
         precio_ind:"",
         descuento:"",
         //ocultar diferentes botones
-        display_pagado: 0,
-        display_recibido: 0,
+        display_pagado:"",
+        display_recibido:"",
       }
     },
     methods:{
@@ -118,20 +118,25 @@ const { createApp, ref } = Vue
                 
             })
         },
-        display(){
-            var me = this;
-            var pedido = this.$refs.pedido.innerHTML;
-            var url = "/pedido/"+ pedido;
-            axios.get(url).then(function (response){
-              if (response.data[0]['pagado']==1) {
-                me.display_pagado = 1;
-              }
-              if (response.data[0]['recibido']==1) {
-                me.display_recibido = 1;
-              }
-
-            })
-
+        display() {
+            const pedidoId = this.$refs.pedido.textContent.trim();
+            const url = `/pedido/${pedidoId}`;
+            
+            axios.get(url)
+                .then(response => {
+                    // Verifica que exista data y tenga la estructura esperada
+                    const pedidoData = response.data || {};
+                    
+                    // Usa valores booleanos directamente
+                    this.display_pagado = pedidoData.pagado; // Cambiado a "pagada" para coincidir con backend
+                    this.display_recibido = pedidoData.entregada; // Cambiado a "entregada"
+                })
+                .catch(error => {
+                    console.error('Error al obtener datos del pedido:', error);
+                    // Opcional: establecer valores por defecto en caso de error
+                    this.display_pagado = false;
+                    this.display_recibido = false;
+                });
         },
         borrar_linea(data){
             console.log(data);
@@ -154,6 +159,7 @@ const { createApp, ref } = Vue
                 }).then((response)=>{
                     if (response.data.flag == 1) {
                         this.mostrar_lineas();
+                        this.display();
                         notify('Pagado');
                     }else{
                         alert(response.data.error);
@@ -181,12 +187,12 @@ const { createApp, ref } = Vue
             axios.post(url,{
               'pedido':pedido
             }).then((response)=>{
-              
-              if (response.data.success) {
-                notify('Datos actualizado');
-              }else{
-                alert(response.data.error);
-              }
+                if (response.data.flag == 1) {
+                    notify('Se ajusto el inventario y se marco como entregada la orden');
+                    this.mostrar_lineas();
+                    this.display();
+                }
+                notify(response.data.message);
             })
         }
       }

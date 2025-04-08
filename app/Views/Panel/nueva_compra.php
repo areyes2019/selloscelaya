@@ -13,8 +13,23 @@
                 <div class="dropdown-header"></div>
                 <a class="dropdown-item" href="<?php echo base_url('/descargar_orden/'.$pedidos_id); ?>"><span class="bi bi-download"></span> Descargar</a>
                 <a class="dropdown-item" href="<?php echo base_url('/enviar_pdf/'.$pedidos_id); ?>"><span class="bi bi-send"></span> Enviar</a>
-                <a :class="['dropdown-item']" v-if="display_pagado == 0" href="#" @click.prevent="agregar_pago"><span class="bi bi-credit-card"></span> Marcar pagado </a>
-                <a :class="['dropdown-item']" v-if="display_recibido == 0" href="#" @click.prevent="recibida"><span class="bi bi-truck"></span> Marcar Recibido </a>
+                <a 
+                  :class="['dropdown-item']" 
+                  v-if="display_pagado == 0" 
+                  href="#" 
+                  @click.prevent="agregar_pago"
+                >
+                  <span class="bi bi-credit-card"></span> Marcar como pagado
+                </a>
+
+                <a 
+                  :class="['dropdown-item']" 
+                  v-if="display_recibido==0" 
+                  href="#" 
+                  @click.prevent="recibida"
+                >
+                  <span class="bi bi-truck"></span> Marcar como recibido
+                </a>
                 <span class="d-none" ref="monto_total"><?= $suma_total?></span>
                 <span class="d-none" ref="pedido" ><?= $pedidos_id ?></span>
                 <div class="dropdown-divider"></div>

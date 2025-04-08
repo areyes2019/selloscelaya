@@ -101,25 +101,19 @@ $routes->group('',static function($routes){
 
 	
 	/*Pedidos*/
-	$routes->get('pedidos', 'admin\Pedidos::index');
-	$routes->get('nuevo_pedido/(:num)', 'admin\Pedidos::nueva/$1');
-	$routes->get('pagina_pedido/(:any)', 'admin\Pedidos::pagina/$1');
-	$routes->get('editar_pedido/(:num)', 'admin\Pedidos::editar/$1');
-	$routes->get('actualizar_pedido/(:num)', 'admin\Pedidos::actualizar/$1');
-	$routes->get('eliminar_pedido/(:num)', 'admin\Pedidos::eliminar/$1');
-	$routes->post('agregar_articulo_pedido', 'admin\Pedidos::agregar');
-	$routes->get('mostrar_detalles_pedido/(:num)', 'admin\Pedidos::mostrar_detalles/$1');
-	$routes->get('borrar_linea_pedido/(:num)', 'admin\Pedidos::borrar_linea/$1');
-	$routes->get('descargar_pedido/(:num)', 'admin\Pedidos::cotizacion_pdf/$1');
-	$routes->get('enviar_pedido', 'admin\Pedidos::enviar');
-	$routes->get('enviar_pdf_pedido/(:num)', 'admin\Pedidos::enviar_pdf/$1');
-	$routes->post('pago_pedido', 'admin\Pedidos::pago');
-
-	/*Existencias*/
-	$routes->get('nueva_existencia/(:num)', 'admin\Existencias::nuevo/$1');
-	$routes->get('editar_existencia/(:num)', 'admin\Existencias::editar/$1');
-	$routes->post('actualizar_existencia', 'admin\Existencias::actualizar');
-	$routes->get('eliminar_existencia/(:num)', 'admin\Existencias::eliminar/$1');
+	$routes->get('pedidos', 'Admin\Pedidos::index');
+	$routes->get('nuevo_pedido/(:num)', 'Admin\Pedidos::nueva/$1');
+	$routes->get('pagina_pedido/(:any)', 'Admin\Pedidos::pagina/$1');
+	$routes->get('editar_pedido/(:num)', 'Admin\Pedidos::editar/$1');
+	$routes->get('actualizar_pedido/(:num)', 'Admin\Pedidos::actualizar/$1');
+	$routes->get('eliminar_pedido/(:num)', 'Admin\Pedidos::eliminar/$1');
+	$routes->post('agregar_articulo_pedido', 'Admin\Pedidos::agregar');
+	$routes->get('mostrar_detalles_pedido/(:num)', 'Admin\Pedidos::mostrar_detalles/$1');
+	$routes->get('borrar_linea_pedido/(:num)', 'Admin\Pedidos::borrar_linea/$1');
+	$routes->get('descargar_pedido/(:num)', 'Admin\Pedidos::cotizacion_pdf/$1');
+	$routes->get('enviar_pedido', 'Admin\Pedidos::enviar');
+	$routes->get('enviar_pdf_pedido/(:num)', 'Admin\Pedidos::enviar_pdf/$1');
+	$routes->post('pago_pedido', 'Admin\Pedidos::pago');
 
 	$routes->get('nueva_venta', 'admin\Ventas::nueva');
 	$routes->get('cotizaciones', 'admin\Cotizaciones::index');
@@ -170,7 +164,7 @@ $routes->group('',static function($routes){
 
 	//existenias
 	$routes->group('existencias',static function($routes) {
-		$routes->get('existencias_admin', 'admin\Existencias::index');
+		$routes->get('existencias_admin', 'Admin\Existencias::index');
 	    // Rutas para el CRUD de Existencias/Inventario
 	    $routes->get('existencias', 'Admin\Existencias::index');
 	    $routes->get('nuevo', 'Admin\Existencias::nuevo');         // Muestra form para crear

@@ -33,8 +33,11 @@ class Compras extends BaseController
 	public function pedido($id)
 	{
 		$query = new PedidosModel();
-		$resultado = $query->where('id_pedido',$id)->findAll();
-		return json_encode($resultado);
+        $resultado = $query->select('pagado, entregada')
+                       ->where('id_pedido', $id)
+                       ->first();
+    
+        return json_encode($resultado ?: ['pagada' => null, 'entregada' => null]);
 	}
 	public function nueva($id)
 	{
@@ -90,8 +93,6 @@ class Compras extends BaseController
             'suma_total'=> $resultado[0]['total']
 		];
 		return view('Panel/nueva_compra', $data);
-
-
 		
 	}
 	
@@ -425,13 +426,21 @@ class Compras extends BaseController
 
         // 1. Verificar que el pedido existe
         $pedido = $pedidosModel->find($pedidoId);
-        if(!$pedido) {
-            return $this->response->setJSON(['error' => 'Pedido no encontrado'])->setStatusCode(404);
+        if (!$pedido){
+            return $this->response->setJSON([
+                'status'=>'error',
+                'message'=>'Pedido no encontrado',
+                'flag' => 0
+            ]);
         }
         
         // Verificar si ya está recibido
         if($pedido['entregada'] == 1) {
-            return $this->response->setJSON(['error' => 'El pedido ya fue marcado como recibido'])->setStatusCode(400);
+            return $this->response->setJSON([
+                'status'=>'error',
+                'message'=>'El pedido ya fue marcado como recibido',
+                'flag' => 0
+            ]);
         }
 
         // 2. Obtener artículos del pedido
@@ -442,7 +451,7 @@ class Compras extends BaseController
             ->findAll();
 
         if(empty($articulosPedido)) {
-            return $this->response->setJSON(['error' => 'No se encontraron artículos para este pedido'])->setStatusCode(404);
+            return $this->response->setJSON(['error' => 'No se encontraron artículos para este pedido']);
         }
 
         // 3. Procesar en transacción

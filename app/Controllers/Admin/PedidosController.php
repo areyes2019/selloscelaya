@@ -5,6 +5,7 @@ use App\Controllers\BaseController;
 use App\Models\PedidoModel;
 use App\Models\DetallePedidoModel;
 use App\Models\ArticulosModel;
+use App\Models\InventarioModel;
 use CodeIgniter\API\ResponseTrait; // Para respuestas JSON si usas AJAX
 use CodeIgniter\Database\Exceptions\DataException;
 
@@ -15,11 +16,13 @@ class PedidosController extends BaseController
     protected $pedidoModel;
     protected $detallePedidoModel;
     protected $db;
+    protected $inventario;
 
     public function __construct()
     {
         $this->pedidoModel = new PedidoModel();
         $this->detallePedidoModel = new DetallePedidoModel();
+        $this->inventario = new DetallePedidoModel();
         $this->db = \Config\Database::connect(); // Para transacciones
         helper(['form', 'url', 'number']); // Carga helpers útiles
     }
@@ -71,10 +74,15 @@ class PedidosController extends BaseController
      */
     public function new()
     {
-        $articuloModel = new ArticulosModel(); // Asegúrate de tener este modelo
-        $data['articulos'] = $articuloModel->select('id_articulo, modelo, precio_pub')->findAll();
+        $inventarioModel = new InventarioModel();
+        
+        $data['articulos'] = $inventarioModel->select('sa.id_articulo, sa.modelo, sa.precio_pub, si.cantidad')
+                                            ->from('sellopro_inventario si')
+                                            ->join('sellopro_articulos sa', 'si.id_articulo = sa.id_articulo')
+                                            ->where('si.cantidad >', 0)
+                                            ->findAll();
+        
         $data['title'] = 'Nuevo Pedido POS';
-        // Puedes pasar datos iniciales si es necesario, ej: lista de productos
         return view('Panel/new', $data);
     }
 
