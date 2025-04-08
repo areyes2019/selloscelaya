@@ -75,29 +75,29 @@ $routes->group('',static function($routes){
 
 	/*Compras*/
 	$routes->get('compras', 'admin\Compras::index');
-	$routes->get('mostrar_compras', 'admin\Compras::mostrar');
-	$routes->get('pedido/(:num)', 'admin\Compras::pedido/$1');
-	$routes->get('nueva_compra/(:num)', 'admin\Compras::nueva/$1');
-	$routes->get('pagina_orden/(:any)', 'admin\Compras::pagina/$1');
-	$routes->get('editar_compra/(:num)', 'admin\Compras::editar/$1');
-	$routes->get('actualizar_compra/(:num)', 'admin\Compras::actualizar/$1');
-	$routes->get('eliminar_compra/(:num)', 'admin\Compras::eliminar/$1');
-	$routes->post('agregar_articulo_compras', 'admin\Compras::agregar');
-	$routes->get('mostrar_detalles_compras/(:num)', 'admin\Compras::mostrar_detalles/$1');
-	$routes->get('borrar_linea_compras/(:num)', 'admin\Compras::borrar_linea/$1');
-	$routes->get('descargar_orden/(:num)', 'admin\Compras::cotizacion_pdf/$1');
-	$routes->get('enviar_orden', 'admin\Compras::enviar');
-	$routes->get('enviar_pdf_orden/(:num)', 'admin\Compras::enviar_pdf/$1');
-	$routes->post('pago_compras', 'admin\Compras::pago');
+	$routes->get('mostrar_compras', 'Admin\Compras::mostrar');
+	$routes->get('pedido/(:num)', 'Admin\Compras::pedido/$1');
+	$routes->get('nueva_compra/(:num)', 'Admin\Compras::nueva/$1');
+	$routes->get('pagina_orden/(:any)', 'Admin\Compras::pagina/$1');
+	$routes->get('editar_compra/(:num)', 'Admin\Compras::editar/$1');
+	$routes->get('actualizar_compra/(:num)', 'Admin\Compras::actualizar/$1');
+	$routes->get('eliminar_compra/(:num)', 'Admin\Compras::eliminar/$1');
+	$routes->post('agregar_articulo_compras', 'Admin\Compras::agregar');
+	$routes->get('mostrar_detalles_compras/(:num)', 'Admin\Compras::mostrar_detalles/$1');
+	$routes->get('borrar_linea_compras/(:num)', 'Admin\Compras::borrar_linea/$1');
+	$routes->get('descargar_orden/(:num)', 'Admin\Compras::cotizacion_pdf/$1');
+	$routes->get('enviar_orden', 'Admin\Compras::enviar');
+	$routes->get('enviar_pdf_orden/(:num)', 'Admin\Compras::enviar_pdf/$1');
+	$routes->post('pago_compras', 'Admin\Compras::pago');
 	$routes->post('recibido_compras', 'Admin\Compras::recibida');
-	$routes->post('modificar_cantidad_compras', 'admin\Compras::modificar_cantidad');
+	$routes->post('modificar_cantidad_compras', 'Admin\Compras::modificar_cantidad');
 
 	/*Cuentas*/
-	$routes->get('contabilidad', 'admin\Contabiidad::index');
-	$routes->get('nueva_cuenta/(:num)', 'admin\Contabiidad::nuevo/$1');
-	$routes->get('editar_cuenta/(:num)', 'admin\Contabiidad::editar/$1');
-	$routes->post('actualizar_cuenta', 'admin\Contabiidad::actualizar');
-	$routes->get('eliminar_cuenta/(:num)', 'admin\Contabiidad::eliminar/$1');
+	$routes->get('contabilidad', 'Admin\Contabiidad::index');
+	$routes->get('nueva_cuenta/(:num)', 'Admin\Contabiidad::nuevo/$1');
+	$routes->get('editar_cuenta/(:num)', 'Admin\Contabiidad::editar/$1');
+	$routes->post('actualizar_cuenta', 'Admin\Contabiidad::actualizar');
+	$routes->get('eliminar_cuenta/(:num)', 'Admin\Contabiidad::eliminar/$1');
 
 	
 	/*Pedidos*/
