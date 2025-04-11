@@ -203,5 +203,6 @@
     });
 </script>
 <script type="" src="<?php echo base_url('public/js/ticket.js'); ?>"></script>
+<script type="" src="<?php echo base_url('public/js/select.js'); ?>"></script>
 
 <?= $this->endSection() ?>

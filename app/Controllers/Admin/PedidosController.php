@@ -74,14 +74,8 @@ class PedidosController extends BaseController
      */
     public function new()
     {
-        $inventarioModel = new InventarioModel();
-        
-        $data['articulos'] = $inventarioModel->select('sa.id_articulo, sa.modelo, sa.precio_pub, si.cantidad')
-                                            ->from('sellopro_inventario si')
-                                            ->join('sellopro_articulos sa', 'si.id_articulo = sa.id_articulo')
-                                            ->where('si.cantidad >', 0)
-                                            ->findAll();
-        
+        $articulos = new ArticulosModel();
+        $data['articulos'] = $articulos->where('stock',1)->findAll();
         $data['title'] = 'Nuevo Pedido POS';
         return view('Panel/new', $data);
     }

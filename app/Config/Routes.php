@@ -127,6 +127,7 @@ $routes->group('',static function($routes){
 	    $routes->get('pos', 'Admin\PedidosController::index');          // Listar pedidos (historial)
 	    $routes->get('new', 'Admin\PedidosController::new');         // Mostrar formulario POS
 	    $routes->post('create', 'Admin\PedidosController::create');    // Procesar nuevo pedido
+	    $routes->get('mostrar_articulos', 'Admin\PedidosController::mostrar_articulos');    // Procesar nuevo pedido
 	    $routes->get('show/(:num)', 'Admin\PedidosController::show/$1'); // Ver detalle pedido
 	    $routes->get('ticket/(:num)', 'Admin\PedidosController::ticket/$1'); // Ver vista de ticket post-creación
 	    $routes->get('download/(:num)', 'Admin\PedidosController::downloadTicket/$1'); // Descargar ticket

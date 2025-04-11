@@ -23,24 +23,8 @@
                 <div class="white_shd full margin_bottom_30">
                     <div class="full graph_head">
                         <div class="heading1 margin_0">
-                            <a class="btn btn-danger rounded-0" href="<?php echo base_url('nuevo_art_vista'); ?>">Agregar Articulo</a>
+                            <a class="btn btn-danger rounded-0 mb-5" href="<?php echo base_url('nuevo_art_vista'); ?>">Agregar Articulo</a>
                         </div>
-                        <h4 class="mt-3">Importacion maisva</h4>
-                        <form action="<?= base_url('import_masivo') ?>" method="post" enctype="multipart/form-data">
-                            <div class="drop-zone mb-3" id="dropZone">
-                                <p id="dropZoneText">Arrastra y suelta tu archivo aquí o haz clic para seleccionarlo</p>
-                                <input type="file" name="archivo_excel" class="d-none" id="fileInput" accept=".xlsx,.xls" required>
-                            </div>
-
-                            <div id="filePreview" class="text-success fw-bold"></div>
-
-                            <small class="form-text text-muted d-block mb-3">
-                                Debe contener exactamente 8 columnas en este orden:<br>
-                                Nombre, Modelo, Precio Proveedor, Mínimo, Stock, Clave, Nombre Imagen, Disponible
-                            </small>
-
-                            <button type="submit" class="btn btn-primary mt-3">Importar</button>
-                        </form>
                     </div>
                     <div class="table_section padding_infor_info">
                         <div class="table-responsive-sm">
@@ -214,9 +198,9 @@ $(document).ready(function() {
             alertDiv.remove();
         }, 5000);
     }
+
 });
 </script>
-
 <!-- Script para el drag and drop -->
 <script type="text/javascript" src="<?php echo base_url('public/js/drag.js'); ?>"></script>
 

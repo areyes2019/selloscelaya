@@ -3,7 +3,8 @@ const {createApp, ref} = Vue
 	createApp({
 		data(){
 			return{
-				existencias:[],
+				pedido:[],
+				articulos:[],
 			}
 		},
 		methods:{
