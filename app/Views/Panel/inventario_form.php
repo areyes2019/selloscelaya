@@ -43,7 +43,7 @@
                             <?php if (!empty($articulos)): ?>
                                 <?php foreach ($articulos as $articulo): ?>
                                     <option value="<?= esc($articulo['id_articulo']) ?>" <?= set_select('id_articulo', $articulo['id_articulo']) ?>>
-                                        <?= esc($articulo['nombre']) ?> (ID: <?= esc($articulo['id_articulo']) ?>)
+                                        <?= esc($articulo['nombre']) ?> (MOD: <?= esc($articulo['modelo']) ?>)
                                     </option>
                                 <?php endforeach; ?>
                              <?php else: ?>
