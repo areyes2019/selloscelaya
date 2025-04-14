@@ -100,6 +100,7 @@
                             <th>ID Inv.</th>
                             <th>ID Art.</th>
                             <th>Artículo</th>
+                            <th>Modelo</th>
                             <th>Cantidad</th>
                             <th>Precio Púb.</th>
                             <th>Precio Prov.</th>
@@ -113,6 +114,7 @@
                             <td><?= esc($item['id_entrada']) ?></td>
                             <td><?= esc($item['id_articulo']) ?></td>
                             <td><?= esc($item['nombre'] ?? 'N/A') ?></td>
+                            <td><?= esc($item['modelo'] ?? 'N/A') ?></td>
                             <td class="text-center"><?= esc($item['cantidad']) ?></td>
                             <td class="text-right"><?= number_to_currency($item['precio_pub'] ?? 0, 'MXN', 'es_MX', 2) ?></td>
                             <td class="text-right"><?= number_to_currency($item['precio_prov'] ?? 0, 'MNX', 'es_MX', 2) ?></td>

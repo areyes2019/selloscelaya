@@ -35,14 +35,16 @@ const { createApp, ref } = Vue
             var url = '/mostrar_articulos_compras/'+id;
             //console.log(pedido);
             axios.get(url)
-              .then(response => {
-                this.lista = response.data;
-                this.tabla();
-            })
-          .catch(error => {
-          console.error(error);
-        });
+                  .then(response => {
+                    this.lista = response.data;
+                    this.tabla();
+                })
+              .catch(error => {
+              console.error(error);
+            });
         },
+        /*Estas funciones manejan el select*/
+        
         agregarArticulo() {
             if (!this.selectedArticulo) {
                 alert('Por favor seleccione un artículo');

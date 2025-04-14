@@ -73,7 +73,7 @@ $routes->group('',static function($routes){
 	/*Facturas*/
 	$routes->post('facturar_cotizacion', 'Admin\FacturaController::convertir');
 
-	/*Compras*/
+	/*Ordenes de Compras*/
 	$routes->get('compras', 'admin\Compras::index');
 	$routes->get('mostrar_compras', 'Admin\Compras::mostrar');
 	$routes->get('pedido/(:num)', 'Admin\Compras::pedido/$1');

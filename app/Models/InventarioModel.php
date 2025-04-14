@@ -30,7 +30,7 @@ class InventarioModel extends Model
     // Alternativa si no usas Entidades/Relaciones complejas
     public function getInventarioConArticulos()
     {
-        $this->select('sellopro_inventario.*, sa.nombre, sa.precio_pub, sa.precio_prov'); // Selecciona campos necesarios
+        $this->select('sellopro_inventario.*, sa.nombre,sa.modelo,sa.precio_pub, sa.precio_prov'); // Selecciona campos necesarios
         $this->join('sellopro_articulos sa', 'sa.id_articulo = sellopro_inventario.id_articulo');
         return $this->findAll();
     }

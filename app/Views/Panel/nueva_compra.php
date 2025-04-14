@@ -172,5 +172,4 @@
 </div>
 </div>
 <script src="<?php echo base_url('public/js/compras.js');?>"></script> 
-<script src="<?php echo base_url('public/js/select.js');?>"></script> 
 <?php echo $this->endSection()?>

@@ -54,7 +54,8 @@ class Compras extends BaseController
    			'slug'=>$slug,
    			'proveedor'=>$id,
    			'fecha'=>$hoy,
-   			'caduca'=>$caduca
+   			'caduca'=>$caduca,
+   			'pagado'=> 0
    		];
    		$nuevo_registro->insert($data);
    		return redirect()->to(base_url('pagina_orden/'.$slug));
