@@ -121,6 +121,31 @@ $routes->group('',static function($routes){
 	$routes->get('nueva_cotizacion', 'admin\Cotizaciones::nueva');
 
 
+	/*Pos experimental*/
+	// Rutas para el módulo de Pedidos POS
+	$routes->group('ventas', static function ($routes) {
+	    $routes->get('pos', 'Admin\PuntoVentaController::index');          // Listar pedidos (historial)
+	    $routes->get('new', 'Admin\PuntoVentaController::new');         // Mostrar formulario POS
+	    $routes->post('create', 'Admin\PuntoVentaController::create');    // Procesar nuevo pedido
+	    $routes->get('mostrar_articulos', 'Admin\PuntoVentaController::articulos');    // Procesar nuevo pedido
+	    $routes->get('show/(:num)', 'Admin\PuntoVentaController::show/$1'); // Ver detalle pedido
+	    $routes->get('ticket/(:num)', 'Admin\PuntoVentaController::ticket/$1'); // Ver vista de ticket post-creación
+	    $routes->get('download/(:num)', 'Admin\PuntoVentaController::downloadTicket/$1'); // Descargar ticket
+	    $routes->get('edit/(:num)', 'Admin\PuntoVentaController::edit/$1');   // (Opcional) Mostrar form edición
+	    $routes->post('update/(:num)', 'Admin\PuntoVentaController::update/$1'); // (Opcional) Procesar edición
+	    $routes->get('delete/(:num)', 'Admin\PuntoVentaController::delete/$1'); // Eliminar pedido (GET para simplicidad, POST/DELETE es mejor)
+	    $routes->post('pagar/(:num)', 'Admin\PuntoVentaController::pagar/$1');
+	    // Si usas resource, ajusta o añade las personalizadas
+	    // $routes->resource('pedidos', ['controller' => 'PedidosController']);
+	    // $routes->get('pedidos/download/(:num)', 'PedidosController::downloadTicket/$1');
+	});
+
+	/*Pos experimental*/
+	// Rutas para el módulo de Pedidos POS
+	$routes->group('reportes', static function ($routes) {
+	    $routes->get('reporte', 'Admin\BalanceController::index'); //reporte de utilidede
+	    $routes->get('este_mes', 'Admin\BalanceController::mes_actual'); //reporte de utilidede
+	});
 
 	// Rutas para el módulo de Pedidos POS
 	$routes->group('pedidos', static function ($routes) {

@@ -61,7 +61,7 @@
 </div>
 
 <div class="mb-3">
-    <a href="<?= site_url('pedidos/new') ?>" class="btn btn-primary text-decoration-none">
+    <a href="<?= site_url('ventas/new') ?>" class="btn btn-primary text-decoration-none">
         <i class="bi bi-plus-circle me-2"></i>Nuevo Pedido POS
     </a>
 </div>
@@ -103,15 +103,15 @@
                     <td><?= date('d/m/Y H:i', strtotime($pedido['created_at'])) ?></td>
                     <td>
                         <div class="btn-group" role="group">
-                            <a href="<?= site_url('pedidos/show/' . $pedido['id']) ?>" class="btn btn-info btn-sm" title="Ver Detalles">
+                            <a href="<?= site_url('ventas/show/' . $pedido['id']) ?>" class="btn btn-info btn-sm" title="Ver Detalles">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <a href="<?= site_url('pedidos/ticket/' . $pedido['id']) ?>" class="btn btn-secondary btn-sm" title="Ver Ticket">
+                            <a href="<?= site_url('ventas/ticket/' . $pedido['id']) ?>" class="btn btn-secondary btn-sm" title="Ver Ticket">
                                 <i class="bi bi-receipt"></i>
                             </a>
                             
                             <?php if ($pedido['estado'] != 'pagado'): ?>
-                                <form action="<?= site_url('pedidos/pagar/' . $pedido['id']) ?>" method="post" style="display: inline;">
+                                <form action="<?= site_url('ventas/pagar/' . $pedido['id']) ?>" method="post" style="display: inline;">
                                     <?= csrf_field() ?>
                                     <button type="submit" class="btn btn-success btn-sm" title="Pagar" onclick="return confirm('¿Marcar este pedido como pagado?')">
                                         <i class="bi bi-cash"></i>
@@ -119,7 +119,7 @@
                                 </form>
                             <?php endif; ?>
                             
-                            <a href="<?= site_url('pedidos/delete/' . $pedido['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de querer eliminar este pedido?');" title="Eliminar">
+                            <a href="<?= site_url('ventas/delete/' . $pedido['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de querer eliminar este pedido?');" title="Eliminar">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </div>

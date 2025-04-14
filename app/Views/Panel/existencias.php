@@ -114,9 +114,9 @@
                             <td><?= esc($item['id_articulo']) ?></td>
                             <td><?= esc($item['nombre'] ?? 'N/A') ?></td>
                             <td class="text-center"><?= esc($item['cantidad']) ?></td>
-                            <td class="text-right"><?= number_to_currency($item['precio_pub'] ?? 0, 'USD', 'es_MX', 2) ?></td>
-                            <td class="text-right"><?= number_to_currency($item['precio_prov'] ?? 0, 'USD', 'es_MX', 2) ?></td>
-                            <td class="text-right"><?= number_to_currency(($item['precio_pub'] ?? 0) * ($item['cantidad'] ?? 0), 'USD', 'es_MX', 2) ?></td>
+                            <td class="text-right"><?= number_to_currency($item['precio_pub'] ?? 0, 'MXN', 'es_MX', 2) ?></td>
+                            <td class="text-right"><?= number_to_currency($item['precio_prov'] ?? 0, 'MNX', 'es_MX', 2) ?></td>
+                            <td class="text-right"><?= number_to_currency(($item['precio_pub'] ?? 0) * ($item['cantidad'] ?? 0), 'MXN', 'es_MX', 2) ?></td>
                             <td class="text-center">
                                 <!-- Botón Editar -->
                                 <a href="<?= site_url('admin/existencias/editar/' . $item['id_entrada']) ?>" class="btn btn-warning btn-sm" title="Editar Cantidad">

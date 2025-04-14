@@ -51,8 +51,8 @@
 </div>
 
 <div class="mt-3">
-     <a href="<?= site_url('pedidos/ticket/' . $pedido['id']) ?>" class="btn btn-info"><i class="bi bi-receipt"></i> Ver Ticket</a>
-    <a href="<?= site_url('pedidos') ?>" class="btn btn-secondary">Volver al Historial</a>
+     <a href="<?= site_url('ventas/ticket/' . $pedido['id']) ?>" class="btn btn-info"><i class="bi bi-receipt"></i> Ver Ticket</a>
+    <a href="<?= site_url('/ventas/pos') ?>" class="btn btn-secondary">Volver al Historial</a>
 </div>
 
 <?= $this->endSection() ?>

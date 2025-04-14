@@ -3,16 +3,18 @@ const {createApp, ref} = Vue
 	createApp({
 		data(){
 			return{
-				pedido:[],
+				mes:[],
 				articulos:[],
 			}
 		},
 		methods:{
-			mostrar_existencias(){
-				
+			este_mes(){
+				axios.get('este_mes').then((response)=>{
+					this.mes = response.data;
+				})		
 			}
 		},
 		mounted(){
-
+			this.este_mes();
 		}
 }).mount('#app')

@@ -27,11 +27,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
 
     <!-- Vue y Axios -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <!-- slim select -->
-    <script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script>
-    <link href="https://unpkg.com/slim-select@latest/dist/slimselect.css" rel="stylesheet"></link>
+    <!--  Vue select -->
+    <script src="https://unpkg.com/vue@latest"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="<?= base_url('public/panel/css/style.css'); ?>">
 </head>
@@ -57,7 +59,7 @@
                 </a>
             </li>
             <li>
-                <a href="<?php echo base_url('pedidos/pos')?>"><i class="bi bi-cash-coin"></i>
+                <a href="<?php echo base_url('ventas/pos')?>"><i class="bi bi-cash-coin"></i>
                 <span>POS</span>
                 </a>
             </li>

@@ -8,6 +8,7 @@ class DetallePedidoModel extends Model
 {
     protected $table            = 'detalle_pedido';
     protected $primaryKey       = 'id';
+    protected $returnType = 'array';
     protected $useAutoIncrement = true;
     protected $protectFields    = true;
     protected $allowedFields = [
@@ -25,10 +26,4 @@ class DetallePedidoModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
-    // Relaciones (opcional pero útil)
-    public function pedido()
-    {
-        // Un detalle pertenece a un pedido
-        return $this->belongsTo(PedidoModel::class, 'pedido_id', 'id');
-    }
 }

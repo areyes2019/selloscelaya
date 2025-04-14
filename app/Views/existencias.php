@@ -1,7 +1,6 @@
 <?= $this->extend('Plantilla/panel_template') ?>
 
 <?= $this->section('contenido') ?>
-
 <div class="container-fluid">
     <!-- Paneles superiores -->
     <div class="row mb-4">

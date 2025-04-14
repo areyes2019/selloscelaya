@@ -33,10 +33,10 @@
                         <a href="<?= site_url('pedidos/download/' . $pedido['id']) ?>" class="btn btn-success">
                             <i class="bi bi-download"></i> <span class="d-none d-md-inline">Descargar</span>
                         </a>
-                        <a href="<?= site_url('pedidos/new') ?>" class="btn btn-primary">
+                        <a href="<?= site_url('ventas/new') ?>" class="btn btn-primary">
                             <i class="bi bi-plus-circle"></i> <span class="d-none d-md-inline">Nuevo Pedido</span>
                         </a>
-                        <a href="<?= site_url('pedidos/pos') ?>" class="btn btn-secondary">
+                        <a href="<?= site_url('ventas/pos') ?>" class="btn btn-secondary">
                             <i class="bi bi-list-ul"></i> <span class="d-none d-md-inline">Historial</span>
                         </a>
                         <button onclick="window.print();" class="btn btn-info">
