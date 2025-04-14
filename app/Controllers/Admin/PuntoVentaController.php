@@ -68,15 +68,48 @@ class PuntoVentaController extends BaseController
     }
     public function new()
     {
-        $articulos = new ArticulosModel();
-        $data['articulos'] = $articulos->where('stock',1)->findAll();
+        $data['articulos'] = $this->articulosModel
+            ->select('
+                a.id_articulo, 
+                a.nombre, 
+                a.modelo,
+                a.precio_pub as precio_venta,
+                a.img,
+                a.clave_producto,
+                COALESCE(SUM(i.cantidad), 0) as stock_disponible
+            ')
+            ->from('sellopro_articulos a') // 'a' es alias para la tabla de artículos
+            ->join('sellopro_inventario i', 'a.id_articulo = i.id_articulo', 'left')
+            ->where('a.stock', 1)
+            ->where('a.venta', 1) // Asumiendo que este campo indica si está disponible para venta
+            ->groupBy('a.id_articulo, a.nombre, a.modelo, a.precio_pub, a.img, a.clave_producto')
+            ->having('stock_disponible >', 0)
+            ->orderBy('a.nombre', 'ASC')
+            ->findAll();
+
         $data['titulo'] = 'Nuevo Pedido POS';
         return view('Panel/index_view', $data);
     }
     public function articulos()
     {
-        $articulos = $this->articulosModel->where('stock',1)->findAll();
-        return json_encode($articulos);
+        $articulos = $this->articulosModel
+            ->select('
+                sellopro_articulos.id_articulo, 
+                sellopro_articulos.nombre, 
+                sellopro_articulos.modelo,
+                sellopro_articulos.precio_pub as precio_venta,
+                sellopro_articulos.img,
+                sellopro_articulos.clave_producto,
+                COALESCE(SUM(sellopro_inventario.cantidad), 0) as stock_disponible
+            ')
+            ->join('sellopro_inventario', 'sellopro_articulos.id_articulo = sellopro_inventario.id_articulo', 'left')
+            ->where('sellopro_articulos.stock', 1)
+            ->where('sellopro_articulos.venta', 1) // Solo artículos disponibles para venta
+            ->groupBy('sellopro_articulos.id_articulo')
+            ->having('stock_disponible >', 0) // Solo con stock disponible
+            ->findAll();
+
+        return $this->response->setJSON($articulos);
     }
     
     public function create()
