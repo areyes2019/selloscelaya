@@ -2,7 +2,7 @@
 <?php echo $this->section('contenido')?>
 <div class="midde_cont">
     <div class="container-fluid">
-        <div class="row column_title">
+        <div class="row column_title card rounded-0 shadow-sm">
             <div class="col-md-12">
                 <div class="page_title">
                     <h2>Lista de precios</h2>
@@ -26,9 +26,9 @@
                             <a class="btn btn-danger rounded-0 mb-5" href="<?php echo base_url('nuevo_art_vista'); ?>">Agregar Articulo</a>
                         </div>
                     </div>
-                    <div class="table_section padding_infor_info">
+                    <div class="card rounded-0 shadow-sm table_section padding_infor_info">
                         <div class="table-responsive-sm">
-                            <table id="example" class="table table-bordered" style="width:100%">
+                            <table id="example" class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -70,16 +70,6 @@
                                     </tr>
                                     <?php endforeach;?>
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Modelo</th>
-                                        <th>Precio Proveedor</th>
-                                        <th>Precio Público</th>
-                                        <th>Beneficio</th>
-                                        <th>Acción</th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -122,14 +112,14 @@
 
 <script>
 $(document).ready(function() {
-    // Inicializar DataTable
-    new DataTable('#example', {
+    $('#example').DataTable({
         responsive: true,
         language: {
             url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-MX.json'
         }
     });
-    
+});
+$(document).ready(function() {
     // Configurar el modal cuando se muestra
     $('#imagenModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);

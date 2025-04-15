@@ -8,7 +8,7 @@
        
     </div>
     <div class="responsive-table-container">
-        <table class="advanced-responsive-table">
+        <table class="advanced-responsive-table" id="example">
             <thead>
                 <tr>
                     <th>ID</th>

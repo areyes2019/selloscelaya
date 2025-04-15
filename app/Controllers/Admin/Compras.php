@@ -407,41 +407,59 @@ class Compras extends BaseController
     
 	}
 	public function pago()
-    {
-        $request = \Config\Services::request();
-        $pedido = $request->getVar('id');
-        $monto_total = $request->getVar('monto_total');
-        
-        // Actualizar el estado de pago en la tabla pedidos
-        $pedidosModel = new PedidosModel();
-        $pedidosModel->where('id_pedido', $pedido);
-        $data['pagado'] = 1;
-        $pedidosModel->update($pedido, $data);
-        
-        // Insertar el gasto en la tabla de gastos
-        $gastosModel = new GastosModel();
-        $gastoData = [
-            'descripcion' => 'Compra de suministros',
-            'monto' => $monto_total,
-            'fecha_gasto' => date('Y-m-d') // Fecha actual
-        ];
-        
-        $gastosModel->insert($gastoData);
-        
-        if ($pedidosModel && $gastosModel){
-            return $this->response->setJSON([
-                'status'=>'error',
-                'message'=>'Sa marco esta Orden de Compra como pagada',
-                'flag'=>1
-            ]);
-        }else{
-            return $this->response->setJSON([
-                'status'=>'error',
-                'message'=>'No se hizo la opercion',
-                'flag'=>0
-            ]);
-        }
-    }
+	{
+	    $request = \Config\Services::request();
+	    $pedidoId = $request->getVar('id');
+
+	    // Cargar modelos
+	    $pedidosModel = new \App\Models\PedidosModel();
+	    $gastosModel = new \App\Models\GastosModel();
+	    $detalleModel = new \App\Models\DetallePedidosModel();
+	    $db = \Config\Database::connect();
+
+	    // Obtener detalles del pedido cuyos artículos tienen venta = 0
+	    $query = $db->table('sellopro_detalles_pedido d')
+	        ->select('d.cantidad, d.p_unitario')
+	        ->join('sellopro_articulos a', 'a.id_articulo = d.id_articulo')
+	        ->where('d.id_pedido', $pedidoId)
+	        ->where('a.venta', 0)
+	        ->get();
+
+	    $detalles = $query->getResultArray();
+
+	    if (empty($detalles)) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'No hay artículos con venta = 0 en esta orden',
+	            'flag' => 0
+	        ]);
+	    }
+
+	    // Calcular monto total solo de artículos con venta = 0
+	    $monto_total = 0;
+	    foreach ($detalles as $detalle) {
+	        $monto_total += $detalle['cantidad'] * $detalle['p_unitario'];
+	    }
+
+	    // Insertar el gasto
+	    $gastoData = [
+	        'descripcion' => 'Compra de suministros'.$pedidoId,
+	        'monto' => $monto_total,
+	        'fecha_gasto' => date('Y-m-d')
+	    ];
+	    $gastosModel->insert($gastoData);
+
+	    // Marcar pedido como pagado
+	    $pedidosModel->update($pedidoId, ['pagado' => 1]);
+
+	    return $this->response->setJSON([
+	        'status' => 'ok',
+	        'message' => 'Orden de compra pagada correctamente',
+	        'monto_registrado' => $monto_total,
+	        'flag' => 1
+	    ]);
+	}
+
     
 	public function recibida()
     {
