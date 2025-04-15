@@ -1,9 +1,12 @@
 <?php echo $this->extend('Panel/panel_template')?>
 <?php echo $this->section('contenido')?>
 <div class="container mt-3">
-    <?php if(session()->getFlashdata('alert_message')): ?>
-    <div class="alert alert-<?= session()->getFlashdata('alert_type') ?> alert-dismissible fade show" role="alert">
-        <?= session()->getFlashdata('alert_message') ?>
+    <?php 
+    $request = \Config\Services::request();
+    if ($request->getGet('alert_type') && $request->getGet('alert_message')): 
+    ?>
+    <div class="alert alert-<?= esc($request->getGet('alert_type')) ?> alert-dismissible fade show" role="alert">
+        <?= esc($request->getGet('alert_message')) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <?php endif; ?>

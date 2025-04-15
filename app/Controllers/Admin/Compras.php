@@ -397,15 +397,12 @@ class Compras extends BaseController
 	    // Adjuntar PDF
 	    $email->attach($pdf_content, 'attachment', 'OC-' . $id . '.pdf', 'application/pdf');
 	    
+	    // Enviar el correo
 	    if ($email->send()) {
-	        $session->setFlashdata('alert_type', 'success');
-	        $session->setFlashdata('alert_message', 'Correo con orden de compra enviado correctamente al proveedor');
+	        return redirect()->to(base_url('/compras?alert_type=success&alert_message=' . urlencode('Correo con orden de compra enviado correctamente al proveedor')));
 	    } else {
-	        $session->setFlashdata('alert_type', 'danger');
-	        $session->setFlashdata('alert_message', 'Error al enviar el correo: ' . $email->printDebugger());
+	        return redirect()->to(base_url('/compras?alert_type=danger&alert_message=' . urlencode('Error al enviar el correo: ' . $email->printDebugger())));
 	    }
-
-    	return redirect()->to(base_url('/compras'));
     
 	}
 	public function pago()
