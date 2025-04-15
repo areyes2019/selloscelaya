@@ -426,7 +426,6 @@ class Compras extends BaseController
 	        ->get();
 
 	    $detalles = $query->getResultArray();
-
 	    if (empty($detalles)) {
 	        return $this->response->setJSON([
 	            'status' => 'error',
@@ -443,7 +442,7 @@ class Compras extends BaseController
 
 	    // Insertar el gasto
 	    $gastoData = [
-	        'descripcion' => 'Compra de suministros'.$pedidoId,
+	        'descripcion' => 'Compra de suministros de la OC No. '.$pedidoId,
 	        'monto' => $monto_total,
 	        'fecha_gasto' => date('Y-m-d')
 	    ];
