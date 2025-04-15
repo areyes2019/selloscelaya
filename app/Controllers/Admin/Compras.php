@@ -165,33 +165,34 @@ class Compras extends BaseController
     }
 	public function mostrar_detalles($id)
 	{
-		//encontrar el articulo completo
+		// encontrar el articulo completo
 		$db = \Config\Database::connect();
 		$builder = $db->table('sellopro_detalles_pedido');
-		$builder->where('id_pedido',$id);
-		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
+		$builder->where('id_pedido', $id);
+		$builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
 		$resultado = $builder->get()->getResultArray();
 
-		//mostrar totales
-		$total = new PedidosModel();
-		$total->where('id_pedido',$id);
-		$suma_total = $total->findAll();
-		$porcenteje = 16;
-		$monto = $suma_total[0]['total'];
-		$iva = $monto*($porcenteje/100);
-		$pago_total = $monto+$iva;
+		// obtener total que ya incluye IVA
+		$totalModel = new PedidosModel();
+		$totalModel->where('id_pedido', $id);
+		$suma_total = $totalModel->findAll();
 
-		
-		$data=[
-			'articulo'=>$resultado,
-			'sub_total'=> number_format($monto,2),
-			'iva'=> number_format($iva,2),
-			'total'=>number_format($pago_total,2),
+		$porcentaje = 16;
+		$total_con_iva = $suma_total[0]['total'];
+
+		$sub_total = $total_con_iva / (1 + ($porcentaje / 100));
+		$iva = $total_con_iva - $sub_total;
+
+		$data = [
+			'articulo' => $resultado,
+			'sub_total' => number_format($sub_total, 2),
+			'iva' => number_format($iva, 2),
+			'total' => number_format($total_con_iva, 2),
 		];
 
 		return json_encode($data);
-		
 	}
+
 	public function borrar_linea($id)
 	{
 		
