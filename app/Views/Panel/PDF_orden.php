@@ -89,8 +89,8 @@
             <td width="2%">&nbsp;</td>
             <td width="49%" style="border: 0.5mm solid #95a5a6; text-align: left;">
                 <?php foreach ($id_pedido as $key): ?>
-                <p><strong>Orden No: <?php echo $key['pedidos_id'] ?> </strong></p>   
-                <p><strong>Fecha: <?php echo $key['fecha'] ?> </strong></p>   
+                <p><strong>Orden No: <?php echo $key['id_pedido'] ?> </strong></p>   
+                <p><strong>Fecha: <?php echo $key['created_at'] ?> </strong></p>   
                 <?php endforeach ?>
                 <?php foreach ($proveedor as $data_proveedor): ?>
                 <p style="margin-top: 10px;"><?php echo $data_proveedor['empresa'] ?></p>

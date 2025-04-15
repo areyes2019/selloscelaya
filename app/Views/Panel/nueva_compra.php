@@ -12,7 +12,7 @@
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style="">
                 <div class="dropdown-header"></div>
                 <a class="dropdown-item" href="<?php echo base_url('/descargar_orden/'.$pedidos_id); ?>"><span class="bi bi-download"></span> Descargar</a>
-                <a class="dropdown-item" href="<?php echo base_url('/enviar_pdf/'.$pedidos_id); ?>"><span class="bi bi-send"></span> Enviar</a>
+                <a class="dropdown-item" href="<?php echo base_url('/enviar_pdf_orden/'.$pedidos_id); ?>"><span class="bi bi-send"></span> Enviar</a>
                 <a 
                   :class="['dropdown-item']" 
                   v-if="display_pagado == 0" 

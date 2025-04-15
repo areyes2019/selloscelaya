@@ -281,15 +281,15 @@ class Compras extends BaseController
 
 		//mostrar los articulos
 		$builder = $db->table('sellopro_detalles_pedido');
-		$builder->where('pedido_id',$id);
-		$builder->join('sellopro_articulos','sellopro_articulos.idArticulo = sellopro_detalles_pedido.id_articulo');
+		$builder->where('id_pedido',$id);
+		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
 		$resultado_lineas = $builder->get()->getResultArray();
 
 		//sacamos los totales 
 
 		//actualizamos el total
 		$sum = $db->table('sellopro_detalles_pedido');
-		$sum->where('pedido_id',$id);
+		$sum->where('id_pedido',$id);
 		$sum->selectSum('total');
 		$result = $sum->get()->getResultArray();
 		$total_sum = $result[0]['total'];
@@ -317,60 +317,93 @@ class Compras extends BaseController
 	}
 	public function enviar_pdf($id)
 	{
-		$db = \Config\Database::connect();
 
-		//datos del cliente
-		$cliente_query = new CotizacionesModel();
-		$cliente_query->where('idQt',$id);
-		$resultado_cotizacion = $cliente_query->findAll();
+	    $db = \Config\Database::connect();
+	    $email = \Config\Services::email();
 
-		$cliente = new ClientesModel();
-		$cliente->where('idCliente',$resultado_cotizacion[0]['cliente']);
-		$resultado = $cliente->findAll();
+	    // Obtener datos del proveedor
+	    $proveedor_query = new PedidosModel();
+	    $proveedor_query->where('id_pedido', $id);
+	    $resultado_cotizacion = $proveedor_query->findAll();
 
-		//mostrar los articulos
-		$builder = $db->table('sellopro_detalles');
-		$builder->where('id_cotizacion',$id);
-		$builder->join('sellopro_articulos','sellopro_articulos.idArticulo = sellopro_detalles.id_articulo');
-		$resultado_lineas = $builder->get()->getResultArray();
+	    $proveedor = new ProveedoresModel();
+	    $proveedor->where('id_proveedor', $resultado_cotizacion[0]['proveedor']);
+	    $resultado = $proveedor->findAll();
 
-		//sacamos los totales 
+	    // Obtener artículos
+	    $builder = $db->table('sellopro_detalles_pedido');
+	    $builder->where('id_pedido', $id);
+	    $builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
+	    $resultado_lineas = $builder->get()->getResultArray();
 
-		//actualizamos el total
-		$sum = $db->table('sellopro_detalles');
-		$sum->where('id_cotizacion',$id);
-		$sum->selectSum('total');
-		$result = $sum->get()->getResultArray();
-		$total_sum = $result[0]['total'];
-		$porcenteje = 16;
-		$iva = $total_sum*($porcenteje/100);
-		$total = $total_sum + $iva;	
-			
+	    // Calcular totales
+	    $sum = $db->table('sellopro_detalles_pedido');
+	    $sum->where('id_pedido', $id);
+	    $sum->selectSum('total');
+	    $result = $sum->get()->getResultArray();
+	    $total_sum = $result[0]['total'];
+	    $porcenteje = 16;
+	    $iva = $total_sum * ($porcenteje / 100);
+	    $total = $total_sum + $iva;
 
-		$data = [
-			'cliente'=>$resultado,
-			'id_cotizacion'=>$resultado_cotizacion,
-			'detalles'=>$resultado_lineas,
-			'sub_total'=>$total_sum,
-			'iva'=>$iva,
-			'total'=>$total,
-		];
-		//return view('Panel/PDF',$data);
-		$doc = new Dompdf();
-		$html = view('Panel/PDF',$data);
-		//return $html;
-		$doc->loadHTML($html);
-		$doc->setPaper('A4','portrait');
-		$doc->render();
-		$salida = $doc->output();
-		$nombre = "QT-".$id.".pdf";
-		$email = \Config\Services::email();
-		$email->setFrom('ventas@sellopronto.com.mx','Sello Pronto');
-		$email->setTo('reyesabdias@gmail.com');
-		$email->setSubject('Cusrsos');
-		$email->setMessage('Este es un mensaje de prueba');
-		$email->attach('img/40.png');
-		$email->send();
+	    // Datos para el PDF
+	    $data_pdf = [
+	        'proveedor' => $resultado,
+	        'id_pedido' => $resultado_cotizacion,
+	        'detalles' => $resultado_lineas,
+	        'sub_total' => $total_sum,
+	        'iva' => $iva,
+	        'total' => $total,
+	    ];
+
+	    // Generar PDF
+	    $doc = new Dompdf();
+	    $html_pdf = view('Panel/PDF_orden', $data_pdf);
+	    $doc->loadHTML($html_pdf);
+	    $doc->setPaper('A4', 'portrait');
+	    $doc->render();
+	    $pdf_content = $doc->output();
+	    // Configurar el correo electrónico
+	    $email_destino = $resultado[0]['correo'];
+	    
+	    // Ruta absoluta al logo
+	    $logo_path = ROOTPATH . '/public/img/logo2.png';
+	    
+	    // Generar un CID único para la imagen
+	    $cid = 'logo_' . uniqid();
+	    
+	    // Leer la imagen y codificarla en base64
+	    $logo_data = base64_encode(file_get_contents($logo_path));
+	    $logo_mime = mime_content_type($logo_path); // ej. 'image/png'
+	    
+	    // Datos para la plantilla de correo
+	    $data_email = [
+	        'id' => $id,
+	        'cid_logo' => $cid,
+	        'logo_data' => $logo_data,
+	        'logo_mime' => $logo_mime
+	    ];
+	    
+	    // Renderizar la plantilla de correo
+	    $html_email = view('Emails/oc', $data_email);
+	    
+	    // Configurar y enviar el correo
+	    $email->setFrom('ventas@sellopronto.com.mx', 'Sello Pronto');
+	    $email->setTo($email_destino);
+	    $email->setSubject('Orden de Compra #' . $id);
+	    $email->setMessage($html_email);
+	    $email->setMailType('html');
+	    
+	    // Adjuntar PDF
+	    $email->attach($pdf_content, 'attachment', 'OC-' . $id . '.pdf', 'application/pdf');
+	    
+	    // Enviar el correo
+	    if ($email->send()) {
+	        return "Correo con orden de compra enviado correctamente al proveedor";
+	    } else {
+	        return "Error al enviar el correo: " . $email->printDebugger();
+	    }
+    
 	}
 	public function pago()
     {
