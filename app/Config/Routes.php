@@ -17,7 +17,19 @@ $routes->get('maestros', 'Home::catalogo');
 $routes->post('contacto', 'Home::contacto');
 
 //logeo
-$routes->get('login', 'Admin::login');
+$routes->group('', ['namespace' => 'App\Controllers\Auth'], function($routes) {
+    $routes->get('register', 'Register::index');
+    $routes->post('register', 'Register::index');
+    
+    $routes->get('login', 'Login::index');
+    $routes->post('login', 'Login::index');
+    $routes->get('logout', 'Login::logout');
+    
+    $routes->get('forgot-password', 'ForgotPassword::index');
+    $routes->post('forgot-password', 'ForgotPassword::index');
+    $routes->get('reset-password', 'ForgotPassword::resetPassword');
+    $routes->post('reset-password', 'ForgotPassword::resetPassword');
+});
 
 $routes->group('',static function($routes){
 	

@@ -10,15 +10,17 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <?php endif; ?>
-	<div class="my-card d-flex justify-content-between">
-		<h2>Ordenes de Compra</h2>
-        <!-- Button trigger modal -->
-        <button  class="btn btn-primary btn-icon-split" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <span class="icon text-white-50">
-                <i class="bi bi-plus-circle"></i>
-            </span>
-            <span class="text">Nueva Orden de Compra</span>
-        </button>
+	<div class="card">
+        <div class="car-body d-flex align-items-center justify-content-between">
+    		<h2>Ordenes de Compra</h2>
+            <!-- Button trigger modal -->
+            <button  class="btn btn-primary btn-icon-split" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <span class="icon text-white-50">
+                    <i class="bi bi-plus-circle"></i>
+                </span>
+                <span class="text">Nueva Orden de Compra</span>
+            </button>
+        </div>
        
 	</div>
 	<div class="my-card mt-3">
