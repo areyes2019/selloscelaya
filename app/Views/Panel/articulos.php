@@ -63,9 +63,13 @@
                                         <td><strong class="text-primary">$<?= $articulo['precio_dist'];?></strong></td>
                                         <td><strong>$<?= $articulo['precio_pub'];?></strong></td>
                                         <td>$<?= $articulo['precio_pub'] - $articulo['precio_prov'];?></td>
-                                        <td>
-                                            <a href="eliminar_articulo/<?php echo $articulo['id_articulo'] ?>" onclick="return confirm('¿Seguro que quieres eliminar este registro?')" class="btn btn-sm rounded-0 my-btn-danger">Eliminar</a>
-                                            <a href="editar_articulo/<?php echo $articulo['id_articulo'] ?>" class="btn btn-sm rounded-0 my-btn-success">Editar</a>
+                                        <td class="d-flex gap-1">
+                                            <a href="eliminar_articulo/<?php echo $articulo['id_articulo'] ?>" onclick="return confirm('¿Seguro que quieres eliminar este registro?')" class="btn btn-sm btn-danger rounded-0">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                            <a href="editar_articulo/<?php echo $articulo['id_articulo'] ?>" class="btn btn-sm btn-success rounded-0">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                     <?php endforeach;?>
