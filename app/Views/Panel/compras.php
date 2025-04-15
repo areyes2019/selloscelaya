@@ -1,6 +1,12 @@
 <?php echo $this->extend('Panel/panel_template')?>
 <?php echo $this->section('contenido')?>
 <div class="container mt-3">
+    <?php if(session()->getFlashdata('alert_message')): ?>
+    <div class="alert alert-<?= session()->getFlashdata('alert_type') ?> alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('alert_message') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php endif; ?>
 	<div class="my-card d-flex justify-content-between">
 		<h2>Ordenes de Compra</h2>
         <!-- Button trigger modal -->
