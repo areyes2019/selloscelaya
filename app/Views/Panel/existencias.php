@@ -101,7 +101,9 @@
                             <th>ID Art.</th>
                             <th>Artículo</th>
                             <th>Modelo</th>
-                            <th>Cantidad</th>
+                            <th>Cant</th>
+                            <th>Mín</th>
+                            <th>Var</th>
                             <th>Precio Púb.</th>
                             <th>Precio Prov.</th>
                             <th>Valor Total (Púb.)</th>
@@ -115,17 +117,21 @@
                             <td><?= esc($item['id_articulo']) ?></td>
                             <td><?= esc($item['nombre'] ?? 'N/A') ?></td>
                             <td><?= esc($item['modelo'] ?? 'N/A') ?></td>
+                            <td class="text-center"><?= esc($item['minimo'] ?? '') ?></td>
                             <td class="text-center"><?= esc($item['cantidad']) ?></td>
-                            <td class="text-right"><?= number_to_currency($item['precio_pub'] ?? 0, 'MXN', 'es_MX', 2) ?></td>
+                            <?php
+                                $variacion = ($item['cantidad'] ?? 0) - ($item['minimo'] ?? 0);
+                                $clase_color = ($item['cantidad'] < $item['minimo']) ? 'text-danger text-center' : '';
+                            ?>
+                            <td class="text-center <?= $clase_color ?>"><?= esc($variacion) ?></td>
+                            <td class="text-center"><?= number_to_currency($item['precio_pub'] ?? 0, 'MXN', 'es_MX', 2) ?></td>
                             <td class="text-right"><?= number_to_currency($item['precio_prov'] ?? 0, 'MNX', 'es_MX', 2) ?></td>
                             <td class="text-right"><?= number_to_currency(($item['precio_pub'] ?? 0) * ($item['cantidad'] ?? 0), 'MXN', 'es_MX', 2) ?></td>
                             <td class="text-center">
-                                <!-- Botón Editar -->
                                 <a href="<?= site_url('admin/existencias/editar/' . $item['id_entrada']) ?>" class="btn btn-warning btn-sm" title="Editar Cantidad">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
 
-                                <!-- Botón Eliminar (Usa un formulario POST) -->
                                 <?= form_open('/existencias/eliminar/' . $item['id_entrada'], ['class' => 'd-inline', 'onsubmit' => "return confirm('¿Estás seguro de querer eliminar este registro del inventario?');"]) ?>
                                     <?= csrf_field() ?>
                                     <button type="submit" class="btn btn-danger btn-sm" title="Eliminar Registro">
@@ -138,7 +144,7 @@
                     </tbody>
                      <tfoot>
                          <tr>
-                             <th colspan="6" class="text-right">TOTALES:</th>
+                             <th colspan="9" class="text-right">TOTALES:</th>
                              <th class="text-right"><?= number_to_currency($valor_total_inventario, 'USD', 'es_MX', 2) ?></th>
                              <th></th> <!-- Columna vacía para acciones -->
                          </tr>

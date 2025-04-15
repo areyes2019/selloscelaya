@@ -42,7 +42,7 @@
             <!-- Grupo de inputs solicitado -->
             <div class="row g-3 align-items-end mb-3">
                 <div class="col-md-4">
-                    <label for="autocomplete_input" class="form-label">Tipo de Servicio:</label>
+                    <label for="autocomplete_input" class="form-label">Artículo:</label>
                     <input 
                       id="autocomplete_input"
                       class="autocomplete-input form-control"

@@ -97,7 +97,7 @@ class PuntoVentaController extends BaseController
                 sellopro_articulos.id_articulo, 
                 sellopro_articulos.nombre, 
                 sellopro_articulos.modelo,
-                sellopro_articulos.precio_pub as precio_venta,
+                sellopro_articulos.precio_pub,
                 sellopro_articulos.img,
                 sellopro_articulos.clave_producto,
                 COALESCE(SUM(sellopro_inventario.cantidad), 0) as stock_disponible
