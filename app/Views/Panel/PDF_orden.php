@@ -137,14 +137,6 @@
                 </table>
                 <table width="30%" align="right" style="font-family: sans-serif; font-size: 14px; border-collapse: collapse;" >
                     <tr>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; line-height: 20px;"><strong>Sub-Total</strong></td>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; line-height: 20px;">$<?php echo number_format($sub_total,2)  ?></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; line-height: 20px;"><strong>IVA</strong></td>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; line-height: 20px;">$<?php echo number_format($iva,2); ?></td>
-                    </tr>
-                    <tr>
                         <td style="border: 1px solid #95a5a6; padding: 10px 8px; line-height: 20px;"><strong>Total</strong></td>
                         <td style="border: 1px solid #95a5a6; padding: 10px 8px; line-height: 20px;">$<?php echo number_format($total,2)?></td>
                     </tr>
