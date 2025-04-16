@@ -90,14 +90,15 @@ class BalanceController extends BaseController
 	    $builder->where("DATE_FORMAT(created_at, '%Y-%m') =", $mes_actual);
 	    $query = $builder->get()->getRowArray();
 
-	    // 2. Capital invertido en el mes (versión simplificada)
-		$builder_cap = $db->table('sellopro_pedidos');
-		$builder_cap->select('SUM(total) AS total_capital');
-		$builder_cap->where("DATE_FORMAT(created_at, '%Y-%m') =", $mes_actual);
-		$builder_cap->where('pagado', 1); // Solo pedidos pagados
+	    // 2. Capital invertido en el mes (versión corregida)
+		$builder_cap = $db->table('detalle_pedido');
+		$builder_cap->select('SUM(sellopro_articulos.precio_prov * detalle_pedido.cantidad) AS total_capital');
+		$builder_cap->join('sellopro_articulos', 'sellopro_articulos.id_articulo = detalle_pedido.id_articulo');
+		$builder_cap->join('pedidos', 'pedidos.id = detalle_pedido.pedido_id');
+		$builder_cap->where("DATE_FORMAT(pedidos.created_at, '%Y-%m') =", $mes_actual);
 		$resultado_cap = $builder_cap->get()->getRowArray();
 
-		
+
 	    // 3. Total de gastos del mes
 	    $builder_gastos = $db->table('sellopro_gastos');
 	    $builder_gastos->selectSum('monto');

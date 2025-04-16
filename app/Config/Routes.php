@@ -214,7 +214,14 @@ $routes->group('',static function($routes){
 	    $routes->post('actualizar/(:num)', 'Admin\Existencias::actualizar/$1'); // Procesa actualización (POST)
 	    $routes->post('eliminar/(:num)', 'Admin\Existencias::eliminar/$1');  // Procesa eliminación (POST)
 	});
-	
+	$routes->group('cuentas', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
+	    $routes->get('/', 'CuentasController::index');           // Muestra la lista de cuentas
+	    $routes->get('nuevo', 'CuentasController::nuevo');       // Muestra el formulario para crear una nueva cuenta
+	    $routes->post('guardar', 'CuentasController::guardar');   // Procesa el formulario de creación
+	    $routes->get('editar/(:num)', 'Cuentas::editar/$1'); // Muestra el formulario para editar una cuenta (/:num es un parámetro numérico)
+	    $routes->post('actualizar/(:num)', 'CuentasController::actualizar/$1'); // Procesa el formulario de edición
+	    $routes->get('borrar/(:num)', 'CuentasController::borrar/$1');   // Borra una cuenta
+	});
 
 
 
