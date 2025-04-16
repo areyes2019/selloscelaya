@@ -189,13 +189,10 @@ createApp({
                     'id': pedido,
                     'monto_total': monto_total
                 }).then((response)=>{
-                    if (response.data.flag == 1) {
-                        this.mostrar_lineas();
-                        this.display();
                         notify('Pagado');
-                    }else{
-                        alert(response.data.error);
-                    }
+                        setTimeout(function() {
+                            window.location.href = "/compras";
+                        }, 1000);
                 })
             }
         },

@@ -434,43 +434,50 @@ class Compras extends BaseController
 	        ->select('d.cantidad, d.p_unitario')
 	        ->join('sellopro_articulos a', 'a.id_articulo = d.id_articulo')
 	        ->where('d.id_pedido', $pedidoId)
-	        ->where('a.venta', 1)
+	        ->where('a.venta', 0)
 	        ->get();
 
 	    $detalles = $query->getResultArray();
-	    if (empty($detalles)) {
-	        return $this->response->setJSON([
-	            'status' => 'error',
-	            'message' => 'No hay artículos con venta = 0 en esta orden',
-	            'flag' => 0
-	        ]);
-	    }
-
-	    // Calcular monto total solo de artículos con venta = 0
+	    
 	    $monto_total = 0;
-	    foreach ($detalles as $detalle) {
-	        $monto_total += $detalle['cantidad'] * $detalle['p_unitario'];
+	    $hayGastos = false;
+
+	    // Si hay artículos con venta = 0, calcular el monto y registrar gasto
+	    if (!empty($detalles)) {
+	        foreach ($detalles as $detalle) {
+	            $monto_total += $detalle['cantidad'] * $detalle['p_unitario'];
+	        }
+
+	        // Insertar el gasto
+	        $gastoData = [
+	            'descripcion' => 'Compra de suministros de la OC No. '.$pedidoId,
+	            'monto' => $monto_total,
+	            'fecha_gasto' => date('Y-m-d')
+	        ];
+	        $gastosModel->insert($gastoData);
+	        $hayGastos = true;
 	    }
 
-	    // Insertar el gasto
-	    $gastoData = [
-	        'descripcion' => 'Compra de suministros de la OC No. '.$pedidoId,
-	        'monto' => $monto_total,
-	        'fecha_gasto' => date('Y-m-d')
-	    ];
-	    $gastosModel->insert($gastoData);
-
-	    // Marcar pedido como pagado
+	    // Marcar pedido como pagado (siempre se hace, haya o no artículos con venta = 0)
 	    $pedidosModel->update($pedidoId, ['pagado' => 1]);
 
-	    return $this->response->setJSON([
-	        'status' => 'ok',
-	        'message' => 'Orden de compra pagada correctamente',
-	        'monto_registrado' => $monto_total,
-	        'flag' => 1
-	    ]);
+	    // Preparar respuesta según si hubo gastos o no
+	    if ($hayGastos) {
+	        return $this->response->setJSON([
+	            'status' => 'ok',
+	            'message' => 'Orden de compra pagada correctamente con registro de gastos',
+	            'monto_registrado' => $monto_total,
+	            'flag' => 1
+	        ]);
+	    } else {
+	        return $this->response->setJSON([
+	            'status' => 'ok',
+	            'message' => 'Orden de compra pagada correctamente (sin artículos para registrar como gasto)',
+	            'monto_registrado' => 0,
+	            'flag' => 2
+	        ]);
+	    }
 	}
-
     
 	public function recibida()
     {
