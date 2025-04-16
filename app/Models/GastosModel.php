@@ -38,4 +38,18 @@ class GastosModel extends Model
     ];
     
     protected $skipValidation = false;
+    public function getGastosMesActual()
+    {
+        // Obtener primer y último día del mes actual
+        $primerDia = date('Y-m-01');
+        $ultimoDia = date('Y-m-t');
+        
+        return $this->select('*')
+                   ->selectSum('monto', 'total_mes')
+                   ->where('fecha_gasto >=', $primerDia)
+                   ->where('fecha_gasto <=', $ultimoDia)
+                   ->groupBy('id_registro') // Mantenemos los registros individuales
+                   ->findAll();
+    }
+
 }

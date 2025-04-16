@@ -5,15 +5,21 @@ const {createApp, ref} = Vue
 			return{
 				pedido:[],
 				articulos:[],
-				saludo:"hola"
+				periodo:1,  // 1 es este mes
+				resumen:[],
 			}
 		},
 		methods:{
-			mostrar_existencias(){
-				
+			mostrar_balance(){
+				if (this.periodo == 1) {
+					//hacemos la consulta del mes
+					axios.get('/reportes/este_mes').then((response)=>{
+						this.resumen = response.data;
+					})
+				}
 			}
 		},
 		mounted(){
-
+			this.mostrar_balance();
 		}
 }).mount('#app')

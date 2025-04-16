@@ -12,7 +12,7 @@
 
     <div class="mb-3">
         <a href="<?php echo base_url('/gastos/nuevo');?>" class="btn btn-primary">Nuevo Gasto</a>
-        <a href="<?php echo base_url('/gastos/reporte'); ?>" class="btn btn-primary">Informe Financiero</a>
+        <a href="<?php echo base_url('/reportes/reporte'); ?>" class="btn btn-primary">Informe Financiero</a>
     </div>
 
     <table class="table table-striped">

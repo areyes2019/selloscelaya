@@ -158,6 +158,7 @@ $routes->group('',static function($routes){
 	$routes->group('reportes', static function ($routes) {
 	    $routes->get('reporte', 'Admin\BalanceController::index'); //reporte de utilidede
 	    $routes->get('este_mes', 'Admin\BalanceController::mes_actual'); //reporte de utilidede
+	    $routes->get('hoy', 'Admin\BalanceController::hoy'); //reporte de utilidede
 	});
 
 	// Rutas para el módulo de Pedidos POS
