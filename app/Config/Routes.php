@@ -101,6 +101,7 @@ $routes->group('',static function($routes){
 	$routes->get('descargar_orden/(:num)', 'Admin\Compras::cotizacion_pdf/$1');
 	$routes->get('enviar_orden', 'Admin\Compras::enviar');
 	$routes->get('enviar_pdf_orden/(:num)', 'Admin\Compras::enviar_pdf/$1');
+	$routes->get('select_compras/(:num)', 'Admin\Compras::select/$1');
 	$routes->post('pago_compras', 'Admin\Compras::pago');
 	$routes->post('recibido_compras', 'Admin\Compras::recibida');
 	$routes->post('modificar_cantidad_compras', 'Admin\Compras::modificar_cantidad');

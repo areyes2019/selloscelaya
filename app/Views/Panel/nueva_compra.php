@@ -51,28 +51,21 @@
 </div>
 <div class="card shadow mb-4 rounded-0">
     <div class="card-body" v-if="display_pagado == 0">
-        <!-- <button :class="['btn btn-primary', 'btn-icon-split']" data-bs-toggle="modal" data-bs-target="#agregar_articulo">
-            <span class="icon text-white-50">
-                <i class="bi bi-list-check"></i>
-            </span>
-            <span class="text">Articulo de Lista</span>
-        </button> -->
         <div class="row">
             <div class="col-md-6">      
                 <p class="mb-2">Agregar Artículos</p>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <select id="selectElement" class="form-control" placeholder="Seleccione un articulo" v-model="selectedArticulo">
-                        <option value="" disabled selected>Seleccione un artículo</option>
-                        <?php foreach ($articulos as $articulo): ?>
-                        <option value="<?= $articulo['id_articulo'] ?>">
-                            <?= $articulo['nombre'] ?> - <?= $articulo['modelo'] ?>
-                        </option>
-                        <?php endforeach ?>
-                    </select>
-                    <input type="number" class="form-control w-25" v-model="cantidad" min="1">
+                <div class="d-inline-flex">
+                    <autocomplete-select
+                      :options="lista"
+                      v-model="selectedArticulo"
+                      placeholder="Escribe para buscar..."
+                    ></autocomplete-select>                
+                    <input type="number" class="form-control w-25 m-0 ml-2 " v-model="cantidad" min="1">
                     <button class="btn btn-primary rounded-0 btn-sm" @click="agregarArticulo">OK</button>
                 </div>
-            </div> 
+            </div>
+            <div class="col-md-6">
+            </div>   
         </div>
     </div>
 </div>
@@ -170,5 +163,5 @@
     </div>
 </div>
 </div>
-<script src="<?php echo base_url('public/js/compras.js');?>"></script> 
+<script type="module" src="<?php echo base_url('public/js/compras.js');?>"></script>
 <?php echo $this->endSection()?>

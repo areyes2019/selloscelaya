@@ -561,4 +561,21 @@ class Compras extends BaseController
             return $this->response->setJSON(['error' => 'Error al procesar el pedido'])->setStatusCode(500);
         }
     }
+   	public function select($id)
+	{
+	    $modelo = new ArticulosModel();
+	    $builder = $modelo->builder();
+	    
+	    $builder->select('*')
+	            ->select("CONCAT(nombre, ' (', modelo, ')') as nombre_completo", false);
+	    
+	    // Aplicar filtro solo si se proporciona un ID válido
+	    if ($id !== null && $id !== '') {
+	        $builder->where('proveedor', $id);
+	    }
+	    
+	    $query = $builder->get();
+	    
+	    return json_encode($query->getResult());
+	}
 }

@@ -1,10 +1,19 @@
+import AutocompleteSelect from './componentes/autocomplete-select.js';
 const { createApp, ref } = Vue
-
-  createApp({
+createApp({
+    //esto tambien se integra al componente
+    components: {
+        AutocompleteSelect, // Lo registras aquí
+    },
     data() {
       return {
+        //todo esto hay que integralo en el componente
+        search: '',
+        showList: false,
+        highlightedIndex: -1,
         selectedArticulo: null,
         cantidadArticulo: 1,
+        //componente
         articulos:[],
         compras:[],
         lista:[],
@@ -29,15 +38,36 @@ const { createApp, ref } = Vue
         display_recibido:"",
       }
     },
+    //componente
+    watch: {
+        modelValue(newVal) {
+            const match = this.options.find(opt => opt.id_articulo === newVal);
+            this.search = match ? match.nombre : '';
+        },
+        search(newVal) {
+            if (newVal !== '') {
+                this.showList = true;
+            } else {
+            this.showList = true; // también mostrar cuando está vacío
+            }
+            this.highlightedIndex = -1;
+        }
+    },
+    computed: {
+      filteredOptions() {
+        const term = this.search.toLowerCase();
+        return this.options.filter(opt => opt.nombre.toLowerCase().includes(term));
+      }
+    },
+    //componente
     methods:{
         mostrar_articulos(){
             var id = this.$refs.proveedor.innerHTML;
-            var url = '/mostrar_articulos_compras/'+id;
+            var url = '/select_compras/'+id;
             //console.log(pedido);
             axios.get(url)
                   .then(response => {
                     this.lista = response.data;
-                    this.tabla();
                 })
               .catch(error => {
               console.error(error);
@@ -201,7 +231,7 @@ const { createApp, ref } = Vue
     },
     mounted(){
       this.mostrar_lineas();
-      //this.mostrar_articulos();
+      this.mostrar_articulos();
       this.display();
     }
 }).mount('#app')
