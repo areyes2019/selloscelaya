@@ -1,11 +1,11 @@
 <?php echo $this->extend('Panel/panel_template')?>
 <?php echo $this->section('contenido')?>
-<div class="midde_cont">
+<div class="midde_cont" id="app">
     <div class="container-fluid">
         <div class="row column_title card rounded-0 shadow-sm">
             <div class="col-md-12">
                 <div class="page_title">
-                    <h2>Lista de precios</h2>
+                    <h2>Lista de precios {{saludo}}</h2>
                 </div>
                 <!-- Mensajes Flash -->
                 <?php if (session()->getFlashdata('success')): ?>
@@ -70,6 +70,52 @@
                                             <a href="editar_articulo/<?php echo $articulo['id_articulo'] ?>" class="btn btn-sm btn-success rounded-0">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+                                            <button type="button" class="btn btn-sm btn-primary rounded-0" @click = "cambio_rapido('<?= $articulo['id_articulo']?>')">
+                                                <i class="bi bi-lightning-charge"></i>
+                                            </button>
+                                            <!-- Modal de Edición Rápida -->
+                                            <div class="modal fade" id="quickEditModal" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Edición rápida</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form>
+                                                                <div class="mb-3">
+                                                                    <label for="nombre" class="form-label">Nombre del artículo</label>
+                                                                    <input type="text" class="form-control" id="nombre" v-model="articulo.nombre">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="modelo" class="form-label">Modelo</label>
+                                                                    <input type="text" class="form-control" id="modelo" v-model="articulo.modelo">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <div class="row g-2">
+                                                                        <div class="col">
+                                                                            <label class="form-label">Precio Público</label>
+                                                                            <input type="number" step="0.01" class="form-control" placeholder="Público" v-model="articulo.precio_pub">
+                                                                        </div>
+                                                                        <div class="col">
+                                                                            <label class="form-label">Precio Dist.</label>
+                                                                            <input type="number" step="0.01" class="form-control" placeholder="Distribuidor" v-model="articulo.precio_dist">
+                                                                        </div>
+                                                                        <div class="col">
+                                                                            <label class="form-label">Precio Prov</label>
+                                                                            <input type="number" step="0.01" class="form-control" placeholder="Proveedor" v-model="articulo.precio_prov">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button @click.prevent = "guardarEdicionRapida('<?= $articulo['id_articulo'] ?>')" class="btn btn-primary">Guardar cambios</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                     <?php endforeach;?>
@@ -81,8 +127,6 @@
             </div>
         </div>
     </div>
-</div>
-
 <!-- Modal para mostrar imagen -->
 <div class="modal fade" id="imagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -106,6 +150,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Incluir las librerías necesarias -->
@@ -195,7 +240,6 @@ $(document).ready(function() {
 
 });
 </script>
+<script src="<?php echo base_url('public/js/articulos.js'); ?>"></script>
 <!-- Script para el drag and drop -->
-<script type="text/javascript" src="<?php echo base_url('public/js/drag.js'); ?>"></script>
-
 <?php echo $this->endSection()?>

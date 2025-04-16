@@ -81,6 +81,26 @@ class Articulos extends BaseController
 	    readfile($rutaImagen);
 	    exit;
 	}
+	public function editar_rapido($id)
+	{
+		$model = new ArticulosModel();
+		$resultado = $model->where('id_articulo',$id)->findAll();
+		if (empty($resultado)){
+		    return $this->response->setJSON([
+		        'status'=>'error',
+		        'message'=>'No se hizo la consulta',
+		        'flag'=>0
+		    ]);
+		}else{
+			return $this->response->setJSON([
+		        'status'=>'success',
+		        'message'=>'Consulta realizada con éxito',
+		        'flag'=>1,
+		        'data'=> $resultado
+		    ]);
+		}
+
+	}
 	public function editar($id)
 	{
 

@@ -10,7 +10,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <?php endif; ?>
-	<div class="card">
+	<div class="card rounded-0 shadow-sm">
         <div class="car-body d-flex align-items-center justify-content-between">
     		<h2>Ordenes de Compra</h2>
             <!-- Button trigger modal -->
@@ -23,7 +23,7 @@
         </div>
        
 	</div>
-	<div class="my-card mt-3">
+	<div class="card mt-3 rounded-0 shadow-sm">
 		<table id="example" class="table table-bordered" style="width:100%">
             <thead>
                 <tr>
@@ -35,22 +35,31 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($pedidos as $data):
-                ?>
+                <?php foreach ($pedidos as $data): ?>
                 <tr>
                     <td><?php echo $data['id_pedido'] ?></td>
                     <td><?php echo $data['empresa'] ?></td>
                     <td><?php echo date('d-m-Y', strtotime($data['created_at'])); ?></td>
                     <td>
-                        <?php if ( $data['entregada'] == "1" ) : ?>
-                        <p class="m-0"><span class="badge badge-primary">Entregada</span></p>
-                        <?php else:?>
-                        <p class="m-0"><span class="badge badge-danger">En Curso</span></p>
+                        <?php if ($data['pagado'] == "0" && $data['entregada'] == "0") : ?>
+                            <span class="badge bg-secondary">Borrador</span>
+                        <?php elseif ($data['pagado'] == "1" && $data['entregada'] == "0") : ?>
+                            <span class="badge bg-warning text-dark">Pagada</span>
+                        <?php elseif ($data['entregada'] == "1") : ?>
+                            <span class="badge bg-success">Entregada</span>
+                        <?php else : ?>
+                            <span class="badge bg-danger">Estado desconocido</span>
                         <?php endif; ?>
                     </td>
                     <td>
-                        <a class="btn btn-primary btn-circle btn-sm" href="<?php echo base_url('pagina_orden/'.$data['slug']); ?>" class="btn btn-sm rounded-0 my-btn-success"><span class="bi bi-pencil"></span></a>
-                        <a class="btn btn-danger btn-circle btn-sm" href="<?php echo base_url('eliminar_cotizacion/'.$data['id_pedido']); ?>" class="btn btn-sm rounded-0 my-btn-danger" onclick="return confirm('Esta eliminación no se puede revertir, ¿Deseas continuar?');"><span class="bi bi-trash3"></span></a>
+                        <a class="btn btn-primary btn-circle btn-sm" href="<?php echo base_url('pagina_orden/'.$data['slug']); ?>">
+                            <span class="bi bi-pencil"></span>
+                        </a>
+                        <?php if ($data['pagado'] == "0"): // Solo mostrar botón eliminar si NO está pagado ?>
+                            <a class="btn btn-danger btn-circle btn-sm" href="<?php echo base_url('eliminar_compra/'.$data['id_pedido']); ?>" onclick="return confirm('Esta eliminación no se puede revertir, ¿Deseas continuar?');">
+                                <span class="bi bi-trash3"></span>
+                            </a>
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach ?>
@@ -113,6 +122,7 @@
 </div>
 <script>
     new DataTable('#modal');
+    new DataTable('#example');
 </script>
 <script type="" src="<?php echo base_url('public/js/cotizaciones.js'); ?>"></script>
 <?php echo $this->endSection(); ?>

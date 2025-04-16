@@ -15,19 +15,31 @@ class Compras extends BaseController
 	use ResponseTrait;
     public function index()
 	{
-		$db= \Config\Database::connect();
-		$proveedor = new ProveedoresModel();
-		
-		$builder = $db->table('sellopro_pedidos');
-		$builder->select('sellopro_pedidos.*, sellopro_proveedores.empresa');
-		$builder->join('sellopro_proveedores', 'sellopro_proveedores.id_proveedor = sellopro_pedidos.proveedor');
-		$pedidos = $builder->get()->getResultArray();
+	    $db = \Config\Database::connect();
+	    $proveedor = new ProveedoresModel();
+	    
+	    // Obtener el primer y último día del mes actual
+	    $primerDiaMes = date('Y-m-01');
+	    $ultimoDiaMes = date('Y-m-t');
+	    
+	    $builder = $db->table('sellopro_pedidos');
+	    $builder->select('sellopro_pedidos.*, sellopro_proveedores.empresa');
+	    $builder->join('sellopro_proveedores', 'sellopro_proveedores.id_proveedor = sellopro_pedidos.proveedor');
+	    
+	    // Filtrar por pedidos del mes actual
+	    $builder->where('sellopro_pedidos.created_at >=', $primerDiaMes);
+	    $builder->where('sellopro_pedidos.created_at <=', $ultimoDiaMes . ' 23:59:59');
+	    
+	    // Opcional: ordenar por fecha descendente (más recientes primero)
+	    $builder->orderBy('sellopro_pedidos.created_at', 'DESC');
+	    
+	    $pedidos = $builder->get()->getResultArray();
 
-		$data['proveedor'] = $proveedor->findAll();
-		$data['pedidos'] = $pedidos;
+	    $data['proveedor'] = $proveedor->findAll();
+	    $data['pedidos'] = $pedidos;
+	    $data['mes_actual'] = date('F Y'); // Para mostrar en la vista (ej: "July 2023")
 
-		return view('Panel/compras',$data);
-
+	    return view('Panel/compras', $data);
 	}
 	
 	public function pedido($id)
@@ -257,14 +269,14 @@ class Compras extends BaseController
 	{
 		$db = \Config\Database::connect();
 
-		$modelo = new CotizacionesModel();
+		$modelo = new PedidosModel();
 		$modelo->delete($id);
 
 		$builder = $db->table('sellopro_detalles');
 		$builder->where('id_cotizacion',$id);
 		$builder->delete();
 
-		return redirect()->to('/cotizaciones');
+		return redirect()->to('/compras');
 
 	}
 	public function cotizacion_pdf($id)

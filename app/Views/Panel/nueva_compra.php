@@ -32,8 +32,7 @@
                 </a>
                 <span class="d-none" ref="monto_total"><?= $suma_total?></span>
                 <span class="d-none" ref="pedido" ><?= $pedidos_id ?></span>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="<?php echo base_url('/eliminar_cotizacion/'.$pedidos_id); ?>" onclick="return confirm('¿Estas seguro de querer eliminar esta cotización?');"><span class="bi bi-trash3"></span> Eliminar Cotización</a>
+                <a class="dropdown-item" v-if="display_pagado == 0" href="<?php echo base_url('/eliminar_compra/'.$pedidos_id); ?>" onclick="return confirm('¿Estas seguro de querer eliminar esta cotización?');"><span class="bi bi-trash3"></span> Eliminar Cotización</a>
             </div>
         </div>
     </div>

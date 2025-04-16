@@ -7,24 +7,21 @@
 
 
     <!-- Iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" 
           crossorigin="anonymous">
+    <script
+    src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+    crossorigin="anonymous"></script>
+    <!--  Data Tables -->
+    <link href="https://cdn.datatables.net/v/dt/dt-2.2.2/datatables.min.css" rel="stylesheet" integrity="sha384-2vMryTPZxTZDZ3GnMBDVQV8OtmoutdrfJxnDTg0bVam9mZhi7Zr3J1+lkVFRr71f" crossorigin="anonymous">
+    <script src="https://cdn.datatables.net/v/dt/dt-2.2.2/datatables.min.js" integrity="sha384-2Ul6oqy3mEjM7dBJzKOck1Qb/mzlO+k/0BQv3D3C7u+Ri9+7OBINGa24AeOv5rgu" crossorigin="anonymous"></script>
 
-    <!-- DataTables core -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    <!-- DataTables Bootstrap 5 styling -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-    <!-- OJO: Este script no es Select2 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 
     <!-- Herramientas adicionales -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -35,9 +32,6 @@
     <!--  Vue select -->
     <script src="https://unpkg.com/vue@latest"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="<?= base_url('public/panel/css/style.css'); ?>">
 </head>
@@ -93,19 +87,19 @@
             </li>
             <li>
                 <a href="<?php echo base_url('compras'); ?>">
-                <i class="fas fa-file"></i>
+                <i class="bi bi-file-earmark-plus"></i>
                 <span>Ordenes de Compra</span>
                 </a>
             </li>
             <li>
                 <a href="<?php echo base_url('existencias/existencias_admin'); ?>">
-                <i class="fas fa-database"></i>
+                <i class="bi bi-bar-chart"></i>
                 <span>Existencias</span>
                 </a>
             </li>
             <li>
                 <a href="<?php echo base_url('gastos/inicio'); ?>">
-                <i class="bi bi-cash-coin"></i>
+                <i class="bi bi-coin"></i>
                 <span>Finansas</span>
                 </a>
             </li>

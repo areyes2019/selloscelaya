@@ -56,6 +56,7 @@ $routes->group('',static function($routes){
 	$routes->get('articulos', 'Admin\Articulos::index');
 	$routes->get('mostrar_articulos', 'Admin\Articulos::mostrar');
 	$routes->get('mostrar_articulos_compras/(:num)', 'Admin\Articulos::mostrar_compras/$1');
+	$routes->get('editar_rapido/(:num)', 'Admin\Articulos::editar_rapido/$1');
 	$routes->post('nuevo_articulo', 'Admin\Articulos::nuevo');
 	$routes->get('editar_articulo/(:num)', 'Admin\Articulos::editar/$1');
 	$routes->post('actualizar_articulo', 'Admin\Articulos::actualizar');
