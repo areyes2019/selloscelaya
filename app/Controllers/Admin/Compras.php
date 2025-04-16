@@ -434,7 +434,7 @@ class Compras extends BaseController
 	        ->select('d.cantidad, d.p_unitario')
 	        ->join('sellopro_articulos a', 'a.id_articulo = d.id_articulo')
 	        ->where('d.id_pedido', $pedidoId)
-	        ->where('a.venta', 0)
+	        ->where('a.venta', 1)
 	        ->get();
 
 	    $detalles = $query->getResultArray();

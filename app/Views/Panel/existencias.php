@@ -117,8 +117,8 @@
                             <td><?= esc($item['id_articulo']) ?></td>
                             <td><?= esc($item['nombre'] ?? 'N/A') ?></td>
                             <td><?= esc($item['modelo'] ?? 'N/A') ?></td>
-                            <td class="text-center"><?= esc($item['minimo'] ?? '') ?></td>
                             <td class="text-center"><?= esc($item['cantidad']) ?></td>
+                            <td class="text-center"><?= esc($item['minimo'] ?? '') ?></td>
                             <?php
                                 $variacion = ($item['cantidad'] ?? 0) - ($item['minimo'] ?? 0);
                                 $clase_color = ($item['cantidad'] < $item['minimo']) ? 'text-danger text-center' : '';
