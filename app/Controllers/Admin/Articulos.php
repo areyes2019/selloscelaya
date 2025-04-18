@@ -111,6 +111,61 @@ class Articulos extends BaseController
 		return view('Panel/editar_articulo',$data);
 
 	}
+	public function actualizar_rapido($idArticulo)
+	{
+	    // Validar que la solicitud sea POST
+	    if (!$this->request->is('post')) {
+	        return $this->response->setStatusCode(405)->setJSON(['error' => 'Método no permitido']);
+	    }
+
+	    // Obtener los datos enviados
+	    $datos = $this->request->getJSON(true);
+	    
+	    // Validar los datos recibidos
+	    $reglas = [
+	        'nombre' => 'required|min_length[3]|max_length[100]',
+	        'modelo' => 'permit_empty|max_length[50]',
+	        'precio_pub' => 'required|decimal',
+	        'precio_dist' => 'required|decimal',
+	        'precio_prov' => 'required|decimal'
+	    ];
+
+	    if (!$this->validate($reglas)) {
+	        return $this->response
+	            ->setStatusCode(400)
+	            ->setJSON(['errors' => $this->validator->getErrors()]);
+	    }
+
+	    try {
+	        // Cargar el modelo de artículos
+	        $articuloModel = new \App\Models\ArticulosModel();
+	        
+	        // Verificar que el artículo existe
+	        $articulo = $articuloModel->find($idArticulo);
+	        if (!$articulo) {
+	            return $this->response
+	                ->setStatusCode(404)
+	                ->setJSON(['error' => 'Artículo no encontrado']);
+	        }
+
+	        // Actualizar el artículo
+	        $articuloModel->update($idArticulo, [
+	            'nombre' => $datos['nombre'],
+	            'modelo' => $datos['modelo'],
+	            'precio_pub' => $datos['precio_pub'],
+	            'precio_dist' => $datos['precio_dist'],
+	            'precio_prov' => $datos['precio_prov']
+	        ]);
+
+	        return $this->response->setJSON(['success' => true]);
+
+	    } catch (\Exception $e) {
+	        log_message('error', 'Error al actualizar artículo: ' . $e->getMessage());
+	        return $this->response
+	            ->setStatusCode(500)
+	            ->setJSON(['error' => 'Error interno del servidor']);
+	    }
+	}
 	public function actualizar()
 	{
 	    // Procesamiento de la imagen (si se sube una nueva)

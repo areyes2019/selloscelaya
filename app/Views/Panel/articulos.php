@@ -109,7 +109,7 @@
                                                                 </div>
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                    <button @click.prevent = "guardarEdicionRapida('<?= $articulo['id_articulo'] ?>')" class="btn btn-primary">Guardar cambios</button>
+                                                                    <button @click.prevent = "guardarEdicionRapida(articulo.id_articulo)" class="btn btn-primary">Guardar cambios</button>
                                                                 </div>
                                                             </form>
                                                         </div>
