@@ -6,7 +6,7 @@
 
 <?= $this->section('contenido') ?>
 
-<div class="container-fluid">
+<div class="container-fluid" id="app">
 
     <!-- Mostrar mensajes flash (feedback al usuario) -->
     <?php if (session()->getFlashdata('success')): ?>
@@ -128,14 +128,34 @@
                             <td class="text-right"><?= number_to_currency($item['precio_prov'] ?? 0, 'MNX', 'es_MX', 2) ?></td>
                             <td class="text-right"><?= number_to_currency(($item['precio_pub'] ?? 0) * ($item['cantidad'] ?? 0), 'MXN', 'es_MX', 2) ?></td>
                             <td class="text-center">
-                                <a href="<?= site_url('admin/existencias/editar/' . $item['id_entrada']) ?>" class="btn btn-warning btn-sm" title="Editar Cantidad">
-                                    <i class="fas fa-pencil-alt"></i>
+                                <a href="" class="btn btn-warning btn-sm rounded-0" title="Editar Cantidad" data-bs-toggle="modal" data-bs-target="#modalNumerico" @click = "cambiar_inventario(<?= $item['id_entrada'] ?>)">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
-
+                                <!-- Modal -->
+                                <div class="modal fade" id="modalNumerico" tabindex="-1" aria-labelledby="modalNumericoLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="modalNumericoLabel">Ajustar valores</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="d-flex align-items-center">
+                                                <label for="cantidad1" class="form-label mr-2">Cambiar la cantidad</label>
+                                                <input type="number" class="form-control number-input mb-0 w-50" id="cantidad1" max="100" min="1" v-model="inventario.cantidad">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="button" class="btn btn-primary" @click = "guardar_rapido">Guardar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <?= form_open('/existencias/eliminar/' . $item['id_entrada'], ['class' => 'd-inline', 'onsubmit' => "return confirm('¿Estás seguro de querer eliminar este registro del inventario?');"]) ?>
                                     <?= csrf_field() ?>
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar Registro">
-                                        <i class="fas fa-trash"></i>
+                                    <button type="submit" class="btn btn-danger btn-sm rounded-0" title="Eliminar Registro">
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 <?= form_close() ?>
                             </td>

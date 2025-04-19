@@ -306,6 +306,25 @@ body {
   width: 0;
   pointer-events: none;
 }
+/*estilos para el modal existencias*/
+.number-control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.number-input {
+    text-align: center;
+    width: 60px;
+}
+.btn-number {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 /* Ajustes para móviles */
 @media (max-width: 768px) {
     .modern-drop-zone {

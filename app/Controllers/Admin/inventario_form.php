@@ -79,7 +79,7 @@
                 <!-- Botones -->
                 <div class="mt-4">
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save"></i> <?= $is_editing ? 'Actualizar Cantidad' : 'Añadir al Inventario' ?>
+                        <i class="bi bi-floppy"></i> <?= $is_editing ? 'Actualizar Cantidad' : 'Añadir al Inventario' ?>
                     </button>
                     <a href="<?= site_url('admin/existencias') ?>" class="btn btn-secondary">
                        <i class="fas fa-arrow-left"></i> Cancelar

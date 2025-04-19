@@ -8,7 +8,6 @@
                     <div class="card-header bg-primary text-white">
                         <h3 class="card-title">Reporte Financiero</h3>
                         <div class="card-tools">
-                            <button class="btn btn-sm btn-light">HOY</button>
                         </div>
                     </div>
                     <div class="card-body">

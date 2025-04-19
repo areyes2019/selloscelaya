@@ -214,6 +214,8 @@ $routes->group('',static function($routes){
 	    $routes->get('editar/(:num)', 'Admin\Existencias::editar/$1'); // Muestra form para editar
 	    $routes->post('actualizar/(:num)', 'Admin\Existencias::actualizar/$1'); // Procesa actualización (POST)
 	    $routes->post('eliminar/(:num)', 'Admin\Existencias::eliminar/$1');  // Procesa eliminación (POST)
+	    $routes->get('edicion_rapida/(:num)', 'Admin\Existencias::edicion_rapida/$1'); // Muestra form para editar
+	    $routes->post('guardar_rapido', 'Admin\Existencias::guardar_rapido'); // Muestra form para editar
 	});
 	$routes->group('cuentas', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
 	    $routes->get('/', 'CuentasController::index');           // Muestra la lista de cuentas

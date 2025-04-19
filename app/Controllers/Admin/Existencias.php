@@ -16,6 +16,8 @@ class Existencias extends BaseController
 
     public function __construct()
     {
+        // Cargar la instancia de la base de datos
+        $this->db = \Config\Database::connect();
         $this->inventarioModel = new InventarioModel();
         $this->articulosModel = new ArticulosModel();
     }
@@ -249,5 +251,60 @@ class Existencias extends BaseController
         }
 
         return redirect()->to('/existencias/existencias_admin');
+    }
+    public function edicion_rapida($id)
+    {
+        // Obtener el registro de inventario
+        $inventario = $this->inventarioModel->where('id_entrada', $id)->first();
+        
+        if (empty($inventario)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'No se encontró el registro de inventario',
+                'flag' => 0
+            ]);
+        }
+
+        // Obtener el artículo relacionado
+        $articulo = $this->articulosModel->where('id_articulo', $inventario['id_articulo'])->first();
+        
+        if (empty($articulo)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'No se encontró el artículo relacionado',
+                'flag' => 0
+            ]);
+        }
+
+        // Retornar los datos necesarios
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => 'Consulta realizada con éxito',
+            'flag' => 1,
+            'data' => [
+                'id_entrada' => $inventario['id_entrada'],
+                'cantidad' => $inventario['cantidad'],
+                'minimo' => $articulo['minimo'],
+                'id_articulo' => $inventario['id_articulo'] // Opcional, por si lo necesitas
+            ]
+        ]);
+    }
+    public function guardar_rapido() {
+        
+        $id_inventario     = $this->request->getVar('id_entrada');
+        $data['cantidad']  = $this->request->getVar('cantidad');
+
+        //guardar en la tabla articulos
+        $actualizar_inventario  = $this->inventarioModel->update($id_inventario,$data);
+
+        if ($actualizar_inventario == true){
+             return $this->response->setJSON([
+                 'status'=>'success',
+                 'message'=>'Se actualizaron los datos correctamente',
+                 'flag'=>1
+             ]);
+         } 
+
+
     }
 }
