@@ -222,6 +222,9 @@ class PuntoVentaController extends BaseController
             // Obtener detalles del pedido
             $detalles = $this->detallePedidoModel->where('pedido_id', $id)->findAll();
 
+            $total_neto = 0;
+            $total_inversion = 0;
+
             foreach ($detalles as $item) {
                 $inventario = $this->inventarioModel
                     ->where('id_articulo', $item['id_articulo'])
@@ -240,6 +243,16 @@ class PuntoVentaController extends BaseController
                 } else {
                     throw new \Exception('Artículo no encontrado en inventario: ' . $item['descripcion']);
                 }
+
+                // Obtener información completa del artículo
+                $articulo = $this->articulosModel->find($item['id_articulo']);
+                if (!$articulo) {
+                    throw new \Exception('Artículo no encontrado: ' . $item['id_articulo']);
+                }
+
+                // Calcular totales para la venta
+                $total_neto += $articulo['precio_pub'] * $item['cantidad']; // Usamos precio_pub del artículo
+                $total_inversion += $articulo['precio_prov'] * $item['cantidad'];
             }
 
             // Marcar pedido como pagado
@@ -248,10 +261,18 @@ class PuntoVentaController extends BaseController
                 'estado' => 'pagado'
             ]);
 
+            // Registrar la venta en sellopro_ventas
+            $ventasModel = new \App\Models\VentasModel();
+            $ventasModel->insert([
+                'ref' => 'VENTA-' . date('Ymd-His') . '-' . $id, // Referencia más descriptiva
+                'total_neto' => $total_neto,
+                'inversion' => $total_inversion,
+                'beneficio' => $total_neto - $total_inversion
+            ]);
 
             $db->transComplete();
 
-            return redirect()->back()->with('success', 'Pedido marcado como pagado correctamente');
+            return redirect()->back()->with('success', 'Pedido marcado como pagado correctamente y venta registrada');
 
         } catch (\Exception $e) {
             $db->transRollback();

@@ -65,16 +65,16 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>Entradas Brutas</td>
-                                                    <td class="text-end">${{resumen.total_bruto}}</td>
+                                                    <td>Total Ventas</td>
+                                                    <td class="text-end">${{resumen.total_ventas}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Inversión Material</td>
-                                                    <td class="text-end">${{resumen.capital}}</td>
+                                                    <td class="text-end">${{resumen.total_inversion}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Gastos Operativos</td>
-                                                    <td class="text-end">${{resumen.gastos}}</td>
+                                                    <td class="text-end">${{resumen.total_gastos}}</td>
                                                 </tr>
                                                 <tr class="table-success fw-bold">
                                                     <td>Beneficio Bruto</td>
