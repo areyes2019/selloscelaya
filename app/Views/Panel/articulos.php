@@ -64,12 +64,17 @@
                                         <td><strong>$<?= $articulo['precio_pub'];?></strong></td>
                                         <td>$<?= $articulo['precio_pub'] - $articulo['precio_prov'];?></td>
                                         <td class="d-flex gap-1">
+                                            <!--  Eliminar articulo -->
                                             <a href="eliminar_articulo/<?php echo $articulo['id_articulo'] ?>" onclick="return confirm('¿Seguro que quieres eliminar este registro?')" class="btn btn-sm btn-danger rounded-0">
                                                 <i class="bi bi-trash"></i>
                                             </a>
+                                            
+                                            <!-- Editar articulo --> 
                                             <a href="editar_articulo/<?php echo $articulo['id_articulo'] ?>" class="btn btn-sm btn-success rounded-0">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+
+                                            <!-- Editar rápido -->
                                             <button type="button" class="btn btn-sm btn-primary rounded-0" @click = "cambio_rapido('<?= $articulo['id_articulo']?>')">
                                                 <i class="bi bi-lightning-charge"></i>
                                             </button>
@@ -104,6 +109,20 @@
                                                                         <div class="col">
                                                                             <label class="form-label">Precio Prov</label>
                                                                             <input type="number" step="0.01" class="form-control" placeholder="Proveedor" v-model="articulo.precio_prov">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <div class="row g-2">
+                                                                        <div class="col">
+                                                                            <label for="" class="form-label">Categoria</label>
+                                                                            <select name="" id="" class="form-control" v-model="articulo.categoria">
+                                                                                <option value="">Seleccione una categoría...</option>
+                                                                                <option value="0">Sin categoria</option>
+                                                                                <option value="1">Autoentintable</option>
+                                                                                <option value="1">Madera</option>
+                                                                                <option value="1">Fechadores</option>
+                                                                            </select>
                                                                         </div>
                                                                     </div>
                                                                 </div>

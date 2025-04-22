@@ -31,9 +31,9 @@
                     <td data-label="Estado">Enviada</td>
                     <td data-label="Acciones">
                         <!-- ver la cotización -->
-                        <a href="<?php echo base_url('pagina_cotizador/'.$data['slug']); ?>" class="btn btn-view"><i class="fas fa-eye"></i></a>
+                        <a href="<?php echo base_url('pagina_cotizador/'.$data['slug']); ?>" class="btn btn-view"><i class="bi bi-eye"></i></a>
                         <a href="<?php echo base_url('enviar_pdf/'.$data['id_cotizacion']); ?>" class="btn btn-edit" onclick="return confirm('¿Deseas enviar esta cotización?');" ><i class="bi bi-send"></i></a>
-                        <a href="<?php echo base_url('eliminar_cotizacion/'.$data['id_cotizacion']); ?>" class="btn btn-delete" onclick="return confirm('Esta eliminación no se puede revertir, ¿Deseas continuar?');"><i class="fas fa-trash"></i></a>
+                        <a href="<?php echo base_url('eliminar_cotizacion/'.$data['id_cotizacion']); ?>" class="btn btn-delete" onclick="return confirm('Esta eliminación no se puede revertir, ¿Deseas continuar?');"><i class="bi bi-trash3"></i></a>
                     </td>
                 </tr>
                 <?php endforeach ?>

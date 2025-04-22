@@ -107,6 +107,12 @@
                 <span>Finansas</span>
                 </a>
             </li>
+            <li>
+                <a href="<?php echo base_url('categorias/'); ?>">
+                <i class="bi bi-shop"></i>
+                <span>Catálogo</span>
+                </a>
+            </li>
             
             
         </ul>

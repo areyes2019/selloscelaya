@@ -82,10 +82,16 @@ $routes->group('',static function($routes){
 	$routes->post('pago', 'Admin\Cotizaciones::pago');
 	$routes->post('modificar_cantidad', 'Admin\Cotizaciones::modificar_cantidad');
 	$routes->post('marcar_entregado', 'Admin\Cotizaciones::entregado');
-	$routes->get('totales/(:num)', 'Admin\Cotizaciones::totales/$1');
+	$routes->get('totales/(:num)', 'Admin\Cotizaciones::calcularTotales/$1');
 	$routes->post('descuento', 'Admin\Cotizaciones::descuento');
+	$routes->post('descuento_dinero', 'Admin\Cotizaciones::descuento_dinero');
+	$routes->post('descontar_inventario', 'Admin\Cotizaciones::descontar_inventario');
+	$routes->post('marcar_pagado', 'Admin\Cotizaciones::pago_total');
+	
+
 	/*Facturas*/
 	$routes->post('facturar_cotizacion', 'Admin\FacturaController::convertir');
+	//$routes->post('marcar_pagado', 'Admin\FacturaController::pago_total');
 
 	/*Ordenes de Compras*/
 	$routes->get('compras', 'Admin\Compras::index');
@@ -225,10 +231,15 @@ $routes->group('',static function($routes){
 	    $routes->post('actualizar/(:num)', 'CuentasController::actualizar/$1'); // Procesa el formulario de edición
 	    $routes->get('borrar/(:num)', 'CuentasController::borrar/$1');   // Borra una cuenta
 	});
-
-
-
-
+	/*categorias*/
+	$routes->group('categorias', ['namespace' => 'App\Controllers\Admin'],function($routes) {
+	    $routes->get('/', 'CategoriasController::index');
+	    $routes->get('show', 'CategoriasController::show');
+	    $routes->post('store', 'CategoriasController::store');
+	    $routes->get('edit/(:num)', 'CategoriasController::edit/$1');
+	    $routes->post('update/(:num)', 'CategoriasController::update/$1');
+	    $routes->get('delete/(:num)', 'CategoriasController::delete/$1');
+	});
 
 });
 

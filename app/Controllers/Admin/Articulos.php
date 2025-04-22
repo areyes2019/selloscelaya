@@ -127,7 +127,8 @@ class Articulos extends BaseController
 	        'modelo' => 'permit_empty|max_length[50]',
 	        'precio_pub' => 'required|decimal',
 	        'precio_dist' => 'required|decimal',
-	        'precio_prov' => 'required|decimal'
+	        'precio_prov' => 'required|decimal',
+	        'categoria' => 'permit_empty|max_length[1]'
 	    ];
 
 	    if (!$this->validate($reglas)) {
@@ -154,7 +155,8 @@ class Articulos extends BaseController
 	            'modelo' => $datos['modelo'],
 	            'precio_pub' => $datos['precio_pub'],
 	            'precio_dist' => $datos['precio_dist'],
-	            'precio_prov' => $datos['precio_prov']
+	            'precio_prov' => $datos['precio_prov'],
+	            'categoria' => $datos['categoria'],
 	        ]);
 
 	        return $this->response->setJSON(['success' => true]);

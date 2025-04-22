@@ -12,6 +12,8 @@ class CotizacionesModel extends Model
         'cliente',
         'fecha',
         'caduca',
+        'subtotal',
+        'iva',
         'total',
         'anticipo',
         'descuento',

@@ -25,7 +25,8 @@ const {createApp, ref} = Vue
 		                modelo: this.articulo.modelo,
 		                precio_pub: this.articulo.precio_pub,
 		                precio_dist: this.articulo.precio_dist,
-		                precio_prov: this.articulo.precio_prov
+		                precio_prov: this.articulo.precio_prov,
+		                categoria: this.articulo.categoria,
 		            };
 		            // Enviar los datos al servidor
 		            const response = await axios.post(`/actualizar_rapido/${idArticulo}`, datosActualizados);
