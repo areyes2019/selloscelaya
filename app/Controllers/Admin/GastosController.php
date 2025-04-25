@@ -6,6 +6,7 @@ use App\Models\GastosModel;
 use App\Models\PedidoModel;
 use App\Models\ArticulosModel;
 use App\Models\DetallePedidoModel;
+use App\Models\CuentasModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 class GastosController extends BaseController
 {
@@ -20,6 +21,7 @@ class GastosController extends BaseController
         $this->pedidoModel = new PedidoModel();
         $this->articulosModel = new ArticulosModel();
         $this->detallePedidoModel = new DetallePedidoModel();
+        $this->cuentasModel = new CuentasModel();
     }
 
     // Listar todos los gastos
@@ -27,7 +29,7 @@ class GastosController extends BaseController
     {
         $data = [
             'title' => 'Gestión de Gastos',
-            'gastos' => $this->gastoModel->orderBy('fecha_gasto', 'DESC')->findAll()
+            'gastos' => $this->gastoModel->orderBy('fecha_gasto', 'DESC')->findAll(),
         ];
 
         return view('Panel/gastos', $data);
@@ -37,31 +39,92 @@ class GastosController extends BaseController
     public function nuevo()
     {
         $data = [
-            'title' => 'Registrar Nuevo Gasto'
+            'title' => 'Registrar Nuevo Gasto',
+            'cuentas'=> $this->cuentasModel->findAll()
         ];
 
         return view('Panel/nuevo_gasto', $data);
     }
-
-    // Guardar nuevo gasto
     public function guardar()
     {
-        // Validar datos
+        // Validar con reglas del modelo
         if (!$this->validate($this->gastoModel->validationRules, $this->gastoModel->validationMessages)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // Obtener datos del formulario
-        $data = [
-            'descripcion' => $this->request->getPost('descripcion'),
-            'monto'       => $this->request->getPost('monto'),
-            'fecha_gasto' => $this->request->getPost('fecha_gasto')
-        ];
+        // Obtener inputs
+        $descripcion     = $this->request->getPost('descripcion');
+        $monto           = floatval($this->request->getPost('monto'));
+        $fecha           = $this->request->getPost('fecha_gasto');
+        $cuentaOrigenId  = intval($this->request->getPost('cuenta_origen'));
+        $esTransferencia = $this->request->getPost('es_transferencia') ? true : false;
 
-        // Insertar en la base de datos
-        $this->gastoModel->insert($data);
+        // Solo procesar cuenta_destino si es transferencia
+        $cuentaDestinoId = null; // Por defecto NULL (no 0)
+        if ($esTransferencia) {
+            $cuentaDestinoId = intval($this->request->getPost('cuenta_destino'));
+        }
 
-        return redirect()->to('/gastos/inicio')->with('message', 'Gasto registrado exitosamente');
+        $cuentasModel = new \App\Models\CuentasModel();
+        $cuentaOrigen = $cuentasModel->find($cuentaOrigenId);
+
+        if (!$cuentaOrigen) {
+            return redirect()->back()->withInput()->with('errors', ['Cuenta de origen no encontrada.']);
+        }
+
+        if ($cuentaOrigen['saldo'] < $monto) {
+            return redirect()->back()->withInput()->with('errors', ['Saldo insuficiente en la cuenta de origen.']);
+        }
+
+        if ($esTransferencia) {
+            if ($cuentaOrigenId === $cuentaDestinoId) {
+                return redirect()->back()->withInput()->with('errors', ['No puedes transferir a la misma cuenta.']);
+            }
+
+            $cuentaDestino = $cuentasModel->find($cuentaDestinoId);
+            if (!$cuentaDestino) {
+                return redirect()->back()->withInput()->with('errors', ['Cuenta de destino no encontrada.']);
+            }
+        }
+
+        // Iniciar transacción
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            // Insertar gasto (cuenta_destino será NULL si no es transferencia)
+            $this->gastoModel->insert([
+                'descripcion'    => $descripcion,
+                'monto'          => $monto,
+                'fecha_gasto'    => $fecha,
+                'cuenta_origen'  => $cuentaOrigenId,
+                'cuenta_destino' => $esTransferencia ? $cuentaDestinoId : null, // Forzamos NULL si no es transferencia
+            ]);
+
+            // Restar saldo cuenta origen
+            $cuentasModel->update($cuentaOrigenId, [
+                'saldo' => $cuentaOrigen['saldo'] - $monto
+            ]);
+
+            // Si es transferencia, sumar saldo a cuenta destino
+            if ($esTransferencia) {
+                $cuentasModel->update($cuentaDestinoId, [
+                    'saldo' => $cuentaDestino['saldo'] + $monto
+                ]);
+            }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                throw new \Exception('Error al procesar la transacción.');
+            }
+
+            return redirect()->to('/gastos/inicio')->with('message', 'Gasto registrado exitosamente');
+            
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('errors', [$e->getMessage()]);
+        }
     }
 
     // Mostrar detalles de un gasto

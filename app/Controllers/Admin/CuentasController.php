@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controllers;
-
-use App\Models\SelloproCuentaModel;
+namespace App\Controllers\Admin;
+use App\Controllers\BaseController;
+use App\Models\CuentasModel;
 
 class CuentasController extends BaseController
 {
@@ -10,7 +10,7 @@ class CuentasController extends BaseController
 
     public function __construct()
     {
-        $this->cuentaModel = new SelloproCuentaModel();
+        $this->cuentaModel = new CuentasModel();
     }
 
     public function index()
@@ -20,7 +20,7 @@ class CuentasController extends BaseController
             'titulo' => 'Listado de Cuentas',
             'cuentas' => $cuentas,
         ];
-        return view('cuentas/listado_cuentas_bancarias', $data);
+        return view('Panel/listado_cuentas_bancarias', $data);
     }
 
     public function nuevo()
@@ -28,22 +28,29 @@ class CuentasController extends BaseController
         $data = [
             'titulo' => 'Nueva Cuenta',
         ];
-        return view('cuentas/nuevo', $data);
+        return view('Panel/nueva_cuenta_bancaria', $data);
     }
 
     public function guardar()
     {
         $rules = [
-            'Banco' => 'required|max_length[255]',
-            'NoCta' => 'required|integer',
-            'Saldo' => 'required|decimal',
+            'banco' => 'required|max_length[255]',
+            'cuenta' => 'required|max_length[50]',
+            'saldo' => 'required|decimal',
+        ];
+        $messages = [
+            'cuenta' => [
+                'required' => 'El número de cuenta es obligatorio',
+                'max_length' => 'El número de cuenta no puede exceder los 50 caracteres'
+            ],
+            // Puedes agregar mensajes para los otros campos si lo deseas
         ];
 
         if ($this->validate($rules)) {
             $data = [
-                'Banco' => $this->request->getPost('Banco'),
-                'NoCta' => $this->request->getPost('NoCta'),
-                'Saldo' => $this->request->getPost('Saldo'),
+                'banco' => $this->request->getPost('banco'),
+                'cuenta' => $this->request->getPost('cuenta'),
+                'saldo' => $this->request->getPost('saldo'),
             ];
             $this->cuentaModel->insert($data);
             return redirect()->to(base_url('cuentas'))->with('mensaje', 'Cuenta guardada correctamente.');
@@ -52,11 +59,11 @@ class CuentasController extends BaseController
                 'titulo' => 'Nueva Cuenta',
                 'validation' => $this->validator,
             ];
-            return view('cuentas/nuevo', $data);
+            return view('Panel/nueva_cuenta_bancaria', $data);
         }
     }
 
-    public function editar($id = null)
+    public function editar($id)
     {
         $cuenta = $this->cuentaModel->find($id);
         if ($cuenta) {
@@ -64,25 +71,25 @@ class CuentasController extends BaseController
                 'titulo' => 'Editar Cuenta',
                 'cuenta' => $cuenta,
             ];
-            return view('cuentas/editar', $data);
+            return view('Panel/editar_cuenta_bancaria', $data);
         } else {
             return redirect()->to(base_url('cuentas'))->with('error', 'Cuenta no encontrada.');
         }
     }
 
-    public function actualizar($id = null)
+    public function actualizar($id)
     {
         $rules = [
-            'Banco' => 'required|max_length[255]',
-            'NoCta' => 'required|integer',
-            'Saldo' => 'required|decimal',
+            'banco' => 'required|max_length[255]',
+            'cuenta' => 'required|max_length[50]',
+            'saldo' => 'required|decimal',
         ];
 
         if ($this->validate($rules)) {
             $data = [
-                'Banco' => $this->request->getPost('Banco'),
-                'NoCta' => $this->request->getPost('NoCta'),
-                'Saldo' => $this->request->getPost('Saldo'),
+                'banco' => $this->request->getPost('banco'),
+                'cuenta' => $this->request->getPost('cuenta'),
+                'saldo' => $this->request->getPost('saldo'),
             ];
             $this->cuentaModel->update($id, $data);
             return redirect()->to(base_url('cuentas'))->with('mensaje', 'Cuenta actualizada correctamente.');
@@ -94,7 +101,7 @@ class CuentasController extends BaseController
                     'cuenta' => $cuenta,
                     'validation' => $this->validator,
                 ];
-                return view('cuentas/editar', $data);
+                return view('Panel/editar_cuenta_bancaria', $data);
             } else {
                 return redirect()->to(base_url('cuentas'))->with('error', 'Cuenta no encontrada.');
             }

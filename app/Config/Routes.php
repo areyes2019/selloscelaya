@@ -210,7 +210,6 @@ $routes->group('',static function($routes){
 	    $routes->post('eliminar/(:num)', 'Admin\GastosController::eliminar/$1');
 	});
 
-	//existenias
 	$routes->group('existencias',static function($routes) {
 		$routes->get('existencias_admin', 'Admin\Existencias::index');
 	    // Rutas para el CRUD de Existencias/Inventario
@@ -224,13 +223,14 @@ $routes->group('',static function($routes){
 	    $routes->post('guardar_rapido', 'Admin\Existencias::guardar_rapido'); // Muestra form para editar
 	});
 	$routes->group('cuentas', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
-	    $routes->get('/', 'CuentasController::index');           // Muestra la lista de cuentas
-	    $routes->get('nuevo', 'CuentasController::nuevo');       // Muestra el formulario para crear una nueva cuenta
-	    $routes->post('guardar', 'CuentasController::guardar');   // Procesa el formulario de creación
-	    $routes->get('editar/(:num)', 'Cuentas::editar/$1'); // Muestra el formulario para editar una cuenta (/:num es un parámetro numérico)
-	    $routes->post('actualizar/(:num)', 'CuentasController::actualizar/$1'); // Procesa el formulario de edición
-	    $routes->get('borrar/(:num)', 'CuentasController::borrar/$1');   // Borra una cuenta
+	    $routes->get('/', 'CuentasController::index');    
+	    $routes->get('nuevo', 'CuentasController::nuevo');     
+	    $routes->get('editar/(:num)', 'CuentasController::editar/$1');     
+	    $routes->post('guardar', 'CuentasController::guardar'); 
+	    $routes->post('actualizar/(:num)', 'CuentasController::actualizar/$1');
+	    $routes->get('borrar/(:num)', 'CuentasController::borrar/$1');   
 	});
+
 	/*categorias*/
 	$routes->group('categorias', ['namespace' => 'App\Controllers\Admin'],function($routes) {
 	    $routes->get('/', 'CategoriasController::index');

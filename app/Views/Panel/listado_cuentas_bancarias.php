@@ -32,9 +32,9 @@
                     <?php foreach ($cuentas as $cuenta): ?>
                         <tr>
                             <td><?= esc($cuenta['id_cuenta']) ?></td>
-                            <td><?= esc($cuenta['Banco']) ?></td>
-                            <td><?= esc($cuenta['NoCta']) ?></td>
-                            <td><?= esc(number_format($cuenta['Saldo'], 2)) ?></td>
+                            <td><?= esc($cuenta['banco']) ?></td>
+                            <td><?= esc($cuenta['cuenta']) ?></td>
+                            <td><?= esc(number_format($cuenta['saldo'], 2)) ?></td>
                             <td><?= esc($cuenta['created_at']) ?></td>
                             <td><?= esc($cuenta['updated_at']) ?></td>
                             <td>

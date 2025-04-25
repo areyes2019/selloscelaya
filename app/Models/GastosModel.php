@@ -12,7 +12,13 @@ class GastosModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['descripcion', 'monto', 'fecha_gasto'];
+    protected $allowedFields = [
+        'descripcion', 
+        'monto', 
+        'fecha_gasto',
+        'cuenta_origen',
+        'cuenta_destino',
+    ];
 
 
     protected $validationRules    = [

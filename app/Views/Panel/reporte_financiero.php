@@ -30,7 +30,6 @@
                             </div>
                         </form>
 
-
                         <!-- Beneficio neto destacado -->
                         <div class="row mt-4">
                             <div class="col-md-12">
@@ -86,6 +85,43 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección nueva para Saldos Bancarios -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <h3 class="card-title">Saldos Bancarios</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover">
+                                                <thead class="thead-dark">
+                                                    <tr>
+                                                        <th>Banco</th>
+                                                        <th>Número de Cuenta</th>
+                                                        <th class="text-end">Saldo</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(cuenta, index) in resumen.detalle_cuentas" :key="index">
+                                                        <td>{{ cuenta.banco }}</td>
+                                                        <td>{{ cuenta.cuenta }}</td>
+                                                        <td class="text-end">${{ cuenta.saldo }}</td>
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="table-info fw-bold">
+                                                        <td colspan="2">Total en Cuentas Bancarias</td>
+                                                        <td class="text-end">${{resumen.total_saldos_bancarios}}</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -14,17 +14,17 @@
             <input type="hidden" name="_method" value="post">
             <div class="form-group">
                 <label for="Banco">Banco</label>
-                <input type="text" class="form-control" id="Banco" name="Banco" value="<?= old('Banco', $cuenta['Banco']) ?>">
+                <input type="text" class="form-control" id="Banco" name="banco" value="<?= old('banco', $cuenta['banco']) ?>">
             </div>
 
             <div class="form-group">
                 <label for="NoCta">No. Cuenta</label>
-                <input type="number" class="form-control" id="NoCta" name="NoCta" value="<?= old('NoCta', $cuenta['NoCta']) ?>">
+                <input type="number" class="form-control" id="NoCta" name="cuenta" value="<?= old('cuenta', $cuenta['cuenta']) ?>">
             </div>
 
             <div class="form-group">
                 <label for="Saldo">Saldo</label>
-                <input type="text" class="form-control" id="Saldo" name="Saldo" value="<?= old('Saldo', $cuenta['Saldo']) ?>">
+                <input type="text" class="form-control" id="Saldo" name="saldo" value="<?= old('saldo', $cuenta['saldo']) ?>">
                 <small class="form-text text-muted">Utilice el formato decimal (ej: 100.50)</small>
             </div>
 

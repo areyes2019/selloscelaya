@@ -14,17 +14,17 @@
 
             <div class="form-group">
                 <label for="Banco">Banco</label>
-                <input type="text" class="form-control" id="Banco" name="Banco" value="<?= old('Banco') ?>">
+                <input type="text" class="form-control" id="Banco" name="banco" value="<?= old('Banco') ?>">
             </div>
 
             <div class="form-group">
                 <label for="NoCta">No. Cuenta</label>
-                <input type="number" class="form-control" id="NoCta" name="NoCta" value="<?= old('NoCta') ?>">
+                <input type="number" class="form-control" id="NoCta" name="cuenta" value="<?= old('NoCta') ?>">
             </div>
 
             <div class="form-group">
                 <label for="Saldo">Saldo</label>
-                <input type="text" class="form-control" id="Saldo" name="Saldo" value="<?= old('Saldo') ?>">
+                <input type="text" class="form-control" id="Saldo" name="saldo" value="<?= old('Saldo') ?>">
                 <small class="form-text text-muted">Utilice el formato decimal (ej: 100.50)</small>
             </div>
 

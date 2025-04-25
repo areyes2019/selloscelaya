@@ -8,6 +8,7 @@ use App\Models\ArticulosModel;
 use App\Models\InventarioModel;
 use App\Models\BalanceModel;
 use App\Models\GastosModel;
+use App\Models\CuentasModel;
 use App\Models\VentasModel;
 use CodeIgniter\API\ResponseTrait; // Para respuestas JSON si usas AJAX
 use CodeIgniter\Database\Exceptions\DataException;
@@ -109,6 +110,23 @@ class BalanceController extends BaseController
 	        $total_gastos += $gasto['monto'];
 	    }
 	    
+	    // Obtener saldos de todas las cuentas bancarias
+	    $cuentasModel = new CuentasModel();
+	    $cuentas = $cuentasModel->findAll();
+	    
+	    // Calcular total de saldos bancarios
+	    $total_saldos = 0;
+	    $detalle_cuentas = [];
+	    
+	    foreach ($cuentas as $cuenta) {
+	        $total_saldos += $cuenta['saldo'];
+	        $detalle_cuentas[] = [
+	            'banco' => $cuenta['banco'],
+	            'cuenta' => $cuenta['cuenta'],
+	            'saldo' => number_format($cuenta['saldo'], 2)
+	        ];
+	    }
+	    
 	    // Calcular beneficios
 	    $beneficio_bruto = $total_ventas - $total_inversion;
 	    $beneficio_neto = $beneficio_bruto - $total_gastos;
@@ -120,6 +138,8 @@ class BalanceController extends BaseController
 	        'total_gastos' => number_format($total_gastos, 2),
 	        'beneficio_bruto' => number_format($beneficio_bruto, 2),
 	        'beneficio_neto' => number_format($beneficio_neto, 2),
+	        'total_saldos_bancarios' => number_format($total_saldos, 2),
+	        'detalle_cuentas' => $detalle_cuentas,
 	        'mes' => $mes_actual
 	    ];
 	    

@@ -14,15 +14,15 @@ class CrearTablaBancos extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'Banco' => [
+            'banco' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
             ],
-            'NoCta' => [
-                'type'       => 'INT',
-                'unsigned'   => true,
+            'cuenta' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 50,
             ],
-            'Saldo' => [
+            'saldo' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '10,2',
             ],
