@@ -54,6 +54,15 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="">Proveedor</label>
+                    <select name="" id="" class="form-control rounded-0 form-control-sm shadow-none">
+                        <option value="">Selecciona un proveedor...</option>
+                        <?php foreach ($proveedores as $person):?>
+                        <option value="<?= $person['id_proveedor'] ?>"><?php echo $person['empresa'] ?></option> 
+                        <?php endforeach ?>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="img">Imagen del Artículo</label>
                     <div class="custom-file">
                         <input type="file" name="img" id="img" class="custom-file-input">

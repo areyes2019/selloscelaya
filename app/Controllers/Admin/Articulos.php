@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\ArticulosModel;
 use App\Models\DescuentosModel;
+use App\Models\ProveedoresModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 class Articulos extends BaseController
 {
@@ -29,7 +30,12 @@ class Articulos extends BaseController
 	}
 	public function nuevo_art()
 	{
-		return view('Panel/nuevo_articulo');
+		$model = new ProveedoresModel();
+		$resultado = $model->findAll();
+		$data = [
+			'proveedores'=> $resultado
+		];
+		return view('Panel/nuevo_articulo', $data);
 	}
 	public function nuevo()
 	{
@@ -62,7 +68,8 @@ class Articulos extends BaseController
 	        'precio_pub' => $precio_pub,
 	        'precio_dist' => $precio_dist,
 	        'venta' => $this->request->getPost('venta') ? 1 : 0,
-	        'img' => $img
+	        'img' => $img,
+	        'proveedor' => $this->request->getPost('proveedor') // Añadir el campo proveedor
 	    ];
 	    
 	    $model->insert($data);
@@ -107,7 +114,11 @@ class Articulos extends BaseController
 		$model = new ArticulosModel();
 		$resultado = $model->where('id_articulo',$id)->findAll();
 		$nombre = $resultado[0]['nombre']." - ".$resultado[0]['modelo'];
-		$data = ['articulos'=>$resultado,'nombre'=>$nombre];
+
+		$modelo = new ProveedoresModel();
+		$resultado_prov = $modelo->findAll();
+
+		$data = ['articulos'=>$resultado,'nombre'=>$nombre,'proveedores'=>$resultado_prov];
 		return view('Panel/editar_articulo',$data);
 
 	}

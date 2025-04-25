@@ -76,7 +76,18 @@
                 <option value="0" <?= $articulo['venta'] == 0 ? 'selected' : '' ?>>No</option>
             </select>
         </div>
-        
+        <div class="col-md-3">
+            <label class="form-label">Proveedor</label>
+            <select class="form-select my-input shadow-none form-control p-1" name="proveedor" required>
+                <option value="">Selecciona un proveedor...</option>
+                <?php foreach ($proveedores as $proveedor): ?>
+                    <option value="<?= $proveedor['id_proveedor'] ?>" 
+                        <?= $proveedor['id_proveedor'] == $articulo['proveedor'] ? 'selected' : '' ?>>
+                        <?= $proveedor['empresa'] ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
         <div class="col-12">
             <button type="submit" class="my-btn-primary p-3">
                 <span class="bi bi-save"></span> Guardar
