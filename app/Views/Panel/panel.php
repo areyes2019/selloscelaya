@@ -3,7 +3,10 @@
 <?= $this->section('contenido') ?>
 
 <h1><?= esc($title) ?></h1>
-
+<a href="<?= site_url('ordenes/descargar_ordenes') ?>" class="btn btn-danger rounded-0 mb-3">
+    <i class="fas fa-file-pdf"></i> <!-- Icono opcional (ej. Font Awesome) -->
+    Descargar Órdenes (PDF)
+</a>
 <!-- Mostrar mensajes generales -->
 <?php if (session()->has('error')): ?>
     <div class="alert alert-danger"><?= session('error') ?></div>
@@ -109,10 +112,6 @@
     <?php endforeach; ?>
 </div>
 
-
-<?= $this->endSection() ?>
-
-<?= $this->section('scripts') ?>
 <script>
     // Puedes añadir JS específico para el dashboard aquí si es necesario
     // Por ejemplo, para confirmaciones antes de cambiar status, etc.

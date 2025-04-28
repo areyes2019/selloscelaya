@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\OrdenTrabajoModel;
 use App\Models\PedidoModel; // Para obtener datos del cliente
 use CodeIgniter\Exceptions\PageNotFoundException;
+use Dompdf\Dompdf;
 
 class OrdenTrabajoController extends BaseController
 {
@@ -38,6 +39,169 @@ class OrdenTrabajoController extends BaseController
      * Muestra el formulario para crear una nueva orden de trabajo,
      * pre-llenando datos desde un pedido existente.
      */
+    public function descargar_ordenes()
+    {
+        // 1. Instanciar el Modelo Principal
+        $pedidoModel = new PedidoModel();
+
+        // 2. Construir la Consulta con JOIN
+        $query = $pedidoModel
+            ->select([
+                'pedidos.id as pedido_id_col', // Alias para evitar conflicto con id_ot si lo necesitaras
+                'pedidos.cliente_nombre',
+                'pedidos.cliente_telefono',
+                'pedidos.total',
+                'pedidos.anticipo',
+                'pedidos.estado',
+                // Campos de la tabla ordenes_trabajo (usar alias si hay nombres iguales)
+                'ot.imagen_path', // Asumiendo que la tabla ordenes_trabajo tiene alias 'ot'
+                'ot.color_tinta',
+                'ot.observaciones'
+                // Añade más campos de 'ot' si los necesitas
+            ])
+            // LEFT JOIN desde 'pedidos' a 'sellopro_ordenes_trabajo' (alias 'ot')
+            // Incluirá todos los pedidos que cumplan el WHERE,
+            // y los datos de 'ot' si hay coincidencia en pedido_id
+            ->join('sellopro_ordenes_trabajo ot', 'ot.pedido_id = pedidos.id', 'left')
+            // Filtrar por pedidos pendientes
+            ->where('pedidos.estado', 'pendiente');
+
+            // Si usas soft deletes en PedidoModel, CI4 añade ->where('pedidos.deleted_at IS NULL') automáticamente.
+            // Si no, y tienes una columna 'deleted_at', añádelo manualmente:
+            // ->where('pedidos.deleted_at IS NULL')
+
+        // 3. Ejecutar la consulta y obtener resultados como objetos
+        // Usar get()->getResultObject() es más robusto para joins complejos que findAll()
+        $resultadosCombinados = $query->get()->getResultObject(); // Obtiene un array de objetos stdClass
+
+        // Verificar si hay resultados
+        if (empty($resultadosCombinados)) {
+            return redirect()->back()->with('message', 'No se encontraron pedidos pendientes para generar el reporte.');
+        }
+
+        // 4. Preparar el HTML para el PDF
+        $html = '<!DOCTYPE html>
+                 <html lang="es">
+                 <head>
+                     <meta charset="UTF-8">
+                     <title>Reporte Combinado de Pedidos Pendientes</title>
+                     <style>
+                         body { font-family: DejaVu Sans, sans-serif; font-size: 10px; }
+                         table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                         th, td { border: 1px solid #ccc; padding: 6px; text-align: left; vertical-align: top; word-wrap: break-word; } /* break-word para textos largos */
+                         th { background-color: #e9e9e9; font-weight: bold; }
+                         h1 { text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;}
+                         img { max-width: 60px; max-height: 60px; display: block; margin-top: 4px; }
+                         .saldo { text-align: right; }
+                         .pagado { text-align: center; font-weight: bold; color: green; }
+                         .observaciones-cell { min-width: 150px; } /* Dar más espacio a observaciones */
+                         .na { color: #888; font-style: italic; } /* Estilo para datos no disponibles */
+                     </style>
+                 </head>
+                 <body>
+                     <h1>Reporte Combinado de Pedidos Pendientes</h1>
+                     <table>
+                         <thead>
+                             <tr>
+                                 <th>Cliente</th>
+                                 <th>Teléfono</th>
+                                 <th>Imagen</th>
+                                 <th>Saldo</th>
+                                 <th>Color Tinta</th>
+                                 <th>Observaciones OT</th>
+                             </tr>
+                         </thead>
+                         <tbody>';
+
+        foreach ($resultadosCombinados as $item) {
+            // Calcular Saldo o Estado "Pagado" (de la tabla pedidos)
+            $total = floatval($item->total ?? 0);
+            $anticipo = floatval($item->anticipo ?? 0);
+            $saldoDisplay = '';
+            $saldoClass = 'saldo';
+
+            if (abs($total - $anticipo) < 0.001 && $total != 0) {
+                $saldoDisplay = 'Pagado';
+                $saldoClass = 'pagado';
+            } else {
+                $saldoCalculado = $total - $anticipo;
+                $saldoDisplay = number_format($saldoCalculado, 2, ',', '.') . ' $'; // Ajusta símbolo moneda
+            }
+
+            $html .= '<tr>';
+            $html .= '<td>' . esc($item->cliente_nombre ?? 'N/A') . '</td>';
+            $html .= '<td>' . esc($item->cliente_telefono ?? 'N/A') . '</td>';
+
+            // Manejo de Imagen (de la tabla ordenes_trabajo)
+            $html .= '<td>';
+            $rutaImagen = WRITEPATH . 'uploads/ordenes/' . ($item->imagen_path ?? '');
+            // Verifica si imagen_path existe y no es null (debido al LEFT JOIN) y el archivo es válido
+            if (!empty($item->imagen_path) && file_exists($rutaImagen) && is_file($rutaImagen) && filesize($rutaImagen) > 0) {
+                try {
+                    if (!function_exists('mime_content_type')) {
+                        log_message('error', '[PDF Generation] La extensión PHP \'fileinfo\' es necesaria y no está habilitada.');
+                        $html .= '<span class="na">(Error: Ext.)</span>';
+                    } else {
+                        $tipoMime = mime_content_type($rutaImagen);
+                        if (strpos($tipoMime, 'image/') === 0) {
+                            $imagenData = file_get_contents($rutaImagen);
+                            $imagenBase64 = base64_encode($imagenData);
+                            $html .= '<img src="data:' . $tipoMime . ';base64,' . $imagenBase64 . '" alt="Imagen Orden">';
+                        } else {
+                            $html .= '<span class="na">(No img)</span>';
+                            log_message('warning', '[PDF Generation] Archivo no es tipo imagen: ' . $rutaImagen . ' MIME: ' . $tipoMime);
+                        }
+                    }
+                } catch (\Exception $e) {
+                     log_message('error', '[PDF Generation] Error procesando imagen: ' . $e->getMessage() . ' Archivo: ' . $rutaImagen);
+                     $html .= '<span class="na">(Error img)</span>';
+                }
+            } else {
+                // Si imagen_path está vacío/null o el archivo no existe/está vacío
+                 $html .= '<span class="na">(Sin imagen)</span>';
+                 if (!empty($item->imagen_path)) { // Log si se esperaba imagen pero falló la carga
+                    log_message('notice', '[PDF Generation] Archivo de imagen no encontrado o vacío: ' . $rutaImagen);
+                 }
+            }
+            $html .= '</td>';
+
+            // Saldo calculado
+            $html .= '<td class="' . $saldoClass . '">' . $saldoDisplay . '</td>';
+
+            // Datos de la orden de trabajo (pueden ser null por el LEFT JOIN)
+            $html .= '<td>' . esc($item->color_tinta ?? '<span class="na">N/D</span>') . '</td>'; // N/D = No Disponible
+            $html .= '<td class="observaciones-cell">' . nl2br(esc($item->observaciones ?? '<span class="na">N/D</span>')) . '</td>'; // Usar nl2br para saltos de línea
+
+            $html .= '</tr>';
+        }
+
+        $html .= '   </tbody>
+                     </table>
+                 </body>
+                 </html>';
+
+        // 5. Configurar y Generar Dompdf (Igual que antes)
+        $pdfOptions = new \Dompdf\Options();
+        $pdfOptions->set('isRemoteEnabled', true);
+        $pdfOptions->set('defaultFont', 'DejaVu Sans');
+        $pdfOptions->set('isHtml5ParserEnabled', true);
+        // Habilitar chroot si se usa referencia directa a archivos en lugar de base64
+        // $pdfOptions->setChroot(WRITEPATH);
+
+        $dompdf = new \Dompdf\Dompdf($pdfOptions);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape'); // Cambiado a landscape (horizontal) para más espacio si es necesario
+        $dompdf->render();
+
+        // 6. Enviar el PDF
+        $nombreArchivo = 'reporte_pedidos_pendientes_' . date('Ymd_His') . '.pdf';
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        $dompdf->stream($nombreArchivo, ['Attachment' => 1]);
+        exit();
+    }
+
     public function new($pedido_id = null)
     {
         if ($pedido_id === null) {

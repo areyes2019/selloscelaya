@@ -191,6 +191,7 @@ $routes->group('',static function($routes){
 	$routes->group('ordenes', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
 	    $routes->get('/', 'OrdenTrabajoController::index', ['as' => 'ordenes_dashboard']); // Dashboard
 	    $routes->get('new/(:num)', 'OrdenTrabajoController::new/$1'); // Formulario nuevo con ID de pedido
+	    $routes->get('descargar_ordenes', 'OrdenTrabajoController::descargar_ordenes');
 	    $routes->post('create', 'OrdenTrabajoController::create'); // Procesar creación
 	    $routes->get('edit/(:num)', 'OrdenTrabajoController::edit/$1'); // (Futuro) Formulario editar
 	    $routes->post('update/(:num)', 'OrdenTrabajoController::update/$1'); // (Futuro) Procesar update
