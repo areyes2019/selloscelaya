@@ -39,7 +39,170 @@ class OrdenTrabajoController extends BaseController
      * Muestra el formulario para crear una nueva orden de trabajo,
      * pre-llenando datos desde un pedido existente.
      */
-    public function descargar_ordenes()
+    public function etiquetas_pdf()
+    {
+        // 1. Obtener los datos (MISMA CONSULTA JOIN QUE ANTES)
+        $pedidoModel = new PedidoModel();
+        $query = $pedidoModel
+            ->select([
+                'pedidos.id as pedido_id', // Ya no necesitamos el alias 'pedido_id_col'
+                'pedidos.cliente_nombre',
+                'pedidos.cliente_telefono',
+                'pedidos.total',
+                'pedidos.anticipo',
+                'pedidos.estado',
+                // Puedes incluir otros campos si los necesitas mostrar en algún sitio,
+                // pero no se piden explícitamente para la etiqueta
+                // 'ot.imagen_path',
+                // 'ot.color_tinta',
+                // 'ot.observaciones'
+            ])
+            ->join('sellopro_ordenes_trabajo ot', 'ot.pedido_id = pedidos.id', 'left')
+            ->where('pedidos.estado', 'pendiente')
+            // ->where('pedidos.deleted_at IS NULL') // Añadir si no usas soft deletes en el modelo
+            ->orderBy('pedidos.id', 'ASC'); // Opcional: ordenar por ID
+
+        $resultadosCombinados = $query->get()->getResultObject();
+
+        if (empty($resultadosCombinados)) {
+            return redirect()->back()->with('message', 'No se encontraron pedidos pendientes para generar etiquetas.');
+        }
+
+        // 2. Preparar el HTML para las Etiquetas
+        // --- Definir dimensiones en pt ---
+        // Ancho etiqueta: 6.7cm * (72pt / 2.54cm) = 189.9pt -> Usaremos 190pt
+        $labelWidthPt = 190;
+        // Alto etiqueta: 2.5cm * (72pt / 2.54cm) = 70.9pt -> Usaremos 71pt
+        $labelHeightPt = 71;
+        // Márgenes pequeños entre etiquetas (ej. 5pt horizontal, 10pt vertical)
+        $marginHorizontalPt = 5;
+        $marginVerticalPt = 10;
+
+        $html = '<!DOCTYPE html>
+                 <html lang="es">
+                 <head>
+                     <meta charset="UTF-8">
+                     <title>Etiquetas Pedidos Pendientes</title>
+                     <style>
+                         @page {
+                             margin: 20pt 20pt 20pt 20pt; /* Márgenes de la página Letter */
+                         }
+                         body {
+                             font-family: DejaVu Sans, sans-serif; /* O Arial, Helvetica */
+                         }
+                         .label-container {
+                             /* Contenedor para usar Flexbox o similar si fuera necesario, */
+                             /* pero con inline-block puede no ser estrictamente necesario */
+                             width: 100%;
+                             text-align: left; /* O center si quieres centrar las filas */
+                         }
+                         .label {
+                             width: ' . $labelWidthPt . 'pt;
+                             height: ' . $labelHeightPt . 'pt;
+                             border: 1px dotted #ccc; /* Borde punteado como guía (quitar si se imprime en etiquetas pre-cortadas) */
+                             display: inline-block; /* Para que fluyan una al lado de otra */
+                             margin-left: ' . $marginHorizontalPt . 'pt;
+                             margin-right: ' . $marginHorizontalPt . 'pt;
+                             margin-bottom: ' . $marginVerticalPt . 'pt;
+                             padding: 4pt; /* Espacio interno */
+                             box-sizing: border-box; /* Padding incluido en el tamaño */
+                             overflow: hidden; /* Evitar que el contenido se desborde */
+                             vertical-align: top; /* Alinear por la parte superior */
+                             page-break-inside: avoid !important; /* Intentar no cortar una etiqueta entre páginas */
+                         }
+                         .label .pedido-id {
+                             font-size: 12pt; /* Más grande */
+                             font-weight: bold; /* Negrita */
+                             margin: 0 0 2pt 0;
+                             padding: 0;
+                             line-height: 1.1;
+                         }
+                          .label .cliente-nombre,
+                          .label .cliente-telefono,
+                          .label .clave,
+                          .label .saldo-info {
+                             font-size: 8pt; /* Tamaño normal/pequeño */
+                             margin: 0 0 1pt 0;
+                             padding: 0;
+                             line-height: 1.1; /* Ajustar interlineado */
+                             white-space: nowrap; /* Evitar saltos de línea no deseados */
+                             overflow: hidden; /* Ocultar si es demasiado largo */
+                             text-overflow: ellipsis; /* Añadir puntos suspensivos (...) */
+                         }
+                         .label .saldo-info {
+                            text-align: right; /* Alinear saldo a la derecha */
+                            margin-top: 2pt;
+                         }
+                         .label .saldo-pagado {
+                            font-weight: bold;
+                            color: green;
+                            text-align: center; /* Centrar "Pagado" */
+                         }
+                         /* Quita el borde si no lo necesitas */
+                         /* .label { border: none; } */
+                     </style>
+                 </head>
+                 <body>
+                     <div class="label-container">';
+
+        foreach ($resultadosCombinados as $item) {
+            // Calcular Saldo o Estado "Pagado"
+            $total = floatval($item->total ?? 0);
+            $anticipo = floatval($item->anticipo ?? 0);
+            $saldoDisplay = '';
+            $saldoClass = 'saldo-info'; // Clase base para el saldo
+
+            if (abs($total - $anticipo) < 0.001 && $total != 0) {
+                $saldoDisplay = 'Pagado';
+                $saldoClass .= ' saldo-pagado'; // Añade clase para "Pagado"
+            } else {
+                $saldoCalculado = $total - $anticipo;
+                $saldoDisplay = 'Saldo: ' . number_format($saldoCalculado, 2, ',', '.') . ' €'; // Ajusta símbolo
+            }
+
+            // Calcular Clave (últimos 2 dígitos del teléfono)
+            $telefono = $item->cliente_telefono ?? '';
+            $clave = !empty($telefono) && strlen($telefono) >= 2 ? substr($telefono, -4) : 'N/A';
+
+            // Construir el HTML de UNA etiqueta
+            $html .= '<div class="label">';
+            $html .= '<div class="pedido-id">#' . esc($item->pedido_id ?? 'N/A') . '</div>';
+            $html .= '<div class="cliente-nombre">' . esc($item->cliente_nombre ?? 'N/A') . '</div>';
+            $html .= '<div class="cliente-telefono">Tel: ' . esc($telefono ?: 'N/A') . '</div>';
+            $html .= '<div class="clave">Clave: ' . esc($clave) . '</div>';
+            $html .= '<div class="' . $saldoClass . '">' . $saldoDisplay . '</div>';
+            $html .= '</div>'; // Cierre de .label
+        }
+
+        $html .= '   </div> <!-- Cierre de .label-container -->
+                 </body>
+                 </html>';
+
+        // 3. Configurar y Generar Dompdf
+        $pdfOptions = new \Dompdf\Options();
+        $pdfOptions->set('isRemoteEnabled', true); // Por si acaso
+        $pdfOptions->set('defaultFont', 'DejaVu Sans'); // Soporte UTF-8
+        $pdfOptions->set('isHtml5ParserEnabled', true);
+        // IMPORTANTE: Establecer DPI puede ayudar a la consistencia de las unidades (96 es común web)
+        // $pdfOptions->setDpi(96);
+
+        $dompdf = new \Dompdf\Dompdf($pdfOptions);
+        $dompdf->loadHtml($html);
+
+        // Establecer tamaño CARTA (Letter) y orientación PORTRAIT
+        $dompdf->setPaper('letter', 'portrait');
+
+        $dompdf->render();
+
+        // 4. Enviar el PDF
+        $nombreArchivo = 'etiquetas_pedidos_pendientes_' . date('Ymd_His') . '.pdf';
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        $dompdf->stream($nombreArchivo, ['Attachment' => 0]); // Attachment 0 para ver en navegador (más fácil ajustar), 1 para descargar
+        exit();
+    }
+    public function descargar_ordenes() // O considera un nombre como visualizar_reporte_combinado()
     {
         // 1. Instanciar el Modelo Principal
         $pedidoModel = new PedidoModel();
@@ -71,11 +234,12 @@ class OrdenTrabajoController extends BaseController
             // ->where('pedidos.deleted_at IS NULL')
 
         // 3. Ejecutar la consulta y obtener resultados como objetos
-        // Usar get()->getResultObject() es más robusto para joins complejos que findAll()
         $resultadosCombinados = $query->get()->getResultObject(); // Obtiene un array de objetos stdClass
 
         // Verificar si hay resultados
         if (empty($resultadosCombinados)) {
+            // Puedes redirigir o mostrar un mensaje de error amigable
+            log_message('info', 'Intento de generar reporte PDF combinado sin pedidos pendientes.');
             return redirect()->back()->with('message', 'No se encontraron pedidos pendientes para generar el reporte.');
         }
 
@@ -86,9 +250,10 @@ class OrdenTrabajoController extends BaseController
                      <meta charset="UTF-8">
                      <title>Reporte Combinado de Pedidos Pendientes</title>
                      <style>
+                         /* Estilos CSS para el PDF */
                          body { font-family: DejaVu Sans, sans-serif; font-size: 10px; }
                          table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-                         th, td { border: 1px solid #ccc; padding: 6px; text-align: left; vertical-align: top; word-wrap: break-word; } /* break-word para textos largos */
+                         th, td { border: 1px solid #ccc; padding: 6px; text-align: left; vertical-align: top; word-wrap: break-word; }
                          th { background-color: #e9e9e9; font-weight: bold; }
                          h1 { text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;}
                          img { max-width: 60px; max-height: 60px; display: block; margin-top: 4px; }
@@ -113,6 +278,7 @@ class OrdenTrabajoController extends BaseController
                          </thead>
                          <tbody>';
 
+        // Iterar sobre los resultados y construir las filas de la tabla
         foreach ($resultadosCombinados as $item) {
             // Calcular Saldo o Estado "Pagado" (de la tabla pedidos)
             $total = floatval($item->total ?? 0);
@@ -120,19 +286,20 @@ class OrdenTrabajoController extends BaseController
             $saldoDisplay = '';
             $saldoClass = 'saldo';
 
-            if (abs($total - $anticipo) < 0.001 && $total != 0) {
+            if (abs($total - $anticipo) < 0.001 && $total != 0) { // Comparación segura de flotantes
                 $saldoDisplay = 'Pagado';
                 $saldoClass = 'pagado';
             } else {
                 $saldoCalculado = $total - $anticipo;
-                $saldoDisplay = number_format($saldoCalculado, 2, ',', '.') . ' $'; // Ajusta símbolo moneda
+                $saldoDisplay = number_format($saldoCalculado, 2, ',', '.') . ' €'; // Ajusta símbolo moneda si es necesario
             }
 
+            // Agregar fila a la tabla HTML
             $html .= '<tr>';
             $html .= '<td>' . esc($item->cliente_nombre ?? 'N/A') . '</td>';
             $html .= '<td>' . esc($item->cliente_telefono ?? 'N/A') . '</td>';
 
-            // Manejo de Imagen (de la tabla ordenes_trabajo)
+            // Manejo de Imagen (de la tabla ordenes_trabajo) con Base64
             $html .= '<td>';
             $rutaImagen = WRITEPATH . 'uploads/ordenes/' . ($item->imagen_path ?? '');
             // Verifica si imagen_path existe y no es null (debido al LEFT JOIN) y el archivo es válido
@@ -140,26 +307,27 @@ class OrdenTrabajoController extends BaseController
                 try {
                     if (!function_exists('mime_content_type')) {
                         log_message('error', '[PDF Generation] La extensión PHP \'fileinfo\' es necesaria y no está habilitada.');
-                        $html .= '<span class="na">(Error: Ext.)</span>';
+                        $html .= '<span class="na">(Error: Ext. Fileinfo)</span>';
                     } else {
                         $tipoMime = mime_content_type($rutaImagen);
-                        if (strpos($tipoMime, 'image/') === 0) {
+                        if (strpos($tipoMime, 'image/') === 0) { // Verificar si es una imagen
                             $imagenData = file_get_contents($rutaImagen);
                             $imagenBase64 = base64_encode($imagenData);
                             $html .= '<img src="data:' . $tipoMime . ';base64,' . $imagenBase64 . '" alt="Imagen Orden">';
                         } else {
-                            $html .= '<span class="na">(No img)</span>';
+                            $html .= '<span class="na">(Archivo no es imagen)</span>';
                             log_message('warning', '[PDF Generation] Archivo no es tipo imagen: ' . $rutaImagen . ' MIME: ' . $tipoMime);
                         }
                     }
                 } catch (\Exception $e) {
                      log_message('error', '[PDF Generation] Error procesando imagen: ' . $e->getMessage() . ' Archivo: ' . $rutaImagen);
-                     $html .= '<span class="na">(Error img)</span>';
+                     $html .= '<span class="na">(Error al cargar imagen)</span>';
                 }
             } else {
                 // Si imagen_path está vacío/null o el archivo no existe/está vacío
                  $html .= '<span class="na">(Sin imagen)</span>';
-                 if (!empty($item->imagen_path)) { // Log si se esperaba imagen pero falló la carga
+                 // Opcional: Log si se esperaba imagen pero falló la carga/existencia
+                 if (!empty($item->imagen_path)) {
                     log_message('notice', '[PDF Generation] Archivo de imagen no encontrado o vacío: ' . $rutaImagen);
                  }
             }
@@ -169,39 +337,53 @@ class OrdenTrabajoController extends BaseController
             $html .= '<td class="' . $saldoClass . '">' . $saldoDisplay . '</td>';
 
             // Datos de la orden de trabajo (pueden ser null por el LEFT JOIN)
-            $html .= '<td>' . esc($item->color_tinta ?? '<span class="na">N/D</span>') . '</td>'; // N/D = No Disponible
-            $html .= '<td class="observaciones-cell">' . nl2br(esc($item->observaciones ?? '<span class="na">N/D</span>')) . '</td>'; // Usar nl2br para saltos de línea
+            $html .= '<td>' . esc($item->color_tinta ?? '<span class="na">N/D</span>') . '</td>'; // Mostrar N/D si es null
+            $html .= '<td class="observaciones-cell">' . nl2br(esc($item->observaciones ?? '<span class="na">N/D</span>')) . '</td>'; // Mostrar N/D y convertir saltos de línea
 
             $html .= '</tr>';
-        }
+        } // Fin del bucle foreach
 
+        // Cerrar tabla y HTML
         $html .= '   </tbody>
                      </table>
                  </body>
                  </html>';
 
-        // 5. Configurar y Generar Dompdf (Igual que antes)
-        $pdfOptions = new \Dompdf\Options();
-        $pdfOptions->set('isRemoteEnabled', true);
-        $pdfOptions->set('defaultFont', 'DejaVu Sans');
-        $pdfOptions->set('isHtml5ParserEnabled', true);
-        // Habilitar chroot si se usa referencia directa a archivos en lugar de base64
-        // $pdfOptions->setChroot(WRITEPATH);
+        // 5. Configurar y Generar Dompdf
+        $pdfOptions = new \Dompdf\Options(); // Usar el namespace global para evitar conflictos
+        $pdfOptions->set('isRemoteEnabled', true); // Permitir cargar recursos externos si fuera necesario (CSS, fuentes, etc.)
+        $pdfOptions->set('defaultFont', 'DejaVu Sans'); // Fuente con buen soporte para UTF-8 (acentos, ñ, etc.)
+        $pdfOptions->set('isHtml5ParserEnabled', true); // Usar el parser HTML5 más moderno
+        // $pdfOptions->setChroot(WRITEPATH); // Solo necesario si usas rutas de archivo directas en src="" y están en writable
+        // $pdfOptions->setDpi(96); // Opcional: ajustar DPI si las unidades pt/cm no se ven como esperas
 
-        $dompdf = new \Dompdf\Dompdf($pdfOptions);
+        $dompdf = new \Dompdf\Dompdf($pdfOptions); // Usar el namespace global
+
+        // Cargar el HTML generado
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape'); // Cambiado a landscape (horizontal) para más espacio si es necesario
+
+        // Establecer tamaño del papel (A4) y orientación (landscape = horizontal)
+        $dompdf->setPaper('A4', 'landscape');
+
+        // Renderizar el HTML a PDF
         $dompdf->render();
 
-        // 6. Enviar el PDF
-        $nombreArchivo = 'reporte_pedidos_pendientes_' . date('Ymd_His') . '.pdf';
+        // 6. Enviar el PDF al Navegador para visualización en línea
+        $nombreArchivo = 'reporte_pedidos_pendientes_' . date('Ymd_His') . '.pdf'; // Nombre sugerido si el usuario guarda
+
+        // Limpiar cualquier salida anterior del buffer (IMPORTANTE en CodeIgniter)
         if (ob_get_level()) {
             ob_end_clean();
         }
-        $dompdf->stream($nombreArchivo, ['Attachment' => 1]);
+
+        // ¡AQUÍ ESTÁ EL CAMBIO PRINCIPAL!
+        // 'Attachment' => 0 : Indica al navegador que intente mostrar el PDF en línea.
+        // 'Attachment' => 1 : Forzaría la descarga del archivo.
+        $dompdf->stream($nombreArchivo, ['Attachment' => 0]);
+
+        // Detener la ejecución del script de CodeIgniter después de enviar el PDF
         exit();
     }
-
     public function new($pedido_id = null)
     {
         if ($pedido_id === null) {

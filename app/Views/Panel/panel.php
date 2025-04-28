@@ -3,9 +3,13 @@
 <?= $this->section('contenido') ?>
 
 <h1><?= esc($title) ?></h1>
-<a href="<?= site_url('ordenes/descargar_ordenes') ?>" class="btn btn-danger rounded-0 mb-3">
+<a href="<?= site_url('ordenes/descargar_ordenes') ?>" target="_blank" class="btn btn-danger rounded-0 mb-3">
     <i class="fas fa-file-pdf"></i> <!-- Icono opcional (ej. Font Awesome) -->
     Descargar Órdenes (PDF)
+</a>
+
+<a href="<?= site_url('ordenes/pedidos-pendientes') ?>" class="btn btn-warning rounded-0 mb-3" target="_blank">
+    <i class="fas fa-tags"></i> Generar Etiquetas Pendientes (PDF)
 </a>
 <!-- Mostrar mensajes generales -->
 <?php if (session()->has('error')): ?>

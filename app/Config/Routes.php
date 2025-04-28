@@ -198,6 +198,8 @@ $routes->group('',static function($routes){
 	    $routes->post('cambiar_status/(:num)', 'OrdenTrabajoController::cambiarStatus/$1'); // Ruta para cambiar status
 	    $routes->get('delete/(:num)', 'OrdenTrabajoController::delete/$1'); // (Futuro) Eliminar
 	    $routes->get('imagen/(:segment)', 'OrdenTrabajoController::serveImage/$1', ['as' => 'orden_imagen']); // Ruta para servir imágenes
+	    // Ajusta 'PedidosController' si es necesario
+		$routes->get('pedidos-pendientes', 'OrdenTrabajoController::etiquetas_pdf');
 	});
 	//gastos
 	$routes->group('gastos',static function($routes) {
