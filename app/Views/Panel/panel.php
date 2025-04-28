@@ -51,7 +51,7 @@
                             <th># Pedido</th>
                             <th>Cliente</th>
                             <th>Fecha Creación</th>
-                            <th>Color Tinta</th>
+                            <th>Teléfono</th>
                             <th>Imagen</th>
                             <th>Observaciones</th>
                             <th>Acciones / Cambiar Status</th>
@@ -69,7 +69,7 @@
                                     </td>
                                     <td><?= esc($orden->cliente_nombre) ?></td>
                                     <td><?= date('d/m/Y H:i', strtotime($orden->created_at)) ?></td>
-                                    <td><?= esc($orden->color_tinta ?: '-') ?></td>
+                                    <td><?= esc($orden->cliente_telefono ?: '-') ?></td>
                                     <td>
                                         <?php if ($orden->imagen_path): ?>
                                             <a href="<?= site_url(route_to('orden_imagen', $orden->imagen_path)) ?>" target="_blank" title="Ver Imagen">
