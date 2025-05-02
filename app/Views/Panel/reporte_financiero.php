@@ -91,7 +91,56 @@
                         </div>
                     </div>
 
-                    <!-- Sección de Saldos Bancarios (se mantiene igual) -->
+                    <!-- Sección de Saldos Bancarios (nueva) -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header bg-dark rounded-0 text-white">
+                                    <h3 class="card-title">Saldos Bancarios</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <!-- Total de Saldos -->
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card card-outline card-primary h-100">
+                                                <div class="card-header">
+                                                    <h3 class="card-title">Total Disponible</h3>
+                                                </div>
+                                                <div class="card-body text-center">
+                                                    <h1 class="display-4 text-primary">
+                                                        $<?= number_format($total_saldos, 2) ?>
+                                                    </h1>
+                                                    <p class="text-muted">Suma de todos los saldos bancarios</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Listado de Cuentas -->
+                                        <div class="col-md-8">
+                                            <div class="table table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Banco</th>
+                                                            <th class="text-end">Saldo Actual</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php foreach ($cuentas_bancarias as $cuenta): ?>
+                                                        <tr>
+                                                            <td><?= esc($cuenta['banco']) ?></td>
+                                                            <td class="text-end">$<?= number_format($cuenta['saldo'], 2) ?></td>
+                                                        </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
