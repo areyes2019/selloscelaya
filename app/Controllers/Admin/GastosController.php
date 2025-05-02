@@ -10,14 +10,14 @@ use App\Models\CuentasModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 class GastosController extends BaseController
 {
-    protected $gastoModel;
+    protected $gastosModel;
     protected $pedidoModel;
     protected $articulosModel;
     protected $detallePedidoModel;
 
     public function __construct()
     {
-        $this->gastoModel = new GastosModel();
+        $this->gastosModel = new GastosModel();
         $this->pedidoModel = new PedidoModel();
         $this->articulosModel = new ArticulosModel();
         $this->detallePedidoModel = new DetallePedidoModel();
@@ -29,7 +29,7 @@ class GastosController extends BaseController
     {
         $data = [
             'title' => 'Gestión de Gastos',
-            'gastos' => $this->gastoModel->orderBy('fecha_gasto', 'DESC')->findAll(),
+            'gastos' => $this->gastosModel->orderBy('fecha_gasto', 'DESC')->findAll(),
         ];
 
         return view('Panel/gastos', $data);
@@ -258,6 +258,74 @@ class GastosController extends BaseController
             'utilidades_netas' => $utilidadesNetas,
             'margen_ganancia' => $margenGanancia
         ]);
+    }
+    public function procesar()
+    {
+        $validation = \Config\Services::validation();
+
+        $validation->setRules([
+            'cuenta_origen' => 'required|numeric',
+            'cuenta_destino' => 'required|numeric|differs[cuenta_origen]',
+            'monto' => 'required|numeric|greater_than[0]',
+            'descripcion' => 'required|string|min_length[3]',
+            'fecha' => 'required|valid_date'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+        }
+
+        $cuentaOrigenId = $this->request->getPost('cuenta_origen');
+        $cuentaDestinoId = $this->request->getPost('cuenta_destino');
+        $monto = (float)$this->request->getPost('monto');
+        $descripcion = $this->request->getPost('descripcion');
+        $fecha = $this->request->getPost('fecha');
+
+        // Verificar saldo suficiente en cuenta origen
+        $cuentaOrigen = $this->cuentasModel->find($cuentaOrigenId);
+        if ($cuentaOrigen['saldo'] < $monto) {
+            return redirect()->back()->withInput()->with('error', 'Saldo insuficiente en la cuenta de origen');
+        }
+
+        // Iniciar transacción para asegurar integridad de datos
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            // Registrar el gasto (salida) en cuenta origen
+            $this->gastosModel->insert([
+                'descripcion' => $descripcion,
+                'salida' => $monto,
+                'cuenta_origen' => $cuentaOrigenId,
+                'cuenta_destino' => $cuentaDestinoId,
+                'fecha_gasto' => $fecha
+            ]);
+
+            // Registrar el ingreso en cuenta destino
+            $this->gastosModel->insert([
+                'descripcion' => $descripcion,
+                'entrada' => $monto,
+                'cuenta_origen' => $cuentaOrigenId,
+                'cuenta_destino' => $cuentaDestinoId,
+                'fecha_gasto' => $fecha
+            ]);
+
+            // Actualizar saldos
+            $this->cuentasModel->where('id_cuenta', $cuentaOrigenId)
+                              ->set('saldo', 'saldo - ' . $monto, false)
+                              ->update();
+
+            $this->cuentasModel->where('id_cuenta', $cuentaDestinoId)
+                              ->set('saldo', 'saldo + ' . $monto, false)
+                              ->update();
+
+            $db->transComplete();
+
+            return redirect()->back()->with('success', 'Transferencia realizada con éxito');
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('error', 'Error al realizar la transferencia: ' . $e->getMessage());
+        }
     }
 
 }

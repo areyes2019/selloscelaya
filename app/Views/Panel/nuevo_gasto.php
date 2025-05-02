@@ -66,6 +66,59 @@
                 <a href="<?= base_url('gastos/inicio'); ?>" class="btn btn-secondary">Cancelar</a>
             </form>
         </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>Transferencia entre cuentas</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="<?= base_url('gastos/procesar') ?>">
+                        <?= csrf_field() ?>
+                        
+                        <div class="form-group">
+                            <label for="cuenta_origen">Cuenta de origen</label>
+                            <select class="form-control" id="cuenta_origen" name="cuenta_origen" required>
+                                <option value="">Seleccione una cuenta</option>
+                                <?php foreach ($cuentas as $cuenta): ?>
+                                    <option value="<?= $cuenta['id_cuenta'] ?>">
+                                        <?= $cuenta['banco'] ?> - <?= $cuenta['cuenta'] ?> (Saldo: <?= number_format($cuenta['saldo'], 2) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cuenta_destino">Cuenta de destino</label>
+                            <select class="form-control" id="cuenta_destino" name="cuenta_destino" required>
+                                <option value="">Seleccione una cuenta</option>
+                                <?php foreach ($cuentas as $cuenta): ?>
+                                    <option value="<?= $cuenta['id_cuenta'] ?>">
+                                        <?= $cuenta['banco'] ?> - <?= $cuenta['cuenta'] ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="monto">Monto a transferir</label>
+                            <input type="number" class="form-control" id="monto" name="monto" step="0.01" min="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="descripcion">Descripción</label>
+                            <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fecha">Fecha de transferencia</label>
+                            <input type="date" class="form-control" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Transferir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

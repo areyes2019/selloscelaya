@@ -213,6 +213,7 @@ $routes->group('',static function($routes){
 	    $routes->get('reporte', 'Admin\GastosController::reporteFinanciero');
 	    $routes->post('actualizar/(:num)', 'Admin\GastosController::actualizar/$1');
 	    $routes->post('eliminar/(:num)', 'Admin\GastosController::eliminar/$1');
+	    $routes->post('procesar', 'Admin\GastosController::procesar');
 	});
 
 	$routes->group('existencias',static function($routes) {
