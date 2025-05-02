@@ -20,21 +20,7 @@ class OrdenTrabajoController extends BaseController
         helper(['form', 'url', 'filesystem']); // Necesitamos filesystem para manejar archivos
     }
 
-    /**
-     * Muestra el dashboard con las órdenes por status.
-     */
-    public function index()
-    {
-        $data['title'] = 'Dashboard Órdenes de Trabajo';
-        $data['ordenesPorStatus'] = $this->ordenTrabajoModel->getOrdenesPorStatus();
-
-        // Pasamos los nombres de los status para las pestañas
-        $data['statuses'] = ['Diseño', 'Elaboracion', 'Entrega'];
-
-        return view('Panel/ordenes_dashboard', $data); // Creamos esta vista más adelante
-    }
-
-
+   
     /**
      * Muestra el formulario para crear una nueva orden de trabajo,
      * pre-llenando datos desde un pedido existente.
@@ -425,7 +411,7 @@ class OrdenTrabajoController extends BaseController
                     'ext_in' => 'Solo se permiten imágenes PNG, JPG, JPEG, GIF, WEBP.'
                  ]
             ],
-            'status_inicial' => 'required|in_list[Diseño,Elaboracion,Entrega]' // Validar status inicial
+            'status_inicial' => 'required|in_list[Dibujo,Elaboracion,Entrega]' // Validar status inicial
         ];
 
         if (!$this->validate($rules)) {
@@ -484,7 +470,7 @@ class OrdenTrabajoController extends BaseController
             'observaciones'  => $this->request->getPost('observaciones'),
             'color_tinta'    => $this->request->getPost('color_tinta'),
             'imagen_path'    => $imgPath,
-            'status'         => $this->request->getPost('status_inicial') ?? 'Diseño', // Usar status del form
+            'status'         => $this->request->getPost('status_inicial'), // Usar status del form
         ];
 
         // --- Guardar en la BD ---
@@ -592,6 +578,42 @@ class OrdenTrabajoController extends BaseController
              // ->setHeader('Cache-Control', 'max-age=3600') // Opcional: Cache
              ->setBody(file_get_contents($path))
              ->send(); // No uses return aquí
-     }
+    }
+    public function actualizarStatus($id)
+    {
+
+        $ordenModel = new OrdenTrabajoModel();
+
+        // Buscamos la orden por su ID
+        $orden = $ordenModel->find($id);
+
+        if (!$orden) {
+            return redirect()->back()->with('error', 'Orden no encontrada.');
+        }
+
+        // Definimos el siguiente estatus
+        $nuevoStatus = '';
+
+        switch ($orden->status) {
+            case 'Dibujo':
+                $nuevoStatus = 'Elaboracion';
+                break;
+            case 'Elaboracion':
+                $nuevoStatus = 'Entrega';
+                break;
+            case 'Entrega':
+                $nuevoStatus = 'Entregado';
+                break;
+            default:
+                // Ya entregado o error
+                return redirect()->back()->with('error', 'No se puede actualizar el estatus.');
+        }
+
+        // Actualizamos el estatus
+        $ordenModel->update($id, ['status' => $nuevoStatus]);
+
+        return redirect()->to('admin')->with('success', 'Estatus actualizado correctamente.');
+    }
+
 
 }

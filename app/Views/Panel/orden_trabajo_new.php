@@ -77,8 +77,8 @@
                         <label for="status_inicial" class="form-label">Estado Inicial:</label>
                         <select class="form-select" id="status_inicial" name="status_inicial" required>
                             <?php
-                            $estadosPosibles = ['Diseño', 'Elaboracion', 'Entrega'];
-                            $statusSeleccionado = old('status_inicial', 'Diseño'); // Default a Diseño
+                            $estadosPosibles = ['Dibujo', 'Elaboracion', 'Entrega'];
+                            $statusSeleccionado = old('status_inicial', 'Dibujo'); // Default a Diseño
                             ?>
                             <?php foreach ($estadosPosibles as $estado): ?>
                                 <option value="<?= esc($estado) ?>" <?= $statusSeleccionado == $estado ? 'selected' : '' ?>>

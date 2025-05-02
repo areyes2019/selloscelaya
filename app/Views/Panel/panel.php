@@ -1,8 +1,7 @@
 <?= $this->extend('Panel/panel_template') ?>
-
 <?= $this->section('contenido') ?>
 
-<h1><?= esc($title) ?></h1>
+<h1>Ordenes de Trabajo</h1>
 <a href="<?= site_url('ordenes/descargar_ordenes') ?>" target="_blank" class="btn btn-danger rounded-0 mb-3">
     <i class="fas fa-file-pdf"></i> <!-- Icono opcional (ej. Font Awesome) -->
     Descargar Órdenes (PDF)
@@ -11,113 +10,85 @@
 <a href="<?= site_url('ordenes/pedidos-pendientes') ?>" class="btn btn-warning rounded-0 mb-3" target="_blank">
     <i class="fas fa-tags"></i> Generar Etiquetas Pendientes (PDF)
 </a>
-<!-- Mostrar mensajes generales -->
-<?php if (session()->has('error')): ?>
-    <div class="alert alert-danger"><?= session('error') ?></div>
-<?php endif; ?>
-<?php if (session()->has('success')): ?>
-    <div class="alert alert-success"><?= session('success') ?></div>
-<?php endif; ?>
-<?php if (session()->has('info')): ?>
-    <div class="alert alert-info"><?= session('info') ?></div>
-<?php endif; ?>
-
-
-<!-- Pestañas (Tabs) -->
-<ul class="nav nav-tabs" id="ordenesTab" role="tablist">
-    <?php $first = true; ?>
-    <?php foreach ($statuses as $status): ?>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link <?= $first ? 'active' : '' ?>" id="<?= strtolower($status) ?>-tab" data-bs-toggle="tab" data-bs-target="#<?= strtolower($status) ?>-tab-pane" type="button" role="tab" aria-controls="<?= strtolower($status) ?>-tab-pane" aria-selected="<?= $first ? 'true' : 'false' ?>">
-                <?= esc($status) ?>
-                <span class="badge bg-secondary"><?= count($ordenesPorStatus[$status] ?? []) ?></span>
-            </button>
-        </li>
-        <?php $first = false; ?>
-    <?php endforeach; ?>
-</ul>
 
 <!-- Contenido de las Pestañas -->
-<div class="tab-content" id="ordenesTabContent">
-     <?php $first = true; ?>
-    <?php foreach ($statuses as $status): ?>
-        <div class="tab-pane fade <?= $first ? 'show active' : '' ?>" id="<?= strtolower($status) ?>-tab-pane" role="tabpanel" aria-labelledby="<?= strtolower($status) ?>-tab" tabindex="0">
-
-            <div class="table-responsive mt-3">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th># Orden</th>
-                            <th># Pedido</th>
-                            <th>Cliente</th>
-                            <th>Fecha Creación</th>
-                            <th>Teléfono</th>
-                            <th>Imagen</th>
-                            <th>Observaciones</th>
-                            <th>Acciones / Cambiar Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($ordenesPorStatus[$status])): ?>
-                            <?php foreach ($ordenesPorStatus[$status] as $orden): ?>
-                                <tr>
-                                    <td><?= esc($orden->id_ot) ?></td>
-                                    <td>
-                                        <a href="<?= site_url('pedidos/ticket/' . $orden->pedido_id) ?>" title="Ver Ticket Original">
-                                            <?= esc($orden->pedido_id) ?>
-                                        </a>
-                                    </td>
-                                    <td><?= esc($orden->cliente_nombre) ?></td>
-                                    <td><?= date('d/m/Y H:i', strtotime($orden->created_at)) ?></td>
-                                    <td><?= esc($orden->cliente_telefono ?: '-') ?></td>
-                                    <td>
-                                        <?php if ($orden->imagen_path): ?>
-                                            <a href="<?= site_url(route_to('orden_imagen', $orden->imagen_path)) ?>" target="_blank" title="Ver Imagen">
-                                                <i class="bi bi-image"></i> Ver
-                                             </a>
-                                        <?php else: ?>
-                                            -
-                                        <?php endif; ?>
-                                    </td>
-                                    <td title="<?= esc($orden->observaciones) ?>">
-                                        <?= character_limiter(esc($orden->observaciones ?: '-'), 50) // Muestra solo una parte ?>
-                                    </td>
-                                    <td>
-                                        <!-- Formulario para cambiar status -->
-                                        <form action="<?= site_url('ordenes/cambiar_status/' . $orden->id_ot) ?>" method="post" class="d-inline-flex align-items-center">
-                                            <?= csrf_field() ?>
-                                            <select name="nuevo_status" class="form-select form-select-sm me-1" style="min-width: 120px;" onchange="this.form.submit()">
-                                                <?php foreach ($statuses as $stat): ?>
-                                                     <option value="<?= esc($stat) ?>" <?= ($stat == $orden->status) ? 'selected' : '' ?>>
-                                                         <?= esc($stat) ?>
-                                                     </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                             <button type="submit" class="btn btn-sm btn-outline-primary" title="Guardar Status">
-                                                 <i class="bi bi-check-lg"></i>
-                                             </button>
-                                             <!-- Opcional: Botón Editar/Ver Detalles -->
-                                             <!-- <a href="<?= site_url('ordenes/edit/' . $orden->id_ot) ?>" class="btn btn-sm btn-outline-secondary ms-1" title="Editar Orden"><i class="bi bi-pencil"></i></a> -->
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+<div class="card rounded-0 shadow-sm">
+    <!-- Panel/ordenes_dashboard.php -->
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Clave</th>
+                <th>Saldo</th>
+                <th>Status</th>
+                <th>Acción</th> <!-- Nueva columna -->
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($ordenes as $orden): ?>
+                <tr>
+                    <td><?= esc($orden->cliente_nombre) ?></td>
+                    <td><?= esc($orden->cliente_telefono) ?></td>
+                    <td><?= esc($orden->clave) ?></td>
+                    <td>
+                        <?php if ($orden->saldo === 'Pagado'): ?>
+                            <span class="badge bg-success"><?= esc($orden->saldo) ?></span>
                         <?php else: ?>
-                            <tr>
-                                <td colspan="8" class="text-center">No hay órdenes en estado "<?= esc($status) ?>".</td>
-                            </tr>
+                            <?= esc($orden->saldo) ?>
                         <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                    </td>
+                    <td>
+                        <?php
+                            $badgeClass = 'secondary'; // valor por defecto
 
-        </div>
-         <?php $first = false; ?>
-    <?php endforeach; ?>
+                            $statusLower = strtolower($orden->status); // Convertimos a minúsculas
+
+                            if ($statusLower === 'dibujo') {
+                                $badgeClass = 'primary';
+                            } elseif ($statusLower === 'elaboracion') {
+                                $badgeClass = 'warning';
+                            } elseif ($statusLower === 'entrega') {
+                                $badgeClass = 'success';
+                            } elseif ($statusLower === 'entregado') {
+                                $badgeClass = 'success'; // también success para entregado
+                            }
+                        ?>
+                        <span class="badge bg-<?= $badgeClass ?>">
+                            <?= ucfirst(esc($orden->status)) ?>
+                        </span>
+                    </td>
+
+                    <td>
+                        <?php if ($orden->status !== 'Entregado'): ?>
+                        <form action="<?= base_url('ordenes/actualizar-status/' . $orden->id_ot) ?>" method="post" style="display:inline;">
+                            <?= csrf_field() ?>
+                            <?php
+                                if ($orden->status == 'Dibujo') {
+                                    echo '<button type="submit" class="btn btn-primary btn-sm">A Elaboración</button>';
+                                } elseif ($orden->status == 'Elaboracion') {
+                                    echo '<button type="submit" class="btn btn-warning btn-sm">A Entrega</button>';
+                                } elseif ($orden->status == 'Entrega') {
+                                    echo '<button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-truck"></i> Entregado
+                                          </button>';
+                                }
+                            ?>
+                        </form>
+                        <?php else: ?>
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-lg"></i>
+                        </span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 </div>
-
 <script>
-    // Puedes añadir JS específico para el dashboard aquí si es necesario
-    // Por ejemplo, para confirmaciones antes de cambiar status, etc.
+    $( document ).ready(function() {
+        new DataTable('#tabla');
+    });
 </script>
 <?= $this->endSection() ?>

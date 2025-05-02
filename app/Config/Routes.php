@@ -200,6 +200,8 @@ $routes->group('',static function($routes){
 	    $routes->get('imagen/(:segment)', 'OrdenTrabajoController::serveImage/$1', ['as' => 'orden_imagen']); // Ruta para servir imágenes
 	    // Ajusta 'PedidosController' si es necesario
 		$routes->get('pedidos-pendientes', 'OrdenTrabajoController::etiquetas_pdf');
+		$routes->post('actualizar-status/(:num)', 'OrdenTrabajoController::actualizarStatus/$1');
+
 	});
 	//gastos
 	$routes->group('gastos',static function($routes) {
