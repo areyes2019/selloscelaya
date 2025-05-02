@@ -6,7 +6,9 @@ use App\Models\PedidoModel;
 use App\Models\DetallePedidoModel;
 use App\Models\ArticulosModel;
 use App\Models\InventarioModel;
+use App\Models\CuentasModel;
 use App\Models\BalanceModel;
+use App\Models\GastosModel;
 use CodeIgniter\API\ResponseTrait; // Para respuestas JSON si usas AJAX
 use CodeIgniter\Database\Exceptions\DataException;
 
@@ -18,6 +20,7 @@ class PuntoVentaController extends BaseController
     protected $articulosModel;
     protected $inventarioModel;
     protected $balanceModel;
+    protected $cuentasModel;
     public function __construct()
     {
         // Puedes cargar helpers, librerías o modelos aquí
@@ -27,6 +30,7 @@ class PuntoVentaController extends BaseController
         $this->articulosModel = new ArticulosModel();
         $this->inventarioModel = new InventarioModel();
         $this->balanceModel = new BalanceModel();
+        $this->cuentasModel = new CuentasModel();
     }
     public function index()
     {
@@ -66,8 +70,12 @@ class PuntoVentaController extends BaseController
         
         return view('Panel/pos', $data);
     }
+    
     public function new()
     {
+        $cuentasModel = new CuentasModel();
+        $resultado = $cuentasModel->findAll();
+
         $data['articulos'] = $this->articulosModel
             ->select('
                 a.id_articulo, 
@@ -88,6 +96,7 @@ class PuntoVentaController extends BaseController
             ->findAll();
 
         $data['titulo'] = 'Nuevo Pedido POS';
+        $data['cuentas'] = $resultado;
         return view('Panel/index_view', $data);
     }
     public function articulos()
@@ -111,40 +120,56 @@ class PuntoVentaController extends BaseController
 
         return $this->response->setJSON($articulos);
     }
-    
     public function create()
     {
+
         // Validar los datos del formulario
         $rules = [
             'cliente_nombre' => 'required|min_length[3]',
             'cliente_telefono' => 'permit_empty|numeric',
-            'anticipo' => 'required|numeric',
-            'detalle' => 'required'
+            'anticipo' => 'required|numeric|greater_than[0]',
+            'detalle' => 'required',
+            'banco_id' => 'required|numeric'
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // Obtener los datos del formulario
+        // Obtener datos del formulario
         $data = [
             'cliente_nombre' => $this->request->getPost('cliente_nombre'),
             'cliente_telefono' => $this->request->getPost('cliente_telefono'),
             'total' => $this->request->getPost('total_final_hidden'),
-            'estado' => 'pendiente', // o 'completado' según tu lógica
+            'estado' => 'pendiente',
             'anticipo' => $this->request->getPost('anticipo')
         ];
 
-        // Iniciar transacción para asegurar la integridad de los datos
+        // Iniciar transacción
         $db = \Config\Database::connect();
         $db->transStart();
 
         try {
-            // Guardar en la tabla Pedidos
+            // 1. Obtener cuenta bancaria
+            $bancoId = $this->request->getPost('banco_id');
+            $cuentasModel = new CuentasModel();
+            $banco = $cuentasModel->find($bancoId);
+            
+            if (!$banco) {
+                throw new \Exception('La cuenta bancaria seleccionada no existe');
+            }
+            
+            $montoASumar = (float)$data['anticipo'];
+
+            // 2. Guardar pedido (con validación adicional)
             $pedidosModel = new PedidoModel();
             $pedidoId = $pedidosModel->insert($data);
+            
+            if (!$pedidoId) {
+                throw new \Exception('Error al insertar el pedido: ' . implode(', ', $pedidosModel->errors()));
+            }
 
-            // Guardar los detalles del pedido
+            // 3. Guardar detalles del pedido
             $detalleModel = new DetallePedidoModel();
             $detalles = $this->request->getPost('detalle');
 
@@ -158,21 +183,45 @@ class PuntoVentaController extends BaseController
                     'subtotal' => $item['cantidad'] * $item['precio_unitario']
                 ];
                 
-                $detalleModel->insert($detalleData);
+                if (!$detalleModel->insert($detalleData)) {
+                    throw new \Exception('Error al insertar detalle: ' . implode(', ', $detalleModel->errors()));
+                }
+            }
+
+            // 4. Actualizar saldo del banco
+            $nuevoSaldo = $banco['saldo'] + $montoASumar;
+            if (!$cuentasModel->update($banco['id_cuenta'], ['saldo' => $nuevoSaldo])) {
+                throw new \Exception('Error al actualizar saldo bancario');
+            }
+
+            // 5. Registrar movimiento
+            $gastosModel = new GastosModel();
+            $gastoData = [
+                'descripcion' => 'Pago del pedido no. ' . $pedidoId,
+                'entrada' => $montoASumar,
+                'salida' => 0,
+                'cuenta_origen' => 0,
+                'cuenta_destino' => $bancoId,
+                'fecha_gasto' => date('Y-m-d H:i:s')
+            ];
+            
+            if (!$gastosModel->insert($gastoData)) {
+                throw new \Exception('Error al registrar gasto: ' . implode(', ', $gastosModel->errors()));
             }
 
             $db->transComplete();
 
             if ($db->transStatus() === false) {
-                throw new \Exception('Error al guardar el pedido');
+                throw new \Exception('Error en la transacción de base de datos');
             }
 
             return redirect()->to('/ventas/ticket/' . $pedidoId)
-                             ->with('success', 'Pedido creado con éxito.');
+                             ->with('success', 'Pedido creado con éxito. Se sumó $'.number_format($montoASumar, 2).' al saldo. Nuevo saldo: $'.number_format($nuevoSaldo, 2));
 
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
+            log_message('error', 'Error en ventas/create: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
         }
     }
     public function ticket($id = null)

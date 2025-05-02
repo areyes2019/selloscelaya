@@ -17,6 +17,8 @@ const {createApp, ref} = Vue
 		        showResults: false,
 		        selectedIndex: -1,
 		        articuloSeleccionado: null,
+		        bancos: [],
+    			bancoSeleccionado: null
 			}
 		},
 		computed: {
@@ -38,8 +40,18 @@ const {createApp, ref} = Vue
 	    },
 	    mounted(){
 			this.listarArticulos();
+			this.listarBancos();
 		},
 		methods:{
+			async listarBancos() {
+			    try {
+			      const response = await axios.get('/cuentas/listar');
+			      this.bancos = response.data;
+			    } catch (error) {
+			      console.error('Error al obtener las cuentas bancarias:', error);
+			      alert('Error al cargar las cuentas bancarias');
+			    }
+			},
 			handleInput() {
 	          this.showResults = this.searchQuery.length > 0;
 	          this.selectedIndex = -1;
@@ -81,7 +93,7 @@ const {createApp, ref} = Vue
 			},
 			mostrar_existencias(){
 					
-				},
+			},
 			async listarArticulos() {
 	          try {
 	            const response = await axios.get('/ventas/mostrar_articulos');
@@ -207,11 +219,12 @@ const {createApp, ref} = Vue
 			  }
 			},
 	        formatCurrency(value) {
-	            return new Intl.NumberFormat('es-MX', {
-	                style: 'currency',
-	                currency: 'MXN',
-	            }).format(value);
-	        },
+			    if (value === null || value === undefined) return '$0.00';
+			    return new Intl.NumberFormat('es-MX', {
+			      style: 'currency',
+			      currency: 'MXN',
+			    }).format(value);
+			}
 
 		}
 		

@@ -13,15 +13,7 @@
                 <div class="dropdown-header"></div>
                 <a class="dropdown-item" href="<?php echo base_url('/descargar_orden/'.$pedidos_id); ?>"><span class="bi bi-download"></span> Descargar</a>
                 <a class="dropdown-item" href="<?php echo base_url('/enviar_pdf_orden/'.$pedidos_id); ?>"><span class="bi bi-send"></span> Enviar</a>
-                <a 
-                  :class="['dropdown-item']" 
-                  v-if="display_pagado == 0" 
-                  href="#" 
-                  @click.prevent="agregar_pago"
-                >
-                  <span class="bi bi-credit-card"></span> Marcar como pagado
-                </a>
-
+                <a href="" v-if="display_pagado == 0" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#misCuentas"><span class="bi bi-credit-card"></span> Marcar como pagado</a>
                 <a 
                   :class="['dropdown-item']" 
                   v-if="display_recibido==0" 
@@ -118,47 +110,34 @@
               </tr>
             </tfoot>
         </table>
-         <!--  Modal agregar articulos -->  
-        <div class="modal fade" id="agregar_articulo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content rounded-0">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Seleecione un artículo</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <table class="table w-100" id="example">
-                            <thead>
-                                <tr>
-                                    <th>Artículo</th>
-                                    <th>Modelo</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($articulos as $articulo): ?>
-                                <tr>
-                                    <td><?php echo $articulo['nombre'] ?></td>
-                                    <td><?php echo $articulo['modelo'] ?></td>
-                                    <td>
-                                        <button class="btn btn-primary btn-circle" @click="add_articulo(<?= $articulo['id_articulo'] ?>)"><span class="bi bi-check"></span></button>
-                                    </td>
-                                </tr>
-                                <?php endforeach ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger btn-icon-split" data-dismiss="modal">
-                            <span class="icon text-white-50">
-                                <i class="bi bi-box-arrow-right"></i>
-                            </span>
-                            <span class="text">Cerrar</span>
-                        </button>
-                    </div>
+        <!-- Botón para abrir el modal -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="misCuentas" tabindex="-1">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="miModalLabel">Seleccionar el Banco</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="d-flex align-items-center">
+                  <!-- Select -->
+                    <select class="form-select flex-grow-1 me-2" v-model="cuentaSeleccionada">
+                        <option disabled selected>Seleccione una cuenta...</option>
+                        <?php foreach($cuentas_bancarias as $cuenta): ?>
+                            <option :value="<?= $cuenta['id_cuenta'] ?>">
+                                <?= esc($cuenta['banco']) ?> - (Saldo: $<?= number_format($cuenta['saldo'], 2) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"  @click="agregar_pago">Cerrar</button>
+              </div>
             </div>
+          </div>
         </div>
     </div>
 </div>

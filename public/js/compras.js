@@ -36,6 +36,7 @@ createApp({
         //ocultar diferentes botones
         display_pagado:"",
         display_recibido:"",
+        cuentaSeleccionada: null,
       }
     },
     //componente
@@ -180,22 +181,34 @@ createApp({
                 })
             }
         },
-        agregar_pago(){
-            var pedido = this.$refs.pedido.innerHTML;
-            var monto_total = this.$refs.monto_total.innerHTML; // Asegúrate de tener esta referencia
-
-            if (window.confirm("¿Realmente quieres marcar este pedido como pagado?")){
-                axios.post('/pago_compras',{
-                    'id': pedido,
-                    'monto_total': monto_total
-                }).then((response)=>{
-                        notify('Pagado');
-                        setTimeout(function() {
-                            window.location.href = "/compras";
-                        }, 1000);
-                })
+        
+        agregar_pago() {
+            let pedido = this.$refs.pedido.textContent.trim();
+            if (!this.cuentaSeleccionada) {
+                alert('Por favor seleccione una cuenta');
+                return;
             }
+            
+            axios.post('/pago_compras', {
+                'banco': this.cuentaSeleccionada, // ID de la cuenta seleccionada
+                'id': pedido // Solo enviamos el ID del pedido
+            }).then((response) => {
+                if (response.data.status === 'ok') {
+                    alert(response.data.message);
+            
+                    // Redireccionar después de 2 segundos
+                    setTimeout(() => {
+                        window.location.href = '/compras'; // Ajusta esta ruta según tu aplicación
+                    }, 2000);
+                } else {
+                    alert(response.data.message);
+                }
+            }).catch((error) => {
+                console.error('Error:', error);
+                alert('Ocurrió un error al procesar el pago');
+            });
         },
+
         descargar_img(){
             var pedido = this.$refs.pedidos_id.innerHTML;
             html2canvas(document.querySelector("#ticket")).then(canvas => {

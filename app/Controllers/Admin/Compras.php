@@ -8,6 +8,7 @@ use App\Models\ArticulosModel;
 use App\Models\DetallePedidosModel;
 use App\Models\GastosModel;
 use App\Models\InventarioModel;
+use App\Models\CuentasModel;
 use Dompdf\Dompdf;
 use CodeIgniter\API\ResponseTrait;
 class Compras extends BaseController
@@ -75,40 +76,44 @@ class Compras extends BaseController
 	}
 	public function pagina($slug)
 	{
-		$db = \Config\Database::connect();
-		$proveedor = new ProveedoresModel();
-		$pedido = new PedidosModel();
-		$articulos = new ArticulosModel();
+	    $db = \Config\Database::connect();
+	    $proveedor = new ProveedoresModel();
+	    $pedido = new PedidosModel();
+	    $articulos = new ArticulosModel();
+	    $cuentas = new CuentasModel(); // Instanciamos el modelo de cuentas
 
-		//vamos a buscar el pedido
-		$pedido->where('slug',$slug);
-		$resultado = $pedido->findAll();
+	    // Buscamos el pedido
+	    $pedido->where('slug', $slug);
+	    $resultado = $pedido->findAll();
 
-		//buscamos al proveedor
-		$proveedor->where('id_proveedor',$resultado[0]['proveedor']);
-		$resultado_proveedor = $proveedor->findAll();
+	    // Buscamos al proveedor
+	    $proveedor->where('id_proveedor', $resultado[0]['proveedor']);
+	    $resultado_proveedor = $proveedor->findAll();
 
-		//buscamos los articulos para el modal
-		$modal = $articulos->findAll();
+	    // Buscamos los articulos para el modal
+	    $modal = $articulos->findAll();
 
-		//lineas de detalle
-		$builder = $db->table('sellopro_detalles_pedido');
-		$builder->where('id_detalle_pedido',$resultado[0]['id_pedido']);
-		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
-		$detalles = $builder->get()->getResultArray();
+	    // Obtenemos todas las cuentas bancarias
+	    $cuentas_bancarias = $cuentas->findAll();
 
-		$data = [
-			'pedido'	=> $resultado,	
-			'proveedor' => $resultado_proveedor, 
-			'articulos' => $modal,
-			'detalles'  => $detalles,
-			'pedidos_id'=> $resultado[0]['id_pedido'],
-            'suma_total'=> $resultado[0]['total']
-		];
-		return view('Panel/nueva_compra', $data);
-		
+	    // Lineas de detalle
+	    $builder = $db->table('sellopro_detalles_pedido');
+	    $builder->where('id_detalle_pedido', $resultado[0]['id_pedido']);
+	    $builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
+	    $detalles = $builder->get()->getResultArray();
+
+	    $data = [
+	        'pedido'          => $resultado,    
+	        'proveedor'       => $resultado_proveedor, 
+	        'articulos'       => $modal,
+	        'detalles'        => $detalles,
+	        'pedidos_id'      => $resultado[0]['id_pedido'],
+	        'suma_total'      => $resultado[0]['total'],
+	        'cuentas_bancarias' => $cuentas_bancarias // Agregamos las cuentas bancarias
+	    ];
+	    
+	    return view('Panel/nueva_compra', $data);
 	}
-	
     public function agregar()
     {
         $db = \Config\Database::connect();
@@ -422,63 +427,128 @@ class Compras extends BaseController
 	{
 	    $request = \Config\Services::request();
 	    $pedidoId = $request->getVar('id');
+	    $bancoId = $request->getVar('banco');
 
 	    // Cargar modelos
 	    $pedidosModel = new \App\Models\PedidosModel();
 	    $gastosModel = new \App\Models\GastosModel();
 	    $detalleModel = new \App\Models\DetallePedidosModel();
+	    $cuentasModel = new \App\Models\CuentasModel();
 	    $db = \Config\Database::connect();
 
-	    // Obtener detalles del pedido cuyos artículos tienen venta = 0
-	    $query = $db->table('sellopro_detalles_pedido d')
-	        ->select('d.cantidad, d.p_unitario')
-	        ->join('sellopro_articulos a', 'a.id_articulo = d.id_articulo')
-	        ->where('d.id_pedido', $pedidoId)
-	        ->where('a.venta', 0)
-	        ->get();
-
-	    $detalles = $query->getResultArray();
-	    
-	    $monto_total = 0;
-	    $hayGastos = false;
-
-	    // Si hay artículos con venta = 0, calcular el monto y registrar gasto
-	    if (!empty($detalles)) {
-	        foreach ($detalles as $detalle) {
-	            $monto_total += $detalle['cantidad'] * $detalle['p_unitario'];
-	        }
-
-	        // Insertar el gasto
-	        $gastoData = [
-	            'descripcion' => 'Compra de suministros de la OC No. '.$pedidoId,
-	            'monto' => $monto_total,
-	            'fecha_gasto' => date('Y-m-d')
-	        ];
-	        $gastosModel->insert($gastoData);
-	        $hayGastos = true;
+	    // 1. Obtener el pedido y calcular el monto total
+	    $pedido = $pedidosModel->find($pedidoId);
+	    if (!$pedido) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'El pedido no existe'
+	        ]);
 	    }
 
-	    // Marcar pedido como pagado (siempre se hace, haya o no artículos con venta = 0)
-	    $pedidosModel->update($pedidoId, ['pagado' => 1]);
+	    // Calcular monto total del pedido
+	    $query = $db->table('sellopro_detalles_pedido d')
+	        ->select('SUM(d.cantidad * d.p_unitario) as monto_total')
+	        ->join('sellopro_articulos a', 'a.id_articulo = d.id_articulo')
+	        ->where('d.id_pedido', $pedidoId)
+	        ->get();
 
-	    // Preparar respuesta según si hubo gastos o no
-	    if ($hayGastos) {
+	    $resultado = $query->getRow();
+	    $montoTotal = $resultado->monto_total ?? 0;
+
+	    if ($montoTotal <= 0) {
 	        return $this->response->setJSON([
-	            'status' => 'ok',
-	            'message' => 'Orden de compra pagada correctamente con registro de gastos',
-	            'monto_registrado' => $monto_total,
-	            'flag' => 1
+	            'status' => 'error',
+	            'message' => 'El pedido no tiene un monto válido para pagar'
 	        ]);
-	    } else {
+	    }
+
+	    // 2. Verificar fondos en la cuenta bancaria
+	    $cuenta = $cuentasModel->find($bancoId);
+	    
+	    if (!$cuenta) {
 	        return $this->response->setJSON([
-	            'status' => 'ok',
-	            'message' => 'Orden de compra pagada correctamente (sin artículos para registrar como gasto)',
-	            'monto_registrado' => 0,
-	            'flag' => 2
+	            'status' => 'error',
+	            'message' => 'La cuenta bancaria seleccionada no existe'
+	        ]);
+	    }
+
+	    if ($cuenta['saldo'] < $montoTotal) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'Fondos insuficientes en la cuenta seleccionada. Saldo disponible: $'.number_format($cuenta['saldo'], 2)
+	        ]);
+	    }
+
+	    // Iniciar transacción
+	    $db->transStart();
+
+	    try {
+	        // 3. Registrar gastos (si aplica)
+	        $queryGastos = $db->table('sellopro_detalles_pedido d')
+	            ->select('d.cantidad, d.p_unitario')
+	            ->join('sellopro_articulos a', 'a.id_articulo = d.id_articulo')
+	            ->where('d.id_pedido', $pedidoId)
+	            ->where('a.venta', 0)
+	            ->get();
+
+	        $detalles = $queryGastos->getResultArray();
+	        
+	        $montoGastos = 0;
+	        $hayGastos = false;
+
+	        if (!empty($detalles)) {
+	            foreach ($detalles as $detalle) {
+	                $montoGastos += $detalle['cantidad'] * $detalle['p_unitario'];
+	            }
+
+	            $gastoData = [
+	                'descripcion' => 'Compra de suministros de la OC No. '.$pedidoId,
+	                'monto' => $montoGastos,
+	                'fecha_gasto' => date('Y-m-d'),
+	                'cuenta_id' => $bancoId
+	            ];
+	            $gastosModel->insert($gastoData);
+	            $hayGastos = true;
+	        }
+
+	        // 4. Actualizar saldo de la cuenta
+	        $nuevoSaldo = $cuenta['saldo'] - $montoTotal;
+	        $cuentasModel->update($bancoId, ['saldo' => $nuevoSaldo]);
+
+	        // 5. Marcar pedido como pagado
+	        $pedidosModel->update($pedidoId, [
+	            'pagado' => 1,
+	            'cuenta_pago' => $bancoId,
+	            'fecha_pago' => date('Y-m-d H:i:s'),
+	            'monto_pagado' => $montoTotal // Guardar el monto pagado
+	        ]);
+
+	        $db->transComplete();
+
+	        // Respuesta
+	        if ($hayGastos) {
+	            return $this->response->setJSON([
+	                'status' => 'ok',
+	                'message' => 'Orden de compra pagada correctamente con registro de gastos. Nuevo saldo: $'.number_format($nuevoSaldo, 2),
+	                'monto_total' => $montoTotal,
+	                'flag' => 1
+	            ]);
+	        } else {
+	            return $this->response->setJSON([
+	                'status' => 'ok',
+	                'message' => 'Orden de compra pagada correctamente. Nuevo saldo: $'.number_format($nuevoSaldo, 2),
+	                'monto_total' => $montoTotal,
+	                'flag' => 2
+	            ]);
+	        }
+	    } catch (\Exception $e) {
+	        $db->transRollback();
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'Error al procesar el pago: '.$e->getMessage()
 	        ]);
 	    }
 	}
-    
 	public function recibida()
     {
         $request = \Config\Services::request();

@@ -118,4 +118,10 @@ class CuentasController extends BaseController
             return redirect()->to(base_url('cuentas'))->with('error', 'Cuenta no encontrada.');
         }
     }
+
+    public function listar() //enlista las cuentas bancarias
+    {
+        $cuentasModel = new CuentasModel();
+        return $this->response->setJSON($cuentasModel->findAll());
+    }
 }

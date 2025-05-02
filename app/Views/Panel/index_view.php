@@ -23,8 +23,6 @@
 <?php endif; ?>
 
 <form action="<?= site_url('ventas/create') ?>" method="post">
-    <?= csrf_field() ?>
-
     <div class="row">
         <!-- Columna Izquierda: Formulario -->
         <div class="col-md-7">
@@ -136,15 +134,14 @@
                     <div class="card">
                         <div class="card-body">
                           <h5 class="card-title">Resumen de Pago</h5>
+                            <div class="row mb-2">
+                                <div class="col-6"><strong>Total:</strong></div>
+                                <div class="col-6 text-end">{{ formatCurrency(total) }}</div>
+                            </div>
                           
-                          <div class="row mb-2">
-                            <div class="col-6"><strong>Total:</strong></div>
-                            <div class="col-6 text-end">{{ formatCurrency(total) }}</div>
-                          </div>
-                          
-                          <div class="row mb-2">
-                            <div class="col-6">
-                              <label for="anticipo" class="form-label"><strong>Anticipo:</strong></label>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                <label for="anticipo" class="form-label"><strong>Anticipo:</strong></label>
                             </div>
                             <div class="col-6">
                               <input 
@@ -161,10 +158,24 @@
                             </div>
                           </div>
                           
-                          <div class="row mb-2">
+                          <div class="row mb-4">
                             <div class="col-6"><strong>Saldo:</strong></div>
                             <div class="col-6 text-end">{{ formatCurrency(saldo) }}</div>
                           </div>
+                          <!-- En la sección de Resumen de Pago, agrega esto: -->
+                            <div class="row mb-2 mt-2">
+                                <div class="col-6"><strong>Banco:</strong></div>
+                                <div class="col-6">
+                                    <select class="form-select" name="banco_id" required>
+                                        <option disabled selected value="">Seleccione un banco</option>
+                                        <?php foreach ($cuentas as $cuenta): ?>
+                                            <option value="<?= esc($cuenta['id_cuenta']) ?>">
+                                                <?= esc($cuenta['banco']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

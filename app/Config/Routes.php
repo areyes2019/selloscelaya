@@ -234,6 +234,7 @@ $routes->group('',static function($routes){
 	    $routes->post('guardar', 'CuentasController::guardar'); 
 	    $routes->post('actualizar/(:num)', 'CuentasController::actualizar/$1');
 	    $routes->get('borrar/(:num)', 'CuentasController::borrar/$1');   
+	    $routes->get('listar', 'CuentasController::listar');   
 	});
 
 	/*categorias*/
