@@ -14,7 +14,7 @@
 <!-- Contenido de las Pestañas -->
 <div class="card rounded-0 shadow-sm">
     <!-- Panel/ordenes_dashboard.php -->
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="ordenes">
         <thead class="table-light">
             <tr>
                 <th>Nombre</th>
@@ -88,7 +88,7 @@
 </div>
 <script>
     $( document ).ready(function() {
-        new DataTable('#tabla');
+        new DataTable('#ordenes');
     });
 </script>
 <?= $this->endSection() ?>
