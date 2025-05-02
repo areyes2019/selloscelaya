@@ -172,22 +172,9 @@
 </div>
 </div>
 
-<!-- Incluir las librerías necesarias -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
 $(document).ready(function() {
-    $('#example').DataTable({
-        responsive: true,
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-MX.json'
-        }
-    });
-});
-$(document).ready(function() {
+    new DataTable('#example');
     // Configurar el modal cuando se muestra
     $('#imagenModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
