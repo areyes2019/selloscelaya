@@ -56,7 +56,7 @@
         </div>
         <ul>
             <li>
-                <a href="<?php echo base_url('admin')?>"><i class="fas fa-home"></i>
+                <a href="<?php echo base_url('admin')?>"><i class="bi bi-house"></i>
                 <span>Inicio</span>
                 </a>
             </li>
