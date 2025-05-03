@@ -43,34 +43,51 @@ class PuntoVentaController extends BaseController
         $resumenDia = $this->pedidoModel
             ->select('COUNT(*) as total_ventas, SUM(total) as monto_total')
             ->where('DATE(created_at)', $hoy)
-            ->where('estado', 'pagado') // Solo ventas pagadas
+            ->where('estado', 'pagado')
             ->first();
         
         $resumenSemana = $this->pedidoModel
             ->select('COUNT(*) as total_ventas, SUM(total) as monto_total')
             ->where('created_at >=', $inicioSemana)
-            ->where('estado', 'pagado') // Solo ventas pagadas
+            ->where('estado', 'pagado')
             ->first();
         
         $resumenMes = $this->pedidoModel
             ->select('COUNT(*) as total_ventas, SUM(total) as monto_total')
             ->where('created_at >=', $inicioMes)
-            ->where('estado', 'pagado') // Solo ventas pagadas
+            ->where('estado', 'pagado')
             ->first();
         
-        // Datos para la vista (paginación muestra todos los pedidos)
+        // Obtener todas las cuentas bancarias según tu modelo
+        $cuentasBancarias = $this->cuentasModel
+            ->select('id_cuenta, banco, cuenta, saldo')
+            ->orderBy('banco', 'ASC')
+            ->findAll();
+        
+        // Calcular saldo total de todas las cuentas
+        $saldoTotal = 0;
+        foreach ($cuentasBancarias as $cuenta) {
+            $saldoTotal += $cuenta['saldo'];
+        }
+        
+        // Formatear saldo total
+        $saldoTotalFormateado = number_format($saldoTotal, 2);
+        
+        // Datos para la vista
         $data = [
             'pedidos' => $this->pedidoModel->orderBy('created_at', 'DESC')->paginate(10),
             'pager' => $this->pedidoModel->pager,
             'title' => 'Punto de venta',
             'resumenDia' => $resumenDia,
             'resumenSemana' => $resumenSemana,
-            'resumenMes' => $resumenMes
+            'resumenMes' => $resumenMes,
+            'cuentasBancarias' => $cuentasBancarias,
+            'saldoTotal' => $saldoTotal,
+            'saldoTotalFormateado' => $saldoTotalFormateado
         ];
         
         return view('Panel/pos', $data);
     }
-    
     public function new()
     {
         $cuentasModel = new CuentasModel();
@@ -258,77 +275,92 @@ class PuntoVentaController extends BaseController
     }
     public function pagar($id)
     {
-        $pedido = $this->pedidoModel->find($id);
+        $request = \Config\Services::request();
+        $pedidoId = $request->getPost('pedido_id');
+        $cuentaId = $request->getPost('cuenta_id');
         
-        if (!$pedido) {
-            return redirect()->back()->with('error', 'Pedido no encontrado');
+        // Validaciones básicas
+        if (!$pedidoId || !$cuentaId) {
+            return redirect()->back()->with('error', 'Datos incompletos');
         }
 
         $db = \Config\Database::connect();
         $db->transStart();
 
         try {
-            // Obtener detalles del pedido
-            $detalles = $this->detallePedidoModel->where('pedido_id', $id)->findAll();
-
-            $total_neto = 0;
-            $total_inversion = 0;
-
-            foreach ($detalles as $item) {
-                $inventario = $this->inventarioModel
-                    ->where('id_articulo', $item['id_articulo'])
-                    ->first();
-
-                if ($inventario) {
-                    $nuevaCantidad = $inventario['cantidad'] - $item['cantidad'];
-
-                    if ($nuevaCantidad < 0) {
-                        throw new \Exception('No hay suficiente inventario para el artículo: ' . $item['descripcion']);
-                    }
-
-                    $this->inventarioModel->update($inventario['id_entrada'], [
-                        'cantidad' => $nuevaCantidad
-                    ]);
-                } else {
-                    throw new \Exception('Artículo no encontrado en inventario: ' . $item['descripcion']);
-                }
-
-                // Obtener información completa del artículo
-                $articulo = $this->articulosModel->find($item['id_articulo']);
-                if (!$articulo) {
-                    throw new \Exception('Artículo no encontrado: ' . $item['id_articulo']);
-                }
-
-                // Calcular totales para la venta
-                $total_neto += $articulo['precio_pub'] * $item['cantidad']; // Usamos precio_pub del artículo
-                $total_inversion += $articulo['precio_prov'] * $item['cantidad'];
+            // 1. Obtener el pedido y sus detalles
+            $pedido = $this->pedidoModel->find($pedidoId);
+            if (!$pedido) {
+                throw new \Exception('Pedido no encontrado');
             }
 
-            // Marcar pedido como pagado
-            $this->pedidoModel->update($id, [
-                'anticipo' => $pedido['total'],
-                'estado' => 'pagado'
-            ]);
+            // Calcular el saldo pendiente (total - anticipo)
+            $saldoPendiente = $pedido['total'] - $pedido['anticipo'];
+            
+            // Si no hay saldo pendiente, no proceder
+            if ($saldoPendiente <= 0) {
+                throw new \Exception('No hay saldo pendiente por pagar');
+            }
 
-            // Registrar la venta en sellopro_ventas
+            // 2. Calcular inversión y beneficio (proporcional al saldo pagado)
+            $detalles = $this->detallePedidoModel->where('pedido_id', $pedidoId)->findAll();
+            $totalInversion = 0;
+            
+            foreach ($detalles as $item) {
+                $articulo = $this->articulosModel->find($item['id_articulo']);
+                if ($articulo) {
+                    $totalInversion += $articulo['precio_prov'] * $item['cantidad'];
+                }
+            }
+
+            // Calcular proporción del beneficio correspondiente al saldo pagado
+            $proporcionPago = $saldoPendiente / $pedido['total'];
+            $beneficio = $saldoPendiente - ($totalInversion * $proporcionPago);
+
+            // 3. Registrar la venta (opcional, depende de tu lógica de negocio)
             $ventasModel = new \App\Models\VentasModel();
             $ventasModel->insert([
-                'ref' => 'VENTA-' . date('Ymd-His') . '-' . $id, // Referencia más descriptiva
-                'total_neto' => $total_neto,
-                'inversion' => $total_inversion,
-                'beneficio' => $total_neto - $total_inversion
+                'ref' => 'VENTA-'.$pedidoId.'-'.date('YmdHis'),
+                'total_neto' => $saldoPendiente, // Registrar solo el saldo pagado
+                'inversion' => $totalInversion * $proporcionPago,
+                'beneficio' => $beneficio
+            ]);
+
+            // 4. Registrar el GASTO (entrada de dinero) - SOLO EL SALDO PENDIENTE
+            $gastosModel = new \App\Models\GastosModel();
+            $gastosModel->insert([
+                'descripcion' => 'Pago del saldo pendiente del pedido #'.$pedidoId,
+                'entrada' => $saldoPendiente, // Solo el saldo pendiente
+                'salida' => 0,
+                'cuenta_origen' => 0,
+                'cuenta_destino' => $cuentaId,
+                'fecha_gasto' => date('Y-m-d H:i:s')
+            ]);
+
+            // 5. Actualizar saldo de la cuenta
+            $cuentasModel = new \App\Models\CuentasModel();
+            $cuenta = $cuentasModel->find($cuentaId);
+            $nuevoSaldo = $cuenta['saldo'] + $saldoPendiente;
+            $cuentasModel->update($cuentaId, ['saldo' => $nuevoSaldo]);
+
+            // 6. Actualizar estado del pedido
+            $this->pedidoModel->update($pedidoId, [
+                'estado' => 'pagado',
+                'anticipo' => $pedido['total'], // El anticipo ahora es igual al total (se pagó completo)
             ]);
 
             $db->transComplete();
 
-            return redirect()->back()->with('success', 'Pedido marcado como pagado correctamente y venta registrada');
+            return redirect()->back()->with('success', 
+                'Pago registrado. Beneficio: $'.number_format($beneficio, 2).
+                ' | Nuevo saldo: $'.number_format($nuevoSaldo, 2)
+            );
 
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->with('error', 'Error al procesar el pago: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: '.$e->getMessage());
         }
     }
-
     public function delete($id = null)
     {
         if ($this->pedidoModel->delete($id)) {

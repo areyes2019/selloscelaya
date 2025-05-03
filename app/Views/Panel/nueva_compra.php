@@ -134,7 +134,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary"  @click="agregar_pago">Cerrar</button>
+                <button type="button" class="btn btn-danger rounded-0"  @click="agregar_pago">Pagar</button>
               </div>
             </div>
           </div>

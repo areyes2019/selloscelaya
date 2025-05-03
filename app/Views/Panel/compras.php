@@ -31,6 +31,7 @@
                     <th>Proveedor</th>
                     <th>Fecha</th>
                     <th>Estatus</th>
+                    <th>Monto</th>
                     <th>Acción</th>
                 </tr>
             </thead>
@@ -51,6 +52,7 @@
                             <span class="badge bg-danger">Estado desconocido</span>
                         <?php endif; ?>
                     </td>
+                    <td>$<?php echo $data['total'] ?></td>
                     <td>
                         <a class="btn btn-primary btn-circle btn-sm" href="<?php echo base_url('pagina_orden/'.$data['slug']); ?>">
                             <span class="bi bi-pencil"></span>
@@ -59,6 +61,14 @@
                             <a class="btn btn-danger btn-circle btn-sm" href="<?php echo base_url('eliminar_compra/'.$data['id_pedido']); ?>" onclick="return confirm('Esta eliminación no se puede revertir, ¿Deseas continuar?');">
                                 <span class="bi bi-trash3"></span>
                             </a>
+                        <?php endif; ?>
+                        <?php if ($data['pagado'] == 1 && $data['entregada'] == 0): ?>
+                            <form action="<?php echo base_url('recibido_compras'); ?>" method="post" class="d-inline">
+                                <input type="hidden" name="pedido" value="<?= $data['id_pedido'] ?>">
+                                <button type="submit" class="btn btn-success btn-circle btn-sm" onclick="return confirm('¿Confirmas que has recibido esta orden de compra?');">
+                                    <span class="bi bi-box-arrow-down"></span>
+                                </button>
+                            </form>
                         <?php endif; ?>
                     </td>
                 </tr>
