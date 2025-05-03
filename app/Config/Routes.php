@@ -189,7 +189,7 @@ $routes->group('',static function($routes){
 
 	// Dentro de tu grupo 'admin' o similar si lo tienes, o directamente:
 	$routes->group('ordenes', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
-	    $routes->get('/', 'OrdenTrabajoController::index', ['as' => 'ordenes_dashboard']); // Dashboard
+	    $routes->get('/', 'OrdenTrabajoController::index'); // Dashboard
 	    $routes->get('new/(:num)', 'OrdenTrabajoController::new/$1'); // Formulario nuevo con ID de pedido
 	    $routes->get('descargar_ordenes', 'OrdenTrabajoController::descargar_ordenes');
 	    $routes->post('create', 'OrdenTrabajoController::create'); // Procesar creación
@@ -201,6 +201,7 @@ $routes->group('',static function($routes){
 	    // Ajusta 'PedidosController' si es necesario
 		$routes->get('pedidos-pendientes', 'OrdenTrabajoController::etiquetas_pdf');
 		$routes->post('actualizar-status/(:num)', 'OrdenTrabajoController::actualizarStatus/$1');
+		$routes->get('eliminar/(:num)', 'OrdenTrabajoController::eliminar/$1');
 
 	});
 	//gastos

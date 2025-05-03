@@ -96,6 +96,12 @@
                 </a>
             </li>
             <li>
+                <a href="<?php echo base_url('ordenes'); ?>">
+                <i class="bi bi-gear"></i>
+                <span>Ordenes de Trabajo</span>
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo base_url('existencias/existencias_admin'); ?>">
                 <i class="bi bi-bar-chart"></i>
                 <span>Existencias</span>

@@ -19,24 +19,18 @@
             <tr>
                 <th>Nombre</th>
                 <th>Teléfono</th>
-                <th>Clave</th>
-                <th>Saldo</th>
+                <td>Img</td>
                 <th>Status</th>
                 <th>Acción</th> <!-- Nueva columna -->
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($ordenes as $orden): ?>
+            <?php foreach ($lista as $orden): ?>
                 <tr>
                     <td><?= esc($orden->cliente_nombre) ?></td>
                     <td><?= esc($orden->cliente_telefono) ?></td>
-                    <td><?= esc($orden->clave) ?></td>
                     <td>
-                        <?php if ($orden->saldo === 'Pagado'): ?>
-                            <span class="badge bg-success"><?= esc($orden->saldo) ?></span>
-                        <?php else: ?>
-                            <?= esc($orden->saldo) ?>
-                        <?php endif; ?>
+                        <p>imagen</p>
                     </td>
                     <td>
                         <?php
@@ -80,7 +74,7 @@
                             <i class="bi bi-check-lg"></i>
                         </span>
                         <?php endif; ?>
-                        <a href="<?php echo base_url('ordenes/eliminar/').$orden->id_ot; ?>" class="btn btn-danger">Eliminar</a>
+                        <a href="<?php echo base_url('ordenes/eliminar/').$orden->id_ot; ?>" class="btn btn-danger btn-sm rounded-0"><span class="bi bi-trash3"></span></a>
                     </td>
                 </tr>
             <?php endforeach; ?>

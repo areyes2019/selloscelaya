@@ -20,6 +20,15 @@ class OrdenTrabajoController extends BaseController
         helper(['form', 'url', 'filesystem']); // Necesitamos filesystem para manejar archivos
     }
 
+    public function index()
+    {
+        $resultado = $this->ordenTrabajoModel->findAll();
+        $data =[
+            'titulo'=>'Ordenes de Trabajo',
+            'lista'=> $resultado
+        ];
+        return view('Panel/ordenes_trabajo',$data);
+    }
    
     /**
      * Muestra el formulario para crear una nueva orden de trabajo,
@@ -613,6 +622,31 @@ class OrdenTrabajoController extends BaseController
         $ordenModel->update($id, ['status' => $nuevoStatus]);
 
         return redirect()->to('admin')->with('success', 'Estatus actualizado correctamente.');
+    }
+    public function eliminar($id_ot)
+    {
+        // Verificar si la solicitud es POST
+        if ($this->request->getMethod() !== 'post') {
+            return redirect()->back()->with('error', 'Método no permitido');
+        }
+
+        // Verificar CSRF token
+        if (!csrf_hash_verify($this->request->getPost('csrf_test_name') ?? '', $this->request->getPost('_csrf') ?? '')) {
+            return redirect()->back()->with('error', 'Token CSRF inválido');
+        }
+
+        $model = new OrdenTrabajoModel();
+
+        try {
+            // Intenta eliminar la orden
+            if ($model->delete($id_ot)) {
+                return redirect()->back()->with('success', 'Orden eliminada correctamente');
+            } else {
+                return redirect()->back()->with('error', 'No se pudo eliminar la orden');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error al eliminar la orden: ' . $e->getMessage());
+        }
     }
 
 
