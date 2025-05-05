@@ -1,149 +1,103 @@
 <?= $this->extend('Panel/panel_template'); ?>
 
 <?= $this->section('contenido'); ?>
-<div class="container-fluid mt-3">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="card-title">Reporte Financiero</h3>
-                </div>
-                <div class="card-body">
-                    <!-- Filtros por fecha (se mantiene igual) -->
-                    
-                    <!-- Sección de Beneficios -->
-                    <div class="row mt-4">
-                        <!-- Beneficio Neto -->
-                        <div class="col-md-6">
-                            <div class="card card-outline card-success h-100">
-                                <div class="card-header">
-                                    <h3 class="card-title">Beneficio Neto</h3>
-                                </div>
-                                <div class="card-body text-center">
-                                    <h1 class="display-4 text-success">
-                                        $<?= number_format($beneficio_total, 2) ?>
-                                    </h1>
-                                    <p class="text-muted">Período: <?= date('d/m/Y', strtotime($fecha_inicio)) ?> - <?= date('d/m/Y', strtotime($fecha_fin)) ?></p>
-                                </div>
-                            </div>
-                        </div>
+<div class="container mt-4">
+    <h1><?= $title; ?></h1>
+
+    <?php if (session('message')): ?>
+        <div class="alert alert-success">
+            <?= session('message'); ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="card shadow-sm rounded-0 mt-3">
+        <div class="card-body ">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="gastos">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Descripción</th>
+                            <th class="text-end">Entrada</th>
+                            <th class="text-end">Salida</th>
+                            <th>Fecha</th>
+                            <th>Cuenta Origen</th>
+                            <th>Cuenta Destino</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $totalEntradas = 0;
+                        $totalSalidas = 0;
                         
-                        <!-- Presupuesto Publicidad (10%) -->
-                        <div class="col-md-6">
-                            <div class="card card-outline card-info h-100">
-                                <div class="card-header">
-                                    <h3 class="card-title">Presupuesto Publicidad (10%)</h3>
-                                </div>
-                                <div class="card-body text-center">
-                                    <h1 class="display-4 text-info">
-                                        $<?= number_format($beneficio_total * 0.10, 2) ?>
-                                    </h1>
-                                    <p class="text-muted">Disponible para campañas de marketing</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tabla de resumen (actualizada) -->
-                    <div class="row mt-4">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Detalle Financiero</h3>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-bordered">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Concepto</th>
-                                                <th class="text-end">Monto</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Total Ventas</td>
-                                                <td class="text-end">$<?= number_format($ventas_brutas, 2) ?></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Inversión Material</td>
-                                                <td class="text-end">$<?= number_format($inversion_total, 2) ?></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Gastos Operativos</td>
-                                                <td class="text-end">$<?= number_format($gastos_operativos ?? 0, 2) ?></td>
-                                            </tr>
-                                            <tr class="table-success fw-bold">
-                                                <td>Beneficio Bruto</td>
-                                                <td class="text-end">$<?= number_format(($ventas_brutas - $inversion_total), 2) ?></td>
-                                            </tr>
-                                            <tr class="table-primary fw-bold">
-                                                <td>Presupuesto Publicidad (10%)</td>
-                                                <td class="text-end">$<?= number_format($beneficio_total * 0.10, 2) ?></td>
-                                            </tr>
-                                            <tr class="table-success fw-bold">
-                                                <td>Beneficio Neto Final</td>
-                                                <td class="text-end">$<?= number_format($beneficio_total * 0.90, 2) ?></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sección de Saldos Bancarios (nueva) -->
-                    <div class="row mt-4">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header bg-dark rounded-0 text-white">
-                                    <h3 class="card-title">Saldos Bancarios</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <!-- Total de Saldos -->
-                                        <div class="col-md-4 mb-4">
-                                            <div class="card card-outline card-primary h-100">
-                                                <div class="card-header">
-                                                    <h3 class="card-title">Total Disponible</h3>
-                                                </div>
-                                                <div class="card-body text-center">
-                                                    <h1 class="display-4 text-primary">
-                                                        $<?= number_format($total_saldos, 2) ?>
-                                                    </h1>
-                                                    <p class="text-muted">Suma de todos los saldos bancarios</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Listado de Cuentas -->
-                                        <div class="col-md-8">
-                                            <div class="table table-responsive">
-                                                <table class="table table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Banco</th>
-                                                            <th class="text-end">Saldo Actual</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php foreach ($cuentas_bancarias as $cuenta): ?>
-                                                        <tr>
-                                                            <td><?= esc($cuenta['banco']) ?></td>
-                                                            <td class="text-end">$<?= number_format($cuenta['saldo'], 2) ?></td>
-                                                        </tr>
-                                                        <?php endforeach; ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
+                        foreach ($gastos as $gasto): 
+                            $totalEntradas += $gasto['entrada'];
+                            $totalSalidas += $gasto['salida'];
+                            
+                            // Determinar texto para cuentas
+                            $cuentaOrigen = ($gasto['cuenta_origen'] == 0) ? 'Externo' : esc($gasto['banco_origen'] ?? '');
+                            $cuentaDestino = ($gasto['cuenta_destino'] == 0) ? 'Externo' : esc($gasto['banco_destino'] ?? '');
+                        ?>
+                            <tr>
+                                <td><?= $gasto['id_registro']; ?></td>
+                                <td><?= esc($gasto['descripcion']); ?></td>
+                                <td class="text-end <?= $gasto['entrada'] > 0 ? 'text-success' : ''; ?>">
+                                    <?= $gasto['entrada'] > 0 ? '$'.number_format($gasto['entrada'], 2) : '-'; ?>
+                                </td>
+                                <td class="text-end <?= $gasto['salida'] > 0 ? 'text-danger' : ''; ?>">
+                                    <?= $gasto['salida'] > 0 ? '$'.number_format($gasto['salida'], 2) : '-'; ?>
+                                </td>
+                                <td><?= date('d/m/Y', strtotime($gasto['fecha_gasto'])); ?></td>
+                                <td><?= $cuentaOrigen; ?></td>
+                                <td><?= $cuentaDestino; ?></td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="<?= base_url('gastos/mostrar/'.$gasto['id_registro']); ?>" class="btn btn-sm btn-dark" title="Ver">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="<?= base_url('gastos/editar/'.$gasto['id_registro']); ?>" class="btn btn-sm btn-warning" title="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="<?= base_url('gastos/eliminar/'.$gasto['id_registro']); ?>" method="post" class="d-inline">
+                                            <?= csrf_field(); ?>
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este movimiento?');">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                    <tfoot class="table-group-divider">
+                        <tr class="table-active">
+                            <th colspan="2">TOTALES</th>
+                            <th class="text-end text-success">$<?= number_format($totalEntradas, 2); ?></th>
+                            <th class="text-end text-danger">$<?= number_format($totalSalidas, 2); ?></th>
+                            <th colspan="4"></th>
+                        </tr>
+                        <tr class="table-secondary">
+                            <th colspan="2">BALANCE FINAL</th>
+                            <th colspan="2" class="text-end <?= ($totalEntradas - $totalSalidas) >= 0 ? 'text-success' : 'text-danger'; ?>">
+                                $<?= number_format($totalEntradas - $totalSalidas, 2); ?>
+                            </th>
+                            <th colspan="4"></th>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .text-success { color: #28a745 !important; font-weight: bold; }
+    .text-danger { color: #dc3545 !important; font-weight: bold; }
+    .table th { white-space: nowrap; }
+    .btn-group .btn { padding: 0.25rem 0.5rem; }
+</style>
+<script type="text/javascript">
+    new DataTable('#gastos');
+</script>
 <?= $this->endSection(); ?>

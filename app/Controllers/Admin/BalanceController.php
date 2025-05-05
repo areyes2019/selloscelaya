@@ -67,7 +67,7 @@ class BalanceController extends BaseController
 	        'total_saldos' => $total_saldos
 	    ];
 	    
-	    return view('Panel/reporte_financiero', $data);
+	    return view('Panel/gastos', $data);
 	}
 	public function hoy()
 	{

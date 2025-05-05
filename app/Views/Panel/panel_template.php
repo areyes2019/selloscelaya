@@ -108,7 +108,7 @@
                 </a>
             </li>
             <li>
-                <a href="<?php echo base_url('gastos/inicio'); ?>">
+                <a href="<?php echo base_url('reportes/reporte'); ?>">
                 <i class="bi bi-coin"></i>
                 <span>Finansas</span>
                 </a>

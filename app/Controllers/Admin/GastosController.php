@@ -28,11 +28,11 @@ class GastosController extends BaseController
     public function index()
     {
         $data = [
-            'title' => 'Gestión de Gastos',
+            'title' => 'Hoja de Movimientos',
             'gastos' => $this->gastosModel->orderBy('fecha_gasto', 'DESC')->findAll(),
         ];
 
-        return view('Panel/gastos', $data);
+        return view('Panel/reporte_financiero', $data);
     }
 
     // Mostrar formulario de creación
