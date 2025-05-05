@@ -607,24 +607,24 @@ class Cotizaciones extends BaseController
 		//sacamos los totales 
 
 		$total = (float)$resultado_cotizacion[0]['total'];
-	    $descuento = (float)$resultado_cotizacion[0]['descuento'];
-	    $anticipo = (float)$resultado_cotizacion[0]['anticipo'];
-	    	   
+		$descuento = (float)$resultado_cotizacion[0]['descuento'];
+		$anticipo = (float)$resultado_cotizacion[0]['anticipo'];
 
-	    $totalConDescuento = $total - $descuento;
-	    $iva = $totalConDescuento * 0.16; // IVA del 16%
-	    $totalConIva = $totalConDescuento + $iva;
-	    $saldo = $totalConIva - $anticipo;
+		$totalConDescuento = $total - $descuento;
+		$sub_total = $totalConDescuento / 1.16;
+		$iva = $totalConDescuento - $sub_total;
+		$saldo = $totalConDescuento - $anticipo;
 
-	    $data = [
-	    	'cliente'=>$resultado,
-	    	'id_cotizacion'=>$resultado_cotizacion,
-			'detalles'=>$resultado_lineas,
-	        'sub_total' => number_format($total, 2),
-	        'descuento' => number_format($descuento, 2),
-	        'iva' => number_format($iva, 2),
-	        'total' => number_format($totalConIva, 2),
-	    ];
+		$data = [
+		    'cliente' => $resultado,
+		    'id_cotizacion' => $resultado_cotizacion,
+		    'detalles' => $resultado_lineas,
+		    'sub_total' => number_format($sub_total, 2),
+		    'descuento' => number_format($descuento, 2),
+		    'iva' => number_format($iva, 2),
+		    'total' => number_format($totalConDescuento, 2),
+		];
+
 
 		
 		//return view('Panel/PDF',$data);
@@ -664,26 +664,24 @@ class Cotizaciones extends BaseController
 		$independiente = $query->findAll();
 
 		//sacamos los totales 
-
 		$total = (float)$resultado_cotizacion[0]['total'];
-	    $descuento = (float)$resultado_cotizacion[0]['descuento'];
-	    $anticipo = (float)$resultado_cotizacion[0]['anticipo'];
-	    	   
+		$descuento = (float)$resultado_cotizacion[0]['descuento'];
+		$anticipo = (float)$resultado_cotizacion[0]['anticipo'];
 
-	    $totalConDescuento = $total - $descuento;
-	    $iva = $totalConDescuento * 0.16; // IVA del 16%
-	    $totalConIva = $totalConDescuento + $iva;
-	    $saldo = $totalConIva - $anticipo;
+		$totalConDescuento = $total - $descuento;
+		$sub_total = $totalConDescuento / 1.16;
+		$iva = $totalConDescuento - $sub_total;
+		$saldo = $totalConDescuento - $anticipo;
 
-	    $data = [
-	    	'cliente'=>$resultado,
-	    	'id_cotizacion'=>$resultado_cotizacion,
-			'detalles'=>$resultado_lineas,
-	        'sub_total' => number_format($total, 2),
-	        'descuento' => number_format($descuento, 2),
-	        'iva' => number_format($iva, 2),
-	        'total' => number_format($totalConIva, 2),
-	    ];
+		$data = [
+		    'cliente' => $resultado,
+		    'id_cotizacion' => $resultado_cotizacion,
+		    'detalles' => $resultado_lineas,
+		    'sub_total' => number_format($sub_total, 2),
+		    'descuento' => number_format($descuento, 2),
+		    'iva' => number_format($iva, 2),
+		    'total' => number_format($totalConDescuento, 2),
+		];
 
 		//return view('Panel/PDF',$data);
 		$doc = new Dompdf();

@@ -65,6 +65,7 @@ $routes->group('',static function($routes){
 	$routes->get('ver_imagen/(:any)', 'Admin\Articulos::verImagen/$1');
 	$routes->get('nuevo_art_vista', 'Admin\Articulos::nuevo_art');
 	$routes->post('import_masivo', 'Admin\Articulos::importArticulos');
+	
 	/*Cotizaciones*/
 	$routes->get('cotizaciones', 'Admin\Cotizaciones::index');
 	$routes->get('nueva_cotizacion/(:num)', 'Admin\Cotizaciones::nueva/$1');
