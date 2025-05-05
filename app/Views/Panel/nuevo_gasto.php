@@ -38,15 +38,29 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="salida" class="form-label">Monto del Gasto</label>
-                    <input type="number" step="0.01" class="form-control" id="salida" name="salida"
-                           value="<?= old('salida'); ?>" required>
+                    <label class="form-label">Tipo de Movimiento</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipo_movimiento" id="entrada" 
+                               value="entrada" <?= old('tipo_movimiento') == 'entrada' ? 'checked' : ''; ?> required>
+                        <label class="form-check-label" for="entrada">Entrada</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipo_movimiento" id="salida" 
+                               value="salida" <?= (old('tipo_movimiento') == 'salida' || !old('tipo_movimiento')) ? 'checked' : ''; ?>>
+                        <label class="form-check-label" for="salida">Salida</label>
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="fecha_gasto" class="form-label">Fecha del Gasto</label>
+                    <label for="monto" class="form-label">Monto</label>
+                    <input type="number" step="0.01" min="0.01" class="form-control" id="monto" name="monto"
+                           value="<?= old('monto'); ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="fecha_gasto" class="form-label">Fecha del Movimiento</label>
                     <input type="date" class="form-control" id="fecha_gasto" name="fecha_gasto"
-                           value="<?= old('fecha_gasto'); ?>" required>
+                           value="<?= old('fecha_gasto', date('Y-m-d')); ?>" required>
                 </div>
 
                 <div class="mb-3">
@@ -56,7 +70,7 @@
                         <?php foreach ($cuentas as $cuenta): ?>
                             <option value="<?= $cuenta['id_cuenta']; ?>"
                                 <?= old('cuenta_origen') == $cuenta['id_cuenta'] ? 'selected' : ''; ?>>
-                                <?= esc($cuenta['banco']); ?>
+                                <?= esc($cuenta['banco']); ?> (Saldo: <?= number_format($cuenta['saldo'], 2); ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>

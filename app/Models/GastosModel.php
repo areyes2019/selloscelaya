@@ -20,4 +20,5 @@ class GastosModel extends Model
         'cuenta_destino',
         'fecha_gasto',
     ];
+
 }

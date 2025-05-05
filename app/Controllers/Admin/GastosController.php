@@ -39,7 +39,7 @@ class GastosController extends BaseController
     public function nuevo()
     {
         $data = [
-            'title' => 'Registrar Nuevo Gasto',
+            'title' => 'Nuevo Movimiento',
             'cuentas'=> $this->cuentasModel->findAll()
         ];
 
@@ -50,10 +50,11 @@ class GastosController extends BaseController
         helper(['form']);
 
         $rules = [
-            'descripcion'    => 'required|min_length[3]|max_length[255]',
-            'salida'         => 'required|numeric|greater_than[0]',
-            'fecha_gasto'    => 'required|valid_date[Y-m-d]',
-            'cuenta_origen'  => 'required|integer|greater_than[0]'
+            'descripcion'      => 'required|min_length[3]|max_length[255]',
+            'monto'            => 'required|numeric|greater_than[0]',
+            'fecha_gasto'      => 'required|valid_date',
+            'cuenta_origen'    => 'required|integer|greater_than[0]',
+            'tipo_movimiento'  => 'required|in_list[entrada,salida]' // sigue validándose pero no se guarda
         ];
 
         if (!$this->validate($rules)) {
@@ -62,45 +63,50 @@ class GastosController extends BaseController
                              ->with('errors', $this->validator->getErrors());
         }
 
-        // Obtener inputs
-        $descripcion    = $this->request->getPost('descripcion');
-        $salida         = floatval($this->request->getPost('salida'));
-        $fecha          = $this->request->getPost('fecha_gasto');
-        $cuentaOrigenId = intval($this->request->getPost('cuenta_origen'));
+        $postData = $this->request->getPost();
 
-        // Verificar saldo suficiente
+        // Buscar cuenta
         $cuentasModel = new \App\Models\CuentasModel();
-        $cuenta = $cuentasModel->find($cuentaOrigenId);
+        $cuenta = $cuentasModel->find((int)$postData['cuenta_origen']);
 
         if (!$cuenta) {
-            return redirect()->back()->withInput()->with('error', 'Cuenta origen no encontrada.');
+            return redirect()->back()->withInput()->with('error', 'Cuenta no encontrada.');
         }
 
-        if ($salida > $cuenta['saldo']) {
-            return redirect()->back()->withInput()->with('error', 'El saldo de la cuenta es insuficiente.');
+        // Verificar saldo si es salida
+        if ($postData['tipo_movimiento'] === 'salida' && $postData['monto'] > $cuenta['saldo']) {
+            return redirect()->back()->withInput()->with('error', 'Saldo insuficiente en la cuenta.');
         }
 
-        // Insertar gasto
-        $gastosModel = new \App\Models\GastosModel();
+        // Preparar datos
         $data = [
-            'descripcion'     => $descripcion,
-            'salida'          => $salida,
-            'fecha_gasto'     => $fecha,
-            'cuenta_origen'   => $cuentaOrigenId,
+            'descripcion'    => $postData['descripcion'],
+            'entrada'        => $postData['tipo_movimiento'] === 'entrada' ? $postData['monto'] : 0,
+            'salida'         => $postData['tipo_movimiento'] === 'salida'  ? $postData['monto'] : 0,
+            'cuenta_origen'  => (int)$postData['cuenta_origen'],
+            'cuenta_destino' => null,
+            'fecha_gasto'    => $postData['fecha_gasto'],
         ];
 
+        $gastosModel = new \App\Models\GastosModel();
+
         if ($gastosModel->insert($data)) {
-            // Descontar el saldo
-            $nuevoSaldo = $cuenta['saldo'] - $salida;
-            $cuentasModel->update($cuentaOrigenId, ['saldo' => $nuevoSaldo]);
+            // Actualizar saldo de cuenta
+            $nuevoSaldo = $postData['tipo_movimiento'] === 'entrada'
+                ? $cuenta['saldo'] + $postData['monto']
+                : $cuenta['saldo'] - $postData['monto'];
+
+            $cuentasModel->update($data['cuenta_origen'], ['saldo' => $nuevoSaldo]);
 
             return redirect()->to('/gastos/inicio')
-                             ->with('message', 'Movimiento registrado y saldo actualizado.');
+                             ->with('message', 'Movimiento registrado correctamente.');
+        } else {
+            // Registrar errores del modelo si falla
+            log_message('error', 'Error insertando gasto: ' . json_encode($gastosModel->errors()));
         }
 
-        return redirect()->back()->withInput()->with('error', 'Ocurrió un error al registrar el gasto.');
+        return redirect()->back()->withInput()->with('error', 'Error al registrar el movimiento.');
     }
-
 
 
     // Mostrar detalles de un gasto
