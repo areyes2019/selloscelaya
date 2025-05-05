@@ -5,7 +5,7 @@
     <div class="card rounded-0">
         <div class="card-body">
             <a href="<?php echo base_url('/gastos/nuevo');?>" class="btn btn-primary btn-sm rounded-0">Nuevo Movimiento</a>
-            <a href="<?php echo base_url('/reportes/reporte'); ?>" class="btn btn-primary btn-sm rounded-0">Informe Financiero</a>
+            <a href="<?php echo base_url('/gastos/inicio'); ?>" class="btn btn-primary btn-sm rounded-0">Informe Financiero</a>
             <a href="<?php echo base_url('/cuentas/'); ?>" class="btn btn-primary btn-sm rounded-0">Bancos</a>   
         </div>
     </div>
