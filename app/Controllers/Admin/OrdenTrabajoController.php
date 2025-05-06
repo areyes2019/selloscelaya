@@ -36,167 +36,152 @@ class OrdenTrabajoController extends BaseController
      */
     public function etiquetas_pdf()
     {
-        // 1. Obtener los datos (MISMA CONSULTA JOIN QUE ANTES)
         $pedidoModel = new PedidoModel();
+
         $query = $pedidoModel
             ->select([
-                'pedidos.id as pedido_id', // Ya no necesitamos el alias 'pedido_id_col'
+                'pedidos.id as pedido_id',
                 'pedidos.cliente_nombre',
                 'pedidos.cliente_telefono',
                 'pedidos.total',
                 'pedidos.anticipo',
-                'pedidos.estado',
-                // Puedes incluir otros campos si los necesitas mostrar en algún sitio,
-                // pero no se piden explícitamente para la etiqueta
-                // 'ot.imagen_path',
-                // 'ot.color_tinta',
-                // 'ot.observaciones'
+                'pedidos.estado'
             ])
             ->join('sellopro_ordenes_trabajo ot', 'ot.pedido_id = pedidos.id', 'left')
             ->where('pedidos.estado', 'pendiente')
-            // ->where('pedidos.deleted_at IS NULL') // Añadir si no usas soft deletes en el modelo
-            ->orderBy('pedidos.id', 'ASC'); // Opcional: ordenar por ID
+            ->orderBy('pedidos.id', 'ASC');
 
-        $resultadosCombinados = $query->get()->getResultObject();
+        $resultados = $query->get()->getResultObject();
 
-        if (empty($resultadosCombinados)) {
+        if (empty($resultados)) {
             return redirect()->back()->with('message', 'No se encontraron pedidos pendientes para generar etiquetas.');
         }
 
-        // 2. Preparar el HTML para las Etiquetas
-        // --- Definir dimensiones en pt ---
-        // Ancho etiqueta: 6.7cm * (72pt / 2.54cm) = 189.9pt -> Usaremos 190pt
-        $labelWidthPt = 190;
-        // Alto etiqueta: 2.5cm * (72pt / 2.54cm) = 70.9pt -> Usaremos 71pt
-        $labelHeightPt = 71;
-        // Márgenes pequeños entre etiquetas (ej. 5pt horizontal, 10pt vertical)
-        $marginHorizontalPt = 5;
-        $marginVerticalPt = 10;
-
         $html = '<!DOCTYPE html>
-                 <html lang="es">
-                 <head>
-                     <meta charset="UTF-8">
-                     <title>Etiquetas Pedidos Pendientes</title>
-                     <style>
-                         @page {
-                             margin: 20pt 20pt 20pt 20pt; /* Márgenes de la página Letter */
-                         }
-                         body {
-                             font-family: DejaVu Sans, sans-serif; /* O Arial, Helvetica */
-                         }
-                         .label-container {
-                             /* Contenedor para usar Flexbox o similar si fuera necesario, */
-                             /* pero con inline-block puede no ser estrictamente necesario */
-                             width: 100%;
-                             text-align: left; /* O center si quieres centrar las filas */
-                         }
-                         .label {
-                             width: ' . $labelWidthPt . 'pt;
-                             height: ' . $labelHeightPt . 'pt;
-                             border: 1px dotted #ccc; /* Borde punteado como guía (quitar si se imprime en etiquetas pre-cortadas) */
-                             display: inline-block; /* Para que fluyan una al lado de otra */
-                             margin-left: ' . $marginHorizontalPt . 'pt;
-                             margin-right: ' . $marginHorizontalPt . 'pt;
-                             margin-bottom: ' . $marginVerticalPt . 'pt;
-                             padding: 4pt; /* Espacio interno */
-                             box-sizing: border-box; /* Padding incluido en el tamaño */
-                             overflow: hidden; /* Evitar que el contenido se desborde */
-                             vertical-align: top; /* Alinear por la parte superior */
-                             page-break-inside: avoid !important; /* Intentar no cortar una etiqueta entre páginas */
-                         }
-                         .label .pedido-id {
-                             font-size: 12pt; /* Más grande */
-                             font-weight: bold; /* Negrita */
-                             margin: 0 0 2pt 0;
-                             padding: 0;
-                             line-height: 1.1;
-                         }
-                          .label .cliente-nombre,
-                          .label .cliente-telefono,
-                          .label .clave,
-                          .label .saldo-info {
-                             font-size: 8pt; /* Tamaño normal/pequeño */
-                             margin: 0 0 1pt 0;
-                             padding: 0;
-                             line-height: 1.1; /* Ajustar interlineado */
-                             white-space: nowrap; /* Evitar saltos de línea no deseados */
-                             overflow: hidden; /* Ocultar si es demasiado largo */
-                             text-overflow: ellipsis; /* Añadir puntos suspensivos (...) */
-                         }
-                         .label .saldo-info {
-                            text-align: right; /* Alinear saldo a la derecha */
-                            margin-top: 2pt;
-                         }
-                         .label .saldo-pagado {
-                            font-weight: bold;
-                            color: green;
-                            text-align: center; /* Centrar "Pagado" */
-                         }
-                         /* Quita el borde si no lo necesitas */
-                         /* .label { border: none; } */
-                     </style>
-                 </head>
-                 <body>
-                     <div class="label-container">';
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                @page {
+                    margin-top: 18pt;
+                    margin-right: 34pt;
+                    margin-bottom: 26pt;
+                    margin-left: 34pt;
+                }
+                body {
+                    font-family: DejaVu Sans, sans-serif;
+                    font-size: 10pt;
+                    margin: 0;
+                    padding: 0;
+                }
+                .etiqueta {
+                    width: 215pt;
+                    height: 71pt;
+                    display: inline-block;
+                    margin-left:5pt;
+                    margin-right:5pt;
+                    margin-bottom: 2pt;
+                    box-sizing: border-box;
+                    padding: 5px 10px;
+                    overflow: hidden;
+                    vertical-align: top;
+                    page-break-inside: avoid;
+                    position: relative;
+                    line-height: 1.2; /* Ajuste de interlineado */
+                }
+                .pedido-id {
+                    font-size: 12pt;
+                    font-weight: bold;
+                    display: inline-block; /* Para que el saldo pueda flotar junto a él */
+                    margin-bottom: 3px;
+                }
+                .cliente-nombre,
+                .cliente-telefono,
+                .clave {
+                    font-size: 8pt;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    margin: 2px 0;
+                    display: block; /* Cada uno en su propia línea */
+                }
+                .saldo {
+                    position: absolute;
+                    right: 25px;
+                    top: 5px; /* Alineado con el pedido-id */
+                    font-size: 10pt;
+                    font-weight: bold;
+                }
+                .pagado {
+                    position: absolute;
+                    right: 2px;
+                    top: 25px;
+                    font-size: 10pt;
+                    font-weight: bold;
+                    color: green;
+                }
+                .pagina {
+                    page-break-after: always;
+                }
+            </style>
+        </head>
+        <body><div class="pagina">';
 
-        foreach ($resultadosCombinados as $item) {
-            // Calcular Saldo o Estado "Pagado"
+        $contador = 0;
+        foreach ($resultados as $item) {
             $total = floatval($item->total ?? 0);
             $anticipo = floatval($item->anticipo ?? 0);
-            $saldoDisplay = '';
-            $saldoClass = 'saldo-info'; // Clase base para el saldo
 
-            if (abs($total - $anticipo) < 0.001 && $total != 0) {
+            $saldoDisplay = '';
+            $saldoClass = 'saldo';
+
+            if (abs($total - $anticipo) < 0.01 && $total > 0) {
                 $saldoDisplay = 'Pagado';
-                $saldoClass .= ' saldo-pagado'; // Añade clase para "Pagado"
+                $saldoClass = 'pagado';
             } else {
-                $saldoCalculado = $total - $anticipo;
-                $saldoDisplay = 'Saldo: ' . number_format($saldoCalculado, 2, ',', '.') . ' €'; // Ajusta símbolo
+                $saldo = $total - $anticipo;
+                $saldoDisplay = 'Saldo: ' . number_format($saldo, 2, ',', '.') . ' $';
             }
 
-            // Calcular Clave (últimos 2 dígitos del teléfono)
             $telefono = $item->cliente_telefono ?? '';
-            $clave = !empty($telefono) && strlen($telefono) >= 2 ? substr($telefono, -4) : 'N/A';
+            $clave = (strlen($telefono) >= 4) ? substr($telefono, -4) : 'N/A';
 
-            // Construir el HTML de UNA etiqueta
-            $html .= '<div class="label">';
-            $html .= '<div class="pedido-id">#' . esc($item->pedido_id ?? 'N/A') . '</div>';
-            $html .= '<div class="cliente-nombre">' . esc($item->cliente_nombre ?? 'N/A') . '</div>';
+            $html .= '<div class="etiqueta">';
+            $html .= '<div class="pedido-id">#' . esc($item->pedido_id) . '</div>';
+            $html .= '<div class="cliente-nombre">' . esc($item->cliente_nombre) . '</div>';
             $html .= '<div class="cliente-telefono">Tel: ' . esc($telefono ?: 'N/A') . '</div>';
             $html .= '<div class="clave">Clave: ' . esc($clave) . '</div>';
-            $html .= '<div class="' . $saldoClass . '">' . $saldoDisplay . '</div>';
-            $html .= '</div>'; // Cierre de .label
+            $html .= '<div class="' . $saldoClass . '">' . esc($saldoDisplay) . '</div>';
+            $html .= '</div>';
+
+            $contador++;
+            if ($contador % 5 == 0) {
+                $html .= '</div><div class="pagina">';
+            }
         }
 
-        $html .= '   </div> <!-- Cierre de .label-container -->
-                 </body>
-                 </html>';
+        $html .= '</div></body></html>';
 
-        // 3. Configurar y Generar Dompdf
+        // Configurar Dompdf
         $pdfOptions = new \Dompdf\Options();
-        $pdfOptions->set('isRemoteEnabled', true); // Por si acaso
-        $pdfOptions->set('defaultFont', 'DejaVu Sans'); // Soporte UTF-8
+        $pdfOptions->set('isRemoteEnabled', true);
+        $pdfOptions->set('defaultFont', 'DejaVu Sans');
         $pdfOptions->set('isHtml5ParserEnabled', true);
-        // IMPORTANTE: Establecer DPI puede ayudar a la consistencia de las unidades (96 es común web)
-        // $pdfOptions->setDpi(96);
 
         $dompdf = new \Dompdf\Dompdf($pdfOptions);
         $dompdf->loadHtml($html);
 
-        // Establecer tamaño CARTA (Letter) y orientación PORTRAIT
-        $dompdf->setPaper('letter', 'portrait');
+        // Tamaño 10cm x 15cm en pt
+        $dompdf->setPaper([0, 0, 283.46, 425.2], 'portrait');
 
         $dompdf->render();
 
-        // 4. Enviar el PDF
-        $nombreArchivo = 'etiquetas_pedidos_pendientes_' . date('Ymd_His') . '.pdf';
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
-        $dompdf->stream($nombreArchivo, ['Attachment' => 0]); // Attachment 0 para ver en navegador (más fácil ajustar), 1 para descargar
+        $nombreArchivo = 'etiquetas_pedidos_' . date('Ymd_His') . '.pdf';
+        if (ob_get_level()) ob_end_clean();
+        $dompdf->stream($nombreArchivo, ['Attachment' => 0]);
         exit();
     }
+
     public function descargar_ordenes() // O considera un nombre como visualizar_reporte_combinado()
     {
         // 1. Instanciar el Modelo Principal
@@ -484,7 +469,7 @@ class OrdenTrabajoController extends BaseController
 
         // --- Guardar en la BD ---
         if ($this->ordenTrabajoModel->insert($dataToSave)) {
-            return redirect()->to('/admin')->with('success', 'Orden de Trabajo creada con éxito.'); // Redirigir al dashboard
+            return redirect()->to('/ordenes')->with('success', 'Orden de Trabajo creada con éxito.'); // Redirigir al dashboard
         } else {
             // Si falla la inserción (raro si la validación pasó, pero posible)
              // Eliminar imagen si se subió pero no se guardó el registro
