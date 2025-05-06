@@ -36,7 +36,21 @@
                     <td><?= esc($orden->cliente_nombre) ?></td>
                     <td><?= esc($orden->cliente_telefono) ?></td>
                     <td>
-                        <p>imagen</p>
+                        <?php 
+                        // Construir la ruta completa del archivo
+                        $rutaImagen = 'writable/uploads/ordenes/' . $orden->imagen_path;
+                        
+                        // Verificar si el archivo existe físicamente
+                        if (!empty($orden->imagen_path) && file_exists($rutaImagen)): ?>
+                            <a href="<?= base_url($rutaImagen) ?>" target="_blank" data-lightbox="orden-<?= $orden->id_ot ?>">
+                                <img src="<?= base_url($rutaImagen) ?>" 
+                                     alt="Imagen de orden <?= $orden->id_ot ?>" 
+                                     class="img-thumbnail" 
+                                     style="max-width: 80px; max-height: 80px; object-fit: cover;">
+                            </a>
+                        <?php else: ?>
+                            <span class="badge bg-secondary">Sin imagen</span>
+                        <?php endif; ?>
                     </td>
                     <td>
                         <?php
