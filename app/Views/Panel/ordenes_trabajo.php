@@ -1,9 +1,16 @@
 <?= $this->extend('Panel/panel_template') ?>
 <?= $this->section('contenido') ?>
 
+<?php if (session()->has('success')): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?= session('success') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
 <h1>Ordenes de Trabajo</h1>
 <a href="<?= site_url('ordenes/descargar_ordenes') ?>" target="_blank" class="btn btn-danger rounded-0 mb-3">
-    <i class="fas fa-file-pdf"></i> <!-- Icono opcional (ej. Font Awesome) -->
+    <i class="fas fa-file-pdf"></i>
     Descargar Órdenes (PDF)
 </a>
 
@@ -13,7 +20,6 @@
 
 <!-- Contenido de las Pestañas -->
 <div class="card rounded-0 shadow-sm">
-    <!-- Panel/ordenes_dashboard.php -->
     <table class="table table-bordered" id="ordenes">
         <thead class="table-light">
             <tr>
@@ -21,7 +27,7 @@
                 <th>Teléfono</th>
                 <td>Img</td>
                 <th>Status</th>
-                <th>Acción</th> <!-- Nueva columna -->
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody>
@@ -34,9 +40,8 @@
                     </td>
                     <td>
                         <?php
-                            $badgeClass = 'secondary'; // valor por defecto
-
-                            $statusLower = strtolower($orden->status); // Convertimos a minúsculas
+                            $badgeClass = 'secondary';
+                            $statusLower = strtolower($orden->status);
 
                             if ($statusLower === 'dibujo') {
                                 $badgeClass = 'primary';
@@ -45,7 +50,7 @@
                             } elseif ($statusLower === 'entrega') {
                                 $badgeClass = 'success';
                             } elseif ($statusLower === 'entregado') {
-                                $badgeClass = 'success'; // también success para entregado
+                                $badgeClass = 'success';
                             }
                         ?>
                         <span class="badge bg-<?= $badgeClass ?>">
@@ -70,11 +75,15 @@
                             ?>
                         </form>
                         <?php else: ?>
-                        <span class="badge bg-success">
+                        <span class="badge bg-success me-2">
                             <i class="bi bi-check-lg"></i>
                         </span>
+                        <a href="<?= base_url('ordenes/eliminar/'.$orden->id_ot) ?>" 
+                           class="btn btn-danger btn-sm rounded-0"
+                           onclick="return confirm('¿Estás seguro de eliminar esta orden?')">
+                           <span class="bi bi-trash3"></span>
+                        </a>
                         <?php endif; ?>
-                        <a href="<?php echo base_url('ordenes/eliminar/').$orden->id_ot; ?>" class="btn btn-danger btn-sm rounded-0"><span class="bi bi-trash3"></span></a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -82,7 +91,7 @@
     </table>
 </div>
 <script>
-    $( document ).ready(function() {
+    $(document).ready(function() {
         new DataTable('#ordenes');
     });
 </script>

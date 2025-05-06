@@ -533,20 +533,7 @@ class OrdenTrabajoController extends BaseController
              return redirect()->to('/admin')->with('error', 'No se pudo actualizar el status de la orden.');
          }
      }
-
-    /**
-     * (FUTURO) Elimina una orden
-     */
-    public function delete($id = null)
-    {
-         // TODO: Implementar lógica de eliminación (considera soft deletes)
-         return redirect()->to('/ordenes')->with('info', 'Funcionalidad Eliminar no implementada aún.');
-    }
-
-     /**
-      * Sirve las imágenes subidas de forma segura.
-      * Necesitarás una ruta como /ordenes/imagen/(:segment)
-      */
+   
      public function serveImage($filename = null)
      {
          if ($filename === null) {
@@ -606,19 +593,10 @@ class OrdenTrabajoController extends BaseController
         // Actualizamos el estatus
         $ordenModel->update($id, ['status' => $nuevoStatus]);
 
-        return redirect()->to('admin')->with('success', 'Estatus actualizado correctamente.');
+        return redirect()->to('ordenes')->with('success', 'Estatus actualizado correctamente.');
     }
     public function eliminar($id_ot)
     {
-        // Verificar si la solicitud es POST
-        if ($this->request->getMethod() !== 'post') {
-            return redirect()->back()->with('error', 'Método no permitido');
-        }
-
-        // Verificar CSRF token
-        if (!csrf_hash_verify($this->request->getPost('csrf_test_name') ?? '', $this->request->getPost('_csrf') ?? '')) {
-            return redirect()->back()->with('error', 'Token CSRF inválido');
-        }
 
         $model = new OrdenTrabajoModel();
 
