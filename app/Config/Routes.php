@@ -200,7 +200,7 @@ $routes->group('',static function($routes){
 	    $routes->get('delete/(:num)', 'OrdenTrabajoController::delete/$1'); // (Futuro) Eliminar
 	    $routes->get('imagen/(:segment)', 'OrdenTrabajoController::serveImage/$1', ['as' => 'orden_imagen']); // Ruta para servir imágenes
 	    // Ajusta 'PedidosController' si es necesario
-		$routes->get('pedidos-pendientes', 'OrdenTrabajoController::etiquetas_pdf');
+		$routes->get('pedidos-pendientes', 'OrdenTrabajoController::etiquetas_txt');
 		$routes->post('actualizar-status/(:num)', 'OrdenTrabajoController::actualizarStatus/$1');
 		$routes->get('eliminar/(:num)', 'OrdenTrabajoController::eliminar/$1');
 

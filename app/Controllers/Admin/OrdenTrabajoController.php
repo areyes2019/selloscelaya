@@ -181,7 +181,64 @@ class OrdenTrabajoController extends BaseController
         $dompdf->stream($nombreArchivo, ['Attachment' => 0]);
         exit();
     }
+    public function etiquetas_txt()
+    {
+        $pedidoModel = new PedidoModel();
 
+        $query = $pedidoModel
+            ->select([
+                'pedidos.id as pedido_id',
+                'pedidos.cliente_nombre',
+                'pedidos.cliente_telefono',
+                'pedidos.total',
+                'pedidos.anticipo',
+                'pedidos.estado'
+            ])
+            ->join('sellopro_ordenes_trabajo ot', 'ot.pedido_id = pedidos.id', 'left')
+            ->where('pedidos.estado', 'pendiente')
+            ->orderBy('pedidos.id', 'ASC');
+
+        $resultados = $query->get()->getResultObject();
+
+        if (empty($resultados)) {
+            return redirect()->back()->with('message', 'No se encontraron pedidos pendientes para generar etiquetas.');
+        }
+
+        // Encabezados del archivo CSV
+        $csvContent = "pedido_id,cliente_nombre,cliente_telefono,total,anticipo,saldo,clave,estado_pago\n";
+
+        foreach ($resultados as $item) {
+            $total = floatval($item->total ?? 0);
+            $anticipo = floatval($item->anticipo ?? 0);
+            $saldo = $total - $anticipo;
+            
+            $telefono = $item->cliente_telefono ?? '';
+            $clave = (strlen($telefono) >= 4) ? substr($telefono, -4) : 'N/A';
+            
+            $estadoPago = (abs($total - $anticipo) < 0.01 && $total > 0) ? 'Pagado' : 'Pendiente';
+
+            // Formatear cada línea con los datos necesarios
+            $csvContent .= sprintf(
+                '%d,"%s","%s",%.2f,%.2f,%.2f,"%s","%s"'."\n",
+                $item->pedido_id,
+                str_replace('"', '""', $item->cliente_nombre), // Escapar comillas
+                $telefono,
+                $total,
+                $anticipo,
+                $saldo,
+                $clave,
+                $estadoPago
+            );
+        }
+
+        // Configurar headers para descarga
+        $nombreArchivo = 'etiquetas_pedidos_'.date('Ymd_His').'.txt';
+        
+        return $this->response
+            ->setHeader('Content-Type', 'text/plain')
+            ->setHeader('Content-Disposition', 'attachment; filename="'.$nombreArchivo.'"')
+            ->setBody($csvContent);
+    }
     public function descargar_ordenes() // O considera un nombre como visualizar_reporte_combinado()
     {
         // 1. Instanciar el Modelo Principal
