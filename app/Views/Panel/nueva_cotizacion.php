@@ -1,6 +1,20 @@
 <?php echo $this->extend('Panel/panel_template')?>
 <?php echo $this->section('contenido')?>
 <div id="app">
+    <?php if (session('alert')) : ?>
+        <div class="alert alert-<?= session('alert')['type'] ?> alert-dismissible fade show fixed-top mx-3 mt-3" role="alert">
+            <?= session('alert')['message'] ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <script>
+            // Cierra automáticamente después de 5 segundos (opcional)
+            document.addEventListener('DOMContentLoaded', function() {
+                var alert = bootstrap.Alert.getOrCreateInstance(document.querySelector('.alert'));
+                setTimeout(() => alert.close(), 5000);
+            });
+        </script>
+    <?php endif; ?>
     <?php foreach ($data as $cotizacion): ?>        
     <!-- panel izquierdo-->
     <div class="row">
@@ -23,6 +37,9 @@
                             <a class="dropdown-item" href="<?php echo base_url('/eliminar_cotizacion/'.$cotizacion['id_cotizacion']); ?>" onclick="return confirm('¿Estas seguro de querer eliminar esta cotización?');"><span class="bi bi-trash3"></span> Eliminar Cotización</a>
                             <a href="#" class="dropdown-item" @click.prevent = "generar_factura">
                                 <span class="bi bi-filetype-pdf">Facturar</span>
+                            </a>
+                            <a class="dropdown-item" href="<?= base_url('ordenes/crear_orden_trabajo/'.$cotizacion['id_cotizacion']) ?>" onclick="return confirm('¿Crear orden de trabajo para esta cotización?')">
+                                <span class="bi bi-clipboard-check"></span> Agregar orden de trabajo
                             </a>
                         </div>
                     </div>

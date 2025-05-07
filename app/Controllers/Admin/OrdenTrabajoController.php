@@ -5,6 +5,8 @@ namespace App\Controllers\Admin; // Ajusta si es necesario
 use App\Controllers\BaseController;
 use App\Models\OrdenTrabajoModel;
 use App\Models\PedidoModel; // Para obtener datos del cliente
+use App\Models\CotizacionesModel; // Para obtener datos del cliente
+use App\Models\ClientesModel; // Para obtener datos del cliente
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Dompdf\Dompdf;
 
@@ -440,6 +442,56 @@ class OrdenTrabajoController extends BaseController
         $data['colores_tinta'] = ['Negro', 'Cyan', 'Magenta', 'Amarillo', 'Blanco', 'Otro'];
 
         return view('Panel/orden_trabajo_new', $data); // Creamos esta vista ahora
+    }
+    /*
+        Procesamos la orden de trabajo para una cotizacion
+    **/
+    public function crear_orden_trabajo($idCotizacion)
+    {
+        $cotizacionesModel = new CotizacionesModel();
+        $clientesModel = new ClientesModel();
+        $ordenTrabajoModel = new OrdenTrabajoModel();
+
+        // Obtener datos de la cotización
+        $cotizacion = $cotizacionesModel->find($idCotizacion);
+        if (!$cotizacion) {
+            session()->setFlashdata('error', 'Cotización no encontrada');
+            return redirect()->back();
+        }
+
+        // Obtener datos del cliente
+        $cliente = $clientesModel->find($cotizacion['cliente']);
+        if (!$cliente) {
+            session()->setFlashdata('error', 'Cliente no encontrado');
+            return redirect()->back();
+        }
+
+        // Verificar si ya existe una orden
+        $ordenExistente = $ordenTrabajoModel->where('pedido_id', $idCotizacion)->first();
+
+        if ($ordenExistente) {
+            return redirect()->back()->with('alert', [
+                'type' => 'warning',
+                'message' => 'Ya existe una orden de trabajo (OT#'.$ordenExistente->id_ot.') para esta cotización'
+            ]);
+        }
+
+        // Preparar datos para la vista
+        $data = [
+            'title' => 'Nueva Orden de Trabajo',
+            'pedido' => [
+                'id' => $idCotizacion,
+                'created_at' => date('Y-m-d H:i:s'), // O usar fecha de la cotización si existe
+                'cliente_nombre' => $cliente['nombre'],
+                'cliente_telefono' => $cliente['telefono']
+            ],
+            'colores_tinta' => [
+                'Negro', 'Blanco', 'Rojo', 'Azul', 'Verde', 'Amarillo', 'Plateado', 'Dorado', 'Personalizado'
+            ],
+            // Puedes agregar más datos necesarios para la vista aquí
+        ];
+
+        return view('Panel/orden_trabajo_new', $data);
     }
 
     /**
