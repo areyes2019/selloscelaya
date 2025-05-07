@@ -6,6 +6,8 @@ use App\Models\CotizacionesModel;
 use App\Models\ClientesModel;
 use App\Models\ArticulosModel;
 use App\Models\InventarioModel;
+use App\Models\CuentasModel;
+use App\Models\GastosModel;
 use App\Models\DetalleModel;
 use App\Models\VentasModel;
 use Dompdf\Dompdf;
@@ -48,11 +50,15 @@ class Cotizaciones extends BaseController
 
 	    $ClientesModel = new ClientesModel();
 	    $cliente = $ClientesModel->where('id_cliente', $cotizacion[0]['cliente'])->findAll();
-
+	    
+	    // Obtenemos la lista de bancos
+	    $cuentasModel = new CuentasModel();
+	    $bancos = $cuentasModel->findAll();
 	    // Ahora pasamos un array asociativo a la vista
 	    return view('Panel/nueva_cotizacion', [
-	        'data' => $cotizacion,
-	        'cliente' => $cliente
+	        'data'    => $cotizacion,
+	        'cliente' => $cliente,
+	        'bancos'  => $bancos
 	    ]);
 		
 	}
@@ -729,16 +735,28 @@ class Cotizaciones extends BaseController
 	{
 	    $request = \Config\Services::request();
 	    $cotizacionModel = new CotizacionesModel();
+	    $gastosModel = new GastosModel();
+	    $cuentasModel = new CuentasModel();
 	    
 	    // Validar datos de entrada
 	    $id_cotizacion = $request->getVar('id');
 	    $monto = (float)$request->getVar('pago');
+	    $id_banco = $request->getVar('id_banco'); // Nuevo: ID del banco seleccionado
 
 	    // Verificar monto válido
 	    if ($monto <= 0) {
 	        return $this->response->setJSON([
 	            'status' => 'error',
 	            'message' => 'El monto debe ser mayor a cero',
+	            'flag' => 0
+	        ]);
+	    }
+
+	    // Verificar que se haya seleccionado un banco
+	    if (empty($id_banco)) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'Debe seleccionar un banco',
 	            'flag' => 0
 	        ]);
 	    }
@@ -765,31 +783,65 @@ class Cotizaciones extends BaseController
 	            ]);
 	        }
 
-	        // Actualizar solo el campo anticipo
-	        $update = $cotizacionModel->update($id_cotizacion, [
+	        // Obtener información de la cuenta bancaria
+	        $cuenta = $cuentasModel->find($id_banco);
+	        if (!$cuenta) {
+	            return $this->response->setJSON([
+	                'status' => 'error',
+	                'message' => 'Cuenta bancaria no encontrada',
+	                'flag' => 0
+	            ]);
+	        }
+
+	        // Iniciar transacción para asegurar la integridad de los datos
+	        $db = \Config\Database::connect();
+	        $db->transStart();
+
+	        // 1. Actualizar el anticipo en la cotización
+	        $updateCotizacion = $cotizacionModel->update($id_cotizacion, [
 	            'anticipo' => $monto
-	            // El campo pago permanece sin cambios
 	        ]);
 
-	        if ($update) {
+	        // 2. Registrar el movimiento en GastosModel (como entrada)
+	        $gastosModel->insert([
+	            'descripcion' => 'Pago de anticipo de cotización No. '.$id_cotizacion,
+	            'entrada' => $monto,
+	            'salida' => 0,
+	            'cuenta_origen' => $id_banco,
+	            'cuenta_destino' => null, // O puedes poner otra cuenta si aplica
+	            'fecha_gasto' => date('Y-m-d H:i:s')
+	        ]);
+
+	        // 3. Actualizar el saldo en la cuenta bancaria
+	        $nuevoSaldo = $cuenta['saldo'] + $monto;
+	        $cuentasModel->update($id_banco, [
+	            'saldo' => $nuevoSaldo
+	        ]);
+
+	        $db->transComplete();
+
+	        if ($db->transStatus() === false) {
 	            return $this->response->setJSON([
-	                'status' => 'success',
-	                'message' => 'Anticipo registrado correctamente',
-	                'flag' => 1,
-	                'data' => [
-	                    'anticipo' => number_format($monto, 2),
-	                    'total' => $cotizacion['total'] // Opcional: incluir total para referencia
-	                ]
+	                'status' => 'error',
+	                'message' => 'Error en la transacción',
+	                'flag' => 0
 	            ]);
 	        }
 
 	        return $this->response->setJSON([
-	            'status' => 'error',
-	            'message' => 'Error al actualizar el anticipo',
-	            'flag' => 0
+	            'status' => 'success',
+	            'message' => 'Anticipo registrado correctamente',
+	            'flag' => 1,
+	            'data' => [
+	                'anticipo' => number_format($monto, 2),
+	                'total' => $cotizacion['total'],
+	                'nuevo_saldo' => number_format($nuevoSaldo, 2),
+	                'banco' => $cuenta['banco']
+	            ]
 	        ]);
 
 	    } catch (\Exception $e) {
+	        // Si hay error, hacer rollback automático (si se usa transacción)
 	        return $this->response->setJSON([
 	            'status' => 'error',
 	            'message' => 'Error: ' . $e->getMessage(),
@@ -799,12 +851,16 @@ class Cotizaciones extends BaseController
 	}
 	public function pago_total()
 	{
-	    $id = $this->request->getVar('id');
+	    $request = \Config\Services::request();
+	    $id = $request->getVar('id');
+	    $id_banco = $request->getVar('banco'); // Nuevo: ID del banco seleccionado
 
 	    $cotizacionesModel = new CotizacionesModel();
 	    $detalleModel = new DetalleModel();
 	    $articulosModel = new ArticulosModel();
 	    $ventasModel = new VentasModel();
+	    $gastosModel = new GastosModel(); // Nuevo: Modelo para registrar movimientos
+	    $cuentasModel = new CuentasModel(); // Nuevo: Modelo para cuentas bancarias
 
 	    $cotizacion = $cotizacionesModel->find($id);
 
@@ -813,6 +869,23 @@ class Cotizaciones extends BaseController
 	            'status' => 'error',
 	            'message' => 'Cotización no encontrada.'
 	        ])->setStatusCode(404);
+	    }
+
+	    // Validar que se haya seleccionado un banco
+	    if (empty($id_banco)) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'Debe seleccionar un banco para registrar el pago'
+	        ]);
+	    }
+
+	    // Obtener información de la cuenta bancaria
+	    $cuenta = $cuentasModel->find($id_banco);
+	    if (!$cuenta) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'Cuenta bancaria no encontrada'
+	        ]);
 	    }
 
 	    $referencia = "QT-" . $id;
@@ -827,8 +900,9 @@ class Cotizaciones extends BaseController
 	    }
 
 	    // Obtener valores de la cotización
-	    $total = floatval($cotizacion['total']); // Total ya incluye IVA si así está configurado
+	    $total = floatval($cotizacion['total']);
 	    $anticipo = floatval($cotizacion['anticipo']);
+	    $saldo_pagado = $total - $anticipo; // Calculamos el saldo que se está pagando ahora
 
 	    // Calcular inversión total (suma de precios de proveedor)
 	    $detalles = $detalleModel->where('id_cotizacion', $id)->findAll();
@@ -843,28 +917,70 @@ class Cotizaciones extends BaseController
 	    // Calcular beneficio (total_neto - inversion)
 	    $beneficio = $total - $inversionTotal;
 
-	    // Insertar en la tabla ventas
-	    $ventasModel->insert([
-	        'ref' => $referencia,
-	        'total_neto' => $total,       // Usamos el total directo de la cotización
-	        'inversion' => $inversionTotal,
-	        'beneficio' => $beneficio
-	    ]);
+	    // Iniciar transacción para asegurar la integridad de los datos
+	    $db = \Config\Database::connect();
+	    $db->transStart();
 
-	    // Marcar como pagado (1 = pagado)
-	    $cotizacionesModel->update($id, ['pago' => 1]);
-
-	    return $this->response->setJSON([
-	        'status' => 'success',
-	        'message' => 'Pago total registrado y venta creada exitosamente',
-	        'flag' => 1,
-	        'data' => [
-	            'referencia' => $referencia,
+	    try {
+	        // 1. Insertar en la tabla ventas
+	        $ventasModel->insert([
+	            'ref' => $referencia,
 	            'total_neto' => $total,
 	            'inversion' => $inversionTotal,
 	            'beneficio' => $beneficio
-	        ]
-	    ]);
+	        ]);
+
+	        // 2. Marcar como pagado (1 = pagado)
+	        $cotizacionesModel->update($id, ['pago' => 1]);
+
+	        // 3. Registrar el movimiento en GastosModel (como entrada)
+	        $gastosModel->insert([
+	            'descripcion' => 'Pago del saldo de la cotización QT-' . $id,
+	            'entrada' => $saldo_pagado, // Registramos solo el saldo pagado (total - anticipo)
+	            'salida' => 0,
+	            'cuenta_origen' => $id_banco,
+	            'cuenta_destino' => null,
+	            'fecha_gasto' => date('Y-m-d H:i:s')
+	        ]);
+
+	        // 4. Actualizar el saldo en la cuenta bancaria
+	        $nuevoSaldo = $cuenta['saldo'] + $saldo_pagado;
+	        $cuentasModel->update($id_banco, [
+	            'saldo' => $nuevoSaldo
+	        ]);
+
+	        $db->transComplete();
+
+	        if ($db->transStatus() === false) {
+	            return $this->response->setJSON([
+	                'status' => 'error',
+	                'message' => 'Error en la transacción',
+	                'flag' => 0
+	            ]);
+	        }
+
+	        return $this->response->setJSON([
+	            'status' => 'success',
+	            'message' => 'Pago total registrado y venta creada exitosamente',
+	            'flag' => 1,
+	            'data' => [
+	                'referencia' => $referencia,
+	                'total_neto' => $total,
+	                'inversion' => $inversionTotal,
+	                'beneficio' => $beneficio,
+	                'saldo_pagado' => $saldo_pagado,
+	                'nuevo_saldo_cuenta' => $nuevoSaldo
+	            ]
+	        ]);
+
+	    } catch (\Exception $e) {
+	        $db->transRollback();
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'Error: ' . $e->getMessage(),
+	            'flag' => 0
+	        ]);
+	    }
 	}
 
 	public function descontar_inventario()

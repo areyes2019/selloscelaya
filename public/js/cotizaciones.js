@@ -8,6 +8,7 @@ const { createApp, ref } = Vue
         independiente:[],
         cantidad:"1",
         anticipo:"",
+        bancoSeleccionado:null,
         sub_total:"",
         iva:"",
         total:"",
@@ -153,25 +154,24 @@ const { createApp, ref } = Vue
           return currencyPattern.test(trimmedValue);
       },
       agregar_pago(){
-        //comprobamos si lo que viene en el input tiene el formato correcto
-        if (!this.isValidCurrency(this.anticipo)) {
-            this.$refs.errorFeedback.textContent = "Formato inválido. Use: 1000.00";
-            this.$refs.errorFeedback.classList.remove('d-none');
-            return;
-        }
         var cotizacion = this.$refs.id_cotizacion.innerHTML;
-        axios.post('/pago',{
-          'pago':this.anticipo,
-          'id':cotizacion
-        }).then((response)=>{
+        
+        axios.post('/pago', {
+          'pago': this.anticipo,
+          'id': cotizacion,
+          'id_banco': this.bancoSeleccionado // Agregamos el ID del banco
+        }).then((response) => {
           if (response.data.flag == 1) {
             $('#modalPago').modal('hide');
             this.mostrar_lineas();
             this.mostrar_totales();
+            location.reload(); // Mover el reload aquí para que solo se ejecute si la petición fue exitosa
           }
-        })
-        location.reload();
-
+        }).catch((error) => {
+          console.error('Error al agregar pago:', error);
+          this.$refs.errorFeedback.textContent = "Error al procesar el pago";
+          this.$refs.errorFeedback.classList.remove('d-none');
+        });
       },
       descontar_inventario() {
         if (!confirm("¿Estás seguro de que quieres descontar del inventario?")) {
@@ -196,14 +196,15 @@ const { createApp, ref } = Vue
       },
       marcar_pagado() {
         var cotizacion = this.$refs.id_cotizacion.innerHTML;
-
+        var banco = this.bancoSeleccionado;
         if (confirm('¿Deseas marcar como pagado esta cotización?') === true) {
           axios.post('/marcar_pagado', {
-            id: cotizacion
+            'id': cotizacion,
+            'banco':banco
           })
           .then((response) => {
             if (response.data.flag === 1) {
-              notify('Pago efectuado con éxito ✅');
+              notify('Pago efectuado con éxito');
               location.reload();
             } else {
               notify(response.data.message || 'Ocurrió un error al registrar el pago ❌');
@@ -266,7 +267,7 @@ const { createApp, ref } = Vue
           })
         }
       },
-      entregada(data){
+      entregadas(data){
         var title = "Hecho";
         var message = "Se ha realizado la accion";
         toaster(title,message);

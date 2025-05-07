@@ -62,7 +62,7 @@
                             <input type="text" v-model="dinero_descuento" class="form-control form-control-sm rounded-0 shadow-none m-0" :disabled="!hayArticulos">
                             <button class="btn btn-dark btn-lg rounded-0" @click = "aplicar_descuento_dinero">Ok</button>
                         </div>
-                            <button class="btn btn-dark mt-2"  @click = "marcar_pagado">Marcar Pagado</button>
+                            <button class="btn btn-dark mt-2"  data-bs-toggle="modal" data-bs-target="#modalPago">Marcar Pagado</button>
                         <?php endif ?>
                     </div>
                 </div>
@@ -139,7 +139,7 @@
                             </th>
                             <td>
                                 ${{totales.anticipo}}
-                                <button v-if="totales.anticipo == 0" class="btn-my bg-success" data-bs-toggle="modal" data-bs-target="#modalPago">
+                                <button v-if="totales.anticipo == 0" class="btn-my bg-success" data-bs-toggle="modal" data-bs-target="#pagoModal">
                                     <span class="bi bi-cash"></span>
                                 </button>
                             </td>
@@ -161,18 +161,52 @@
             </div>
         </div>
     </div>
+    <!--  Modal pagos -->
+    <div class="modal fade" id="pagoModal" tabindex="-1" aria-labelledby="pagoModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm"> <!-- Añadida clase modal-sm para tamaño pequeño -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fs-6" id="pagoModalLabel">Registrar Pago</h5> <!-- fs-6 para texto más pequeño -->
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-2"> <!-- mb-2 para menos margen -->
+                <label for="bancoSelect" class="form-label small">Banco</label> <!-- small para texto más pequeño -->
+                <select class="form-select form-select-sm" id="bancoSelect" v-model="bancoSeleccionado" required> <!-- form-select-sm para select pequeño -->
+                    <option value="" selected disabled>Seleccione banco</option>
+                    <?php foreach ($bancos as $banco): ?>
+                    <option value="<?= $banco['id_cuenta'] ?>"><?= $banco['banco'] ?></option>        
+                    <?php endforeach ?>
+                    <!-- Menos opciones para mantenerlo compacto -->
+                </select>
+              </div>
+              <div class="mb-2">
+                <label for="cantidadPago" class="form-label small">Cantidad a pagar</label>
+                <input type="number" class="form-control form-control-sm" id="cantidadPago" placeholder="Monto" required v-model="anticipo"> <!-- form-control-sm para input pequeño -->
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer py-2"> <!-- py-2 para menos padding vertical -->
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button> <!-- btn-sm para botón pequeño -->
+            <button type="button" class="btn btn-sm btn-primary" @click = "agregar_pago">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Modal Mini pagos-->
-    <div class="modal fade mini-modal" id="modalPago" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered rounded-0">
+    <div class="modal fade" id="modalPago" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered rounded-0 modal-sm">
             <div class="modal-content rounded-0">
                 <div class="modal-body p-3">
-                    <div class="mb-2">
-                        <input type="text" class="w-100" placeholder="Monto" required autofocus v-model="anticipo">
-                        <div ref="errorFeedback" class="text-danger d-none mb-2"></div>
-                    </div>
-                    <button type="btn" class="btn-my w-100" @click.prevent="agregar_pago">
-                        <i class="bi bi-check-circle"></i> Guardar
-                    </button>
+                    <h4>Seleccione una cuenta</h4>
+                    <select name="" id="" class="form-control form-control-sm rounded-0 shadow-none" v-model="bancoSeleccionado">
+                        <option value="">Seleccione un banco...</option>
+                        <?php foreach ($bancos as $banco): ?>
+                        <option value="<?= $banco['id_cuenta'] ?>"><?= $banco['banco'] ?></option>        
+                        <?php endforeach ?>
+                    </select>
+                    <button class="btn-block btn btn-primary rounded-0 float-right" @click = "marcar_pagado">Pagar</button>
                 </div>
             </div>
         </div>
