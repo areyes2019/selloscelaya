@@ -75,19 +75,19 @@
                                     </tr>
                                     <tr>
                                         <td>Gastos Operativos</td>
-                                        <td class="text-end">$<?= number_format($gastos_operativos ?? 0, 2) ?></td>
+                                        <td class="text-end">$<?= number_format($total_gastos ?? 0, 2) ?></td>
                                     </tr>
                                     <tr class="table-success fw-bold">
                                         <td>Beneficio Bruto</td>
-                                        <td class="text-end">$<?= number_format(($ventas_brutas - $inversion_total), 2) ?></td>
+                                        <td class="text-end">$<?= number_format($beneficio_bruto, 2) ?></td>
                                     </tr>
                                     <tr class="table-primary fw-bold">
                                         <td>Presupuesto Publicidad (10%)</td>
-                                        <td class="text-end">$<?= number_format($beneficio_total * 0.10, 2) ?></td>
+                                        <td class="text-end">$<?= number_format($presupuesto_publicidad, 2) ?></td>
                                     </tr>
                                     <tr class="table-success fw-bold">
                                         <td>Beneficio Neto Final</td>
-                                        <td class="text-end">$<?= number_format($beneficio_total * 0.90, 2) ?></td>
+                                        <td class="text-end">$<?= number_format($beneficio_neto_final, 2) ?></td>
                                     </tr>
                                 </tbody>
                             </table>

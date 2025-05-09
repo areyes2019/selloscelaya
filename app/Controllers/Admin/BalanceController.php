@@ -35,38 +35,58 @@ class BalanceController extends BaseController
 	{
 	    $ventasModel = new VentasModel();
 	    $cuentasModel = new CuentasModel();
-	    
+	    $gastosModel = new GastosModel(); // Instancia del modelo de Gastos
+
 	    // Obtener el primer y último día del mes actual como valores por defecto
 	    $fechaInicioDefault = date('Y-m-01');
 	    $fechaFinDefault = date('Y-m-t');
-	    
+
 	    // Obtener fechas del request o usar valores por defecto
 	    $fechaInicio = $this->request->getGet('fecha_inicio') ?? $fechaInicioDefault;
 	    $fechaFin = $this->request->getGet('fecha_fin') ?? $fechaFinDefault;
-	    
-	    // Consulta para obtener los totales filtrados por fecha
-	    $totales = $ventasModel->select('SUM(total_neto) as ventas_brutas, 
-	                                    SUM(inversion) as inversion_total, 
-	                                    SUM(beneficio) as beneficio_total')
-	                          ->where('created_at >=', $fechaInicio)
-	                          ->where('created_at <=', $fechaFin)
-	                          ->first();
-	    
+
+	    // Consulta para obtener los totales de ventas e inversión filtrados por fecha
+	    $totales = $ventasModel->select('SUM(total_neto) as ventas_brutas,
+	                                        SUM(inversion) as inversion_total,
+	                                        SUM(beneficio) as beneficio_total')
+	                            ->where('created_at >=', $fechaInicio)
+	                            ->where('created_at <=', $fechaFin)
+	                            ->first();
+
+	    // Consulta para obtener el total de gastos operativos filtrados por fecha
+	    $total_gastos_data = $gastosModel->select('SUM(salida) as total_gastos')
+	                                    ->where('fecha_gasto >=', $fechaInicio)
+	                                    ->where('fecha_gasto <=', $fechaFin)
+	                                    ->first();
+	    $total_gastos = $total_gastos_data['total_gastos'] ?? 0;
+
 	    // Obtener cuentas bancarias
 	    $cuentas_bancarias = $cuentasModel->findAll();
 	    $total_saldos = array_sum(array_column($cuentas_bancarias, 'saldo'));
-	    
+
+	    // Calcular el beneficio bruto y el beneficio neto final
+	    $ventas_brutas = $totales['ventas_brutas'] ?? 0;
+	    $inversion_total = $totales['inversion_total'] ?? 0;
+	    $beneficio_bruto = $ventas_brutas - $inversion_total;
+	    $beneficio_total = $beneficio_bruto - $total_gastos; // Ahora el beneficio total considera los gastos
+	    $presupuesto_publicidad = $beneficio_total * 0.10;
+	    $beneficio_neto_final = $beneficio_total * 0.90;
+
 	    // Preparar los datos para la vista
 	    $data = [
-	        'ventas_brutas' => $totales['ventas_brutas'] ?? 0,
-	        'inversion_total' => $totales['inversion_total'] ?? 0,
-	        'beneficio_total' => $totales['beneficio_total'] ?? 0,
+	        'ventas_brutas' => $ventas_brutas,
+	        'inversion_total' => $inversion_total,
+	        'beneficio_total' => $beneficio_total, // Este es el beneficio *después* de gastos
 	        'fecha_inicio' => $fechaInicio,
 	        'fecha_fin' => $fechaFin,
 	        'cuentas_bancarias' => $cuentas_bancarias,
-	        'total_saldos' => $total_saldos
+	        'total_saldos' => $total_saldos,
+	        'total_gastos' => $total_gastos, // Pasar el total de gastos a la vista
+	        'presupuesto_publicidad' => $presupuesto_publicidad,
+	        'beneficio_neto_final' => $beneficio_neto_final,
+	        'beneficio_bruto' => $beneficio_bruto,
 	    ];
-	    
+
 	    return view('Panel/gastos', $data);
 	}
 	public function hoy()
