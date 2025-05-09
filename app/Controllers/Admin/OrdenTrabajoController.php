@@ -207,8 +207,24 @@ class OrdenTrabajoController extends BaseController
             return redirect()->back()->with('message', 'No se encontraron órdenes en elaboración para generar etiquetas.');
         }
 
-        // Encabezados del archivo CSV
-        $csvContent = "pedido_id,cliente_nombre,cliente_telefono,total,anticipo,saldo,clave,estado_pago,status_ot\n";
+        // Crear el contenido CSV en memoria
+        $output = fopen('php://temp', 'w');
+        
+        // Escribir BOM (Byte Order Mark) para UTF-8
+        fwrite($output, "\xEF\xBB\xBF");
+        
+        // Encabezados
+        fputcsv($output, [
+            'pedido_id',
+            'cliente_nombre',
+            'cliente_telefono',
+            'total',
+            'anticipo',
+            'saldo',
+            'clave',
+            'estado_pago',
+            'status_ot'
+        ]);
 
         foreach ($resultados as $item) {
             $total = floatval($item->total ?? 0);
@@ -220,11 +236,10 @@ class OrdenTrabajoController extends BaseController
             
             $estadoPago = (abs($total - $anticipo) < 0.01 && $total > 0) ? 'Pagado' : 'Pendiente';
 
-            // Formatear cada línea con los datos necesarios
-            $csvContent .= sprintf(
-                '%d,"%s","%s",%.2f,%.2f,%.2f,"%s","%s","%s"'."\n",
+            // Escribir fila
+            fputcsv($output, [
                 $item->pedido_id,
-                str_replace('"', '""', $item->cliente_nombre), // Escapar comillas dobles
+                $item->cliente_nombre,
                 $telefono,
                 $total,
                 $anticipo,
@@ -232,8 +247,12 @@ class OrdenTrabajoController extends BaseController
                 $clave,
                 $estadoPago,
                 $item->status
-            );
+            ]);
         }
+
+        rewind($output);
+        $csvContent = stream_get_contents($output);
+        fclose($output);
 
         // Configurar headers para descarga como CSV
         $nombreArchivo = 'etiquetas_ordenes_elaboracion_'.date('Ymd_His').'.csv';
