@@ -23,7 +23,7 @@
                           <div class="modal-dialog">
                             <div class="modal-content">
                               <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">Nuevo Cliente</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>
                                 </button>
@@ -31,15 +31,19 @@
                               <div class="modal-body">
                                 <form action="<?php echo base_url('nuevo_cliente');?>" method="post">
                                     <label for="">Nombre</label>
-                                    <input type="text" class="my-input w-100" name="nombre">
-                                    <label for="">Numero WhatsApp</label>
+                                    <input type="text" class="my-input w-100" name="nombre" required>
+                                    <label for="">Tipo</label>
+                                    <select class="my-input w-100" name="tipo" required>
+                                        <option value="1">Cliente</option>
+                                        <option value="2">Proveedor</option>
+                                    </select>
+                                    <label for="">Número WhatsApp</label>
                                     <input type="text" class="my-input w-100" name="telefono">
                                     <input type="submit" value="Guardar" class="my-btn-primary p-2 mt-2 w-100">
                                 </form>
                               </div>
                               <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                               </div>
                             </div>
                           </div>
@@ -51,7 +55,8 @@
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>Numero WhatsApp</th>
+                                        <th>Tipo</th>
+                                        <th>Número WhatsApp</th>
                                         <th>Correo</th>
                                         <th>Acción</th>
                                     </tr>
@@ -60,6 +65,13 @@
                                     <?php foreach ($clientes as $cliente): ?>
                                     <tr>
                                         <td><?php echo $cliente['nombre'] ?></td>
+                                        <td>
+                                            <?php if($cliente['tipo'] == 1): ?>
+                                                <span class="badge bg-primary">Cliente</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-success">Distribuidor</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?php echo $cliente['telefono'] ?></td>
                                         <?php if ($cliente['correo'] == null):?>
                                         <td>No registrado</td>
@@ -76,7 +88,8 @@
                                 <tfoot>
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>Numero WhatsApp</th>
+                                        <th>Tipo</th>
+                                        <th>Número WhatsApp</th>
                                         <th>Correo</th>
                                         <th>Acción</th>
                                     </tr>

@@ -10,6 +10,7 @@ class CotizacionesModel extends Model
     protected $allowedFields = [
         'slug',
         'cliente',
+        'tipo_venta', //nuevo campo
         'fecha',
         'caduca',
         'subtotal',

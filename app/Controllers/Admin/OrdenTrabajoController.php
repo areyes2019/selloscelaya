@@ -194,20 +194,21 @@ class OrdenTrabajoController extends BaseController
                 'pedidos.cliente_telefono',
                 'pedidos.total',
                 'pedidos.anticipo',
-                'pedidos.estado'
+                'pedidos.estado',
+                'ot.status'
             ])
-            ->join('sellopro_ordenes_trabajo ot', 'ot.pedido_id = pedidos.id', 'left')
-            ->where('pedidos.estado', 'pendiente')
+            ->join('sellopro_ordenes_trabajo ot', 'ot.pedido_id = pedidos.id', 'inner')
+            ->where('ot.status', 'Elaboracion')
             ->orderBy('pedidos.id', 'ASC');
 
         $resultados = $query->get()->getResultObject();
 
         if (empty($resultados)) {
-            return redirect()->back()->with('message', 'No se encontraron pedidos pendientes para generar etiquetas.');
+            return redirect()->back()->with('message', 'No se encontraron órdenes en elaboración para generar etiquetas.');
         }
 
         // Encabezados del archivo CSV
-        $csvContent = "pedido_id,cliente_nombre,cliente_telefono,total,anticipo,saldo,clave,estado_pago\n";
+        $csvContent = "pedido_id,cliente_nombre,cliente_telefono,total,anticipo,saldo,clave,estado_pago,status_ot\n";
 
         foreach ($resultados as $item) {
             $total = floatval($item->total ?? 0);
@@ -221,27 +222,28 @@ class OrdenTrabajoController extends BaseController
 
             // Formatear cada línea con los datos necesarios
             $csvContent .= sprintf(
-                '%d,"%s","%s",%.2f,%.2f,%.2f,"%s","%s"'."\n",
+                '%d,"%s","%s",%.2f,%.2f,%.2f,"%s","%s","%s"'."\n",
                 $item->pedido_id,
-                str_replace('"', '""', $item->cliente_nombre), // Escapar comillas
+                str_replace('"', '""', $item->cliente_nombre), // Escapar comillas dobles
                 $telefono,
                 $total,
                 $anticipo,
                 $saldo,
                 $clave,
-                $estadoPago
+                $estadoPago,
+                $item->status
             );
         }
 
-        // Configurar headers para descarga
-        $nombreArchivo = 'etiquetas_pedidos_'.date('Ymd_His').'.txt';
+        // Configurar headers para descarga como CSV
+        $nombreArchivo = 'etiquetas_ordenes_elaboracion_'.date('Ymd_His').'.csv';
         
         return $this->response
-            ->setHeader('Content-Type', 'text/plain')
+            ->setHeader('Content-Type', 'text/csv; charset=utf-8')
             ->setHeader('Content-Disposition', 'attachment; filename="'.$nombreArchivo.'"')
             ->setBody($csvContent);
     }
-    public function descargar_ordenes() // O considera un nombre como visualizar_reporte_combinado()
+    public function descargar_ordenes()
     {
         // 1. Instanciar el Modelo Principal
         $pedidoModel = new PedidoModel();
@@ -249,37 +251,26 @@ class OrdenTrabajoController extends BaseController
         // 2. Construir la Consulta con JOIN
         $query = $pedidoModel
             ->select([
-                'pedidos.id as pedido_id_col', // Alias para evitar conflicto con id_ot si lo necesitaras
+                'pedidos.id as pedido_id_col',
                 'pedidos.cliente_nombre',
                 'pedidos.cliente_telefono',
                 'pedidos.total',
                 'pedidos.anticipo',
-                'pedidos.estado',
-                // Campos de la tabla ordenes_trabajo (usar alias si hay nombres iguales)
-                'ot.imagen_path', // Asumiendo que la tabla ordenes_trabajo tiene alias 'ot'
+                'pedidos.estado', // Este campo podría ser diferente al status de OT
+                'ot.imagen_path',
                 'ot.color_tinta',
-                'ot.observaciones'
-                // Añade más campos de 'ot' si los necesitas
+                'ot.observaciones',
+                'ot.status' // Asegúrate de incluir este campo si lo necesitas mostrar
             ])
-            // LEFT JOIN desde 'pedidos' a 'sellopro_ordenes_trabajo' (alias 'ot')
-            // Incluirá todos los pedidos que cumplan el WHERE,
-            // y los datos de 'ot' si hay coincidencia en pedido_id
             ->join('sellopro_ordenes_trabajo ot', 'ot.pedido_id = pedidos.id', 'left')
-            // Filtrar por pedidos pendientes
-            ->where('pedidos.estado', 'pendiente');
+            ->where('ot.status', 'Elaboracion'); // Filtramos por el status en la tabla de órdenes de trabajo
 
-            // Si usas soft deletes en PedidoModel, CI4 añade ->where('pedidos.deleted_at IS NULL') automáticamente.
-            // Si no, y tienes una columna 'deleted_at', añádelo manualmente:
-            // ->where('pedidos.deleted_at IS NULL')
+        // 3. Ejecutar la consulta y obtener resultados
+        $resultadosCombinados = $query->get()->getResultObject();
 
-        // 3. Ejecutar la consulta y obtener resultados como objetos
-        $resultadosCombinados = $query->get()->getResultObject(); // Obtiene un array de objetos stdClass
-
-        // Verificar si hay resultados
         if (empty($resultadosCombinados)) {
-            // Puedes redirigir o mostrar un mensaje de error amigable
-            log_message('info', 'Intento de generar reporte PDF combinado sin pedidos pendientes.');
-            return redirect()->back()->with('message', 'No se encontraron pedidos pendientes para generar el reporte.');
+            log_message('info', 'Intento de generar reporte PDF sin pedidos en estado Elaboracion.');
+            return redirect()->back()->with('message', 'No se encontraron pedidos en estado Elaboración para generar el reporte.');
         }
 
         // 4. Preparar el HTML para el PDF
@@ -287,9 +278,8 @@ class OrdenTrabajoController extends BaseController
                  <html lang="es">
                  <head>
                      <meta charset="UTF-8">
-                     <title>Reporte Combinado de Pedidos Pendientes</title>
+                     <title>Reporte de Pedidos en Elaboración</title>
                      <style>
-                         /* Estilos CSS para el PDF */
                          body { font-family: DejaVu Sans, sans-serif; font-size: 10px; }
                          table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
                          th, td { border: 1px solid #ccc; padding: 6px; text-align: left; vertical-align: top; word-wrap: break-word; }
@@ -298,12 +288,12 @@ class OrdenTrabajoController extends BaseController
                          img { max-width: 60px; max-height: 60px; display: block; margin-top: 4px; }
                          .saldo { text-align: right; }
                          .pagado { text-align: center; font-weight: bold; color: green; }
-                         .observaciones-cell { min-width: 150px; } /* Dar más espacio a observaciones */
-                         .na { color: #888; font-style: italic; } /* Estilo para datos no disponibles */
+                         .observaciones-cell { min-width: 150px; }
+                         .na { color: #888; font-style: italic; }
                      </style>
                  </head>
                  <body>
-                     <h1>Reporte Combinado de Pedidos Pendientes</h1>
+                     <h1>Reporte de Pedidos en Elaboración</h1>
                      <table>
                          <thead>
                              <tr>
@@ -317,110 +307,75 @@ class OrdenTrabajoController extends BaseController
                          </thead>
                          <tbody>';
 
-        // Iterar sobre los resultados y construir las filas de la tabla
         foreach ($resultadosCombinados as $item) {
-            // Calcular Saldo o Estado "Pagado" (de la tabla pedidos)
             $total = floatval($item->total ?? 0);
             $anticipo = floatval($item->anticipo ?? 0);
             $saldoDisplay = '';
             $saldoClass = 'saldo';
 
-            if (abs($total - $anticipo) < 0.001 && $total != 0) { // Comparación segura de flotantes
+            if (abs($total - $anticipo) < 0.001 && $total != 0) {
                 $saldoDisplay = 'Pagado';
                 $saldoClass = 'pagado';
             } else {
                 $saldoCalculado = $total - $anticipo;
-                $saldoDisplay = number_format($saldoCalculado, 2, ',', '.') . ' €'; // Ajusta símbolo moneda si es necesario
+                $saldoDisplay = number_format($saldoCalculado, 2, ',', '.') . ' €';
             }
 
-            // Agregar fila a la tabla HTML
             $html .= '<tr>';
             $html .= '<td>' . esc($item->cliente_nombre ?? 'N/A') . '</td>';
             $html .= '<td>' . esc($item->cliente_telefono ?? 'N/A') . '</td>';
 
-            // Manejo de Imagen (de la tabla ordenes_trabajo) con Base64
             $html .= '<td>';
             $rutaImagen = WRITEPATH . 'uploads/ordenes/' . ($item->imagen_path ?? '');
-            // Verifica si imagen_path existe y no es null (debido al LEFT JOIN) y el archivo es válido
-            if (!empty($item->imagen_path) && file_exists($rutaImagen) && is_file($rutaImagen) && filesize($rutaImagen) > 0) {
+            if (!empty($item->imagen_path) && file_exists($rutaImagen)) {
                 try {
-                    if (!function_exists('mime_content_type')) {
-                        log_message('error', '[PDF Generation] La extensión PHP \'fileinfo\' es necesaria y no está habilitada.');
-                        $html .= '<span class="na">(Error: Ext. Fileinfo)</span>';
+                    $tipoMime = mime_content_type($rutaImagen);
+                    if (strpos($tipoMime, 'image/') === 0) {
+                        $imagenData = file_get_contents($rutaImagen);
+                        $imagenBase64 = base64_encode($imagenData);
+                        $html .= '<img src="data:' . $tipoMime . ';base64,' . $imagenBase64 . '" alt="Imagen Orden">';
                     } else {
-                        $tipoMime = mime_content_type($rutaImagen);
-                        if (strpos($tipoMime, 'image/') === 0) { // Verificar si es una imagen
-                            $imagenData = file_get_contents($rutaImagen);
-                            $imagenBase64 = base64_encode($imagenData);
-                            $html .= '<img src="data:' . $tipoMime . ';base64,' . $imagenBase64 . '" alt="Imagen Orden">';
-                        } else {
-                            $html .= '<span class="na">(Archivo no es imagen)</span>';
-                            log_message('warning', '[PDF Generation] Archivo no es tipo imagen: ' . $rutaImagen . ' MIME: ' . $tipoMime);
-                        }
+                        $html .= '<span class="na">(Archivo no es imagen)</span>';
                     }
                 } catch (\Exception $e) {
-                     log_message('error', '[PDF Generation] Error procesando imagen: ' . $e->getMessage() . ' Archivo: ' . $rutaImagen);
-                     $html .= '<span class="na">(Error al cargar imagen)</span>';
+                    $html .= '<span class="na">(Error al cargar imagen)</span>';
                 }
             } else {
-                // Si imagen_path está vacío/null o el archivo no existe/está vacío
-                 $html .= '<span class="na">(Sin imagen)</span>';
-                 // Opcional: Log si se esperaba imagen pero falló la carga/existencia
-                 if (!empty($item->imagen_path)) {
-                    log_message('notice', '[PDF Generation] Archivo de imagen no encontrado o vacío: ' . $rutaImagen);
-                 }
+                $html .= '<span class="na">(Sin imagen)</span>';
             }
             $html .= '</td>';
 
-            // Saldo calculado
             $html .= '<td class="' . $saldoClass . '">' . $saldoDisplay . '</td>';
-
-            // Datos de la orden de trabajo (pueden ser null por el LEFT JOIN)
-            $html .= '<td>' . esc($item->color_tinta ?? '<span class="na">N/D</span>') . '</td>'; // Mostrar N/D si es null
-            $html .= '<td class="observaciones-cell">' . nl2br(esc($item->observaciones ?? '<span class="na">N/D</span>')) . '</td>'; // Mostrar N/D y convertir saltos de línea
+            $html .= '<td>' . esc($item->color_tinta ?? '<span class="na">N/D</span>') . '</td>';
+            $html .= '<td class="observaciones-cell">' . nl2br(esc($item->observaciones ?? '<span class="na">N/D</span>')) . '</td>';
 
             $html .= '</tr>';
-        } // Fin del bucle foreach
+        }
 
-        // Cerrar tabla y HTML
-        $html .= '   </tbody>
-                     </table>
+        $html .= '</tbody>
+                 </table>
                  </body>
                  </html>';
 
         // 5. Configurar y Generar Dompdf
-        $pdfOptions = new \Dompdf\Options(); // Usar el namespace global para evitar conflictos
-        $pdfOptions->set('isRemoteEnabled', true); // Permitir cargar recursos externos si fuera necesario (CSS, fuentes, etc.)
-        $pdfOptions->set('defaultFont', 'DejaVu Sans'); // Fuente con buen soporte para UTF-8 (acentos, ñ, etc.)
-        $pdfOptions->set('isHtml5ParserEnabled', true); // Usar el parser HTML5 más moderno
-        // $pdfOptions->setChroot(WRITEPATH); // Solo necesario si usas rutas de archivo directas en src="" y están en writable
-        // $pdfOptions->setDpi(96); // Opcional: ajustar DPI si las unidades pt/cm no se ven como esperas
+        $pdfOptions = new \Dompdf\Options();
+        $pdfOptions->set('isRemoteEnabled', true);
+        $pdfOptions->set('defaultFont', 'DejaVu Sans');
+        $pdfOptions->set('isHtml5ParserEnabled', true);
 
-        $dompdf = new \Dompdf\Dompdf($pdfOptions); // Usar el namespace global
-
-        // Cargar el HTML generado
+        $dompdf = new \Dompdf\Dompdf($pdfOptions);
         $dompdf->loadHtml($html);
-
-        // Establecer tamaño del papel (A4) y orientación (landscape = horizontal)
         $dompdf->setPaper('A4', 'landscape');
-
-        // Renderizar el HTML a PDF
         $dompdf->render();
 
-        // 6. Enviar el PDF al Navegador para visualización en línea
-        $nombreArchivo = 'reporte_pedidos_pendientes_' . date('Ymd_His') . '.pdf'; // Nombre sugerido si el usuario guarda
+        // 6. Enviar el PDF al navegador
+        $nombreArchivo = 'reporte_pedidos_elaboracion_' . date('Ymd_His') . '.pdf';
 
-        // Limpiar cualquier salida anterior del buffer (IMPORTANTE en CodeIgniter)
         if (ob_get_level()) {
             ob_end_clean();
         }
 
-        // ¡AQUÍ ESTÁ EL CAMBIO PRINCIPAL!
-        // 'Attachment' => 0 : Indica al navegador que intente mostrar el PDF en línea.
-        // 'Attachment' => 1 : Forzaría la descarga del archivo.
         $dompdf->stream($nombreArchivo, ['Attachment' => 0]);
-
-        // Detener la ejecución del script de CodeIgniter después de enviar el PDF
         exit();
     }
     public function new($pedido_id = null)

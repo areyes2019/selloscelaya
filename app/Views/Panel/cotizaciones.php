@@ -43,7 +43,6 @@
 </div>
 
 
-<!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog rounded-0">
     <div class="modal-content rounded-0">
@@ -56,6 +55,7 @@
             <thead>
                 <tr>
                     <th>Nombre</th>
+                    <th>Tipo Venta</th>
                     <th>Acción</th>
                 </tr>
             </thead>
@@ -64,7 +64,17 @@
                 <tr class="w-100">
                     <td><?php echo $cliente['nombre'] ?></td>
                     <td>
-                        <a class="btn-my" href="/nueva_cotizacion/<?php echo $cliente['id_cliente']?>"  class="my-btn-primary p-1"><span class="bi bi-check"></span></a>
+                        <select class="form-select tipo-venta-select" data-cliente="<?php echo $cliente['id_cliente'] ?>">
+                            <option value="1">Sello completo</option>
+                            <option value="2">Mecanismos</option>
+                        </select>
+                    </td>
+                    <td>
+                        <a class="btn-my crear-cotizacion" href="#" 
+                           data-cliente="<?php echo $cliente['id_cliente'] ?>" 
+                           class="my-btn-primary p-1">
+                            <span class="bi bi-check"></span>
+                        </a>
                     </td>
                 </tr>
                 <?php endforeach;?>
@@ -77,11 +87,27 @@
     </div>
   </div>
 </div>
+
 <script>
-    $( document ).ready(function() {
-        new DataTable('#modal');
-        new DataTable('#example');
+document.addEventListener('DOMContentLoaded', function() {
+    // Manejar el click en el botón de crear cotización
+    document.querySelectorAll('.crear-cotizacion').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const clienteId = this.getAttribute('data-cliente');
+            const row = this.closest('tr');
+            const tipoVenta = row.querySelector('.tipo-venta-select').value;
+            
+            // Redirigir al controlador con ambos parámetros
+            window.location.href = `/nueva_cotizacion/${clienteId}?tipo_venta=${tipoVenta}`;
+        });
     });
+});
+$( document ).ready(function() {
+    new DataTable('#modal');
+    new DataTable('#example');
+});
 </script>
 <script type="" src="<?php echo base_url('public/js/cotizaciones.js'); ?>"></script>
 <?php echo $this->endSection(); ?>

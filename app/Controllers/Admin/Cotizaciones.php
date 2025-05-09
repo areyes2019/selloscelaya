@@ -29,19 +29,24 @@ class Cotizaciones extends BaseController
 	}
 	public function nueva($id)
 	{
-		//vamops a guardar un slgu y un cliente
-
-		$caracteres_permitidos = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-   		$longitud = 12;
-   		$slug = substr(str_shuffle($caracteres_permitidos), 0, $longitud);
-   		$nuevo_registro = new CotizacionesModel();
-   		$data=[
-   			'slug'=>$slug,
-   			'cliente'=>$id,
-   		];
-   		$nuevo_registro->insert($data);
-   		return redirect()->to(base_url('pagina_cotizador/'.$slug));
-		
+	    // Validar el tipo de venta
+	    $tipoVenta = $this->request->getGet('tipo_venta') ?? '1'; // Default a Sello completo
+	    
+	    // Generar slug único
+	    $caracteres_permitidos = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	    $longitud = 12;
+	    $slug = substr(str_shuffle($caracteres_permitidos), 0, $longitud);
+	    
+	    // Insertar nuevo registro
+	    $nuevo_registro = new CotizacionesModel();
+	    $data = [
+	        'slug' => $slug,
+	        'cliente' => $id,
+	        'tipo_venta' => ($tipoVenta == '1') ? 1 : 2 // Ajusta según tu ENUM
+	    ];
+	    
+	    $nuevo_registro->insert($data);
+	    return redirect()->to(base_url('pagina_cotizador/'.$slug));
 	}
 	public function pagina($slug)
 	{
