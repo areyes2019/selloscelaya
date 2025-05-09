@@ -85,6 +85,18 @@ class Cotizaciones extends BaseController
 	    $cantidad = $request->getVar('cantidad');
 	    $cotizacion = $request->getVar('id_cotizacion');
 
+	    // Obtener información de la cotización para saber el tipo de venta
+	    $cotizacionData = $cot->find($cotizacion);
+	    if (!$cotizacionData) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'Cotización no encontrada',
+	            'flag' => 0
+	        ]);
+	    }
+
+	    $tipoVenta = $cotizacionData['tipo_venta'] ?? 1; // Por defecto 1 si no está definido
+
 	    // Verificar si el producto ya está agregado
 	    $existe = $model->where('id_cotizacion', $cotizacion)
 	                   ->where('id_articulo', $articulo)
@@ -99,12 +111,22 @@ class Cotizaciones extends BaseController
 
 	    // Obtener el artículo
 	    if (!empty($articulo)) {
-	        $query_articulo = $query->where('id_articulo', $articulo)->findAll();
+	        $query_articulo = $query->where('id_articulo', $articulo)->first();
 	    }
 
+	    if (!$query_articulo) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => 'Artículo no encontrado',
+	            'flag' => 0
+	        ]);
+	    }
+
+	    // Seleccionar el precio según el tipo de venta
+	    $precioBase = ($tipoVenta == 2) ? $query_articulo['precio_prov'] : $query_articulo['precio_pub'];
+	    
 	    // Cálculos de precios
-	    $precioOriginal = $query_articulo[0]['precio_pub'] ?? 0;
-	    $precioConDescuento = $precioOriginal / 1.16; // Precio sin IVA (16%)
+	    $precioConDescuento = $precioBase / 1.16; // Precio sin IVA (16%)
 	    $subtotal = $precioConDescuento * $cantidad;
 	    $iva = $subtotal * 0.16; // Calculamos el IVA (16%)
 	    $total = $subtotal + $iva;
@@ -112,11 +134,11 @@ class Cotizaciones extends BaseController
 	    // Datos para insertar en detalles
 	    $data = [
 	        'cantidad' => $cantidad,
-	        'id_articulo' => $query_articulo[0]['id_articulo'] ?? null,
+	        'id_articulo' => $query_articulo['id_articulo'],
 	        'p_unitario' => $precioConDescuento,
 	        'total' => $subtotal, // Guardamos el subtotal (sin IVA) en detalles
 	        'id_cotizacion' => $cotizacion,
-	        'descripcion' => ($query_articulo[0]['nombre'] ?? '') . " " . ($query_articulo[0]['modelo'] ?? '')
+	        'descripcion' => $query_articulo['nombre'] . " " . $query_articulo['modelo']
 	    ];
 
 	    // Validar campos vacíos
