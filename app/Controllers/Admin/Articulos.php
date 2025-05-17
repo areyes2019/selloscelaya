@@ -75,19 +75,7 @@ class Articulos extends BaseController
 	    $model->insert($data);
 	    return redirect()->to('/articulos');
 	}
-	public function verImagen($nombreImagen)
-	{
-	    $rutaImagen = WRITEPATH . 'uploads/articulos/' . $nombreImagen;
-	    
-	    if(!file_exists($rutaImagen)) {
-	        throw new \CodeIgniter\Exceptions\PageNotFoundException('Imagen no encontrada');
-	    }
-
-	    $mime = mime_content_type($rutaImagen);
-	    header('Content-Type: '.$mime);
-	    readfile($rutaImagen);
-	    exit;
-	}
+	
 	public function editar_rapido($id)
 	{
 		$model = new ArticulosModel();
