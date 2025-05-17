@@ -52,7 +52,7 @@
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#imagenModal" 
                                                data-imagen="<?= base_url('public/img/catalogo/'.$articulo['img']) ?>"
                                                data-nombre="<?= $articulo['nombre'] ?>">
-                                                <img src="<?= base_url('public/img/catalogo/'.$articulo['img']) ?>" alt="Imagen" width="30" style="max-height: 30px; object-fit: contain;">
+                                               Ver imagen
                                             </a>
                                             <?php else: ?>
                                                 <span class="text-muted">Sin imagen</span>
