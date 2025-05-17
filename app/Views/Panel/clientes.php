@@ -35,7 +35,7 @@
                                     <label for="">Tipo</label>
                                     <select class="my-input w-100" name="tipo" required>
                                         <option value="1">Cliente</option>
-                                        <option value="2">Proveedor</option>
+                                        <option value="2">Distribuidor</option>
                                     </select>
                                     <label for="">Número WhatsApp</label>
                                     <input type="text" class="my-input w-100" name="telefono">
