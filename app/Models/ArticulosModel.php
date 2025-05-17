@@ -17,7 +17,8 @@ class ArticulosModel extends Model
         'img',
         'venta',
         'precio_dist',
-        'clave_producto'
+        'clave_producto',
+        'visible'
     ];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

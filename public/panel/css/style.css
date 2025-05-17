@@ -325,6 +325,7 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 /* Ajustes para móviles */
 @media (max-width: 768px) {
     .modern-drop-zone {

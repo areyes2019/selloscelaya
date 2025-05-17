@@ -9,13 +9,12 @@ class CategoriasModel extends Model
     protected $table = 'sellopro_categorias';
     protected $primaryKey = 'id_categoria';
     
-    protected $allowedFields = ['nombre'];
-    
+    protected $allowedFields = ['nombre']; 
     protected $returnType = 'array';
     protected $useTimestamps = false;
     
     protected $validationRules = [
-        'nombre' => 'required|min_length[3]|max_length[100]|is_unique[categorias.nombre]',
+        'nombre' => 'required|min_length[3]|max_length[100]|is_unique[sellopro_categorias.nombre]',
     ];
     
     protected $validationMessages = [

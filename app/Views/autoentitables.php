@@ -5,7 +5,181 @@
         <div class="container">
             <div class="row">
                 <div class="col-8 h-100">
-                    <img class="img-fluid" src="<?php echo base_url('public/img/autoentitables.png'); ?>" alt="">
+                    <div class="row g-4">
+                        <!-- Producto 1 -->
+                        <div class="col-lg-4 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="product-item bg-light rounded">
+                                <div class="position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="<?php echo base_url('public/img/productos/sello1.jpg'); ?>" alt="Sello autoentintable 38x14mm">
+                                    <div class="product-action">
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h5 text-decoration-none text-truncate" href="">Sello 38x14mm</a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        <h6>$120.00</h6><h6 class="text-muted ml-2"><del>$150.00</del></h6>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small>(99)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Producto 2 -->
+                        <div class="col-lg-4 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="product-item bg-light rounded">
+                                <div class="position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="<?php echo base_url('public/img/productos/sello2.jpg'); ?>" alt="Sello autoentintable 47x18mm">
+                                    <div class="product-action">
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h5 text-decoration-none text-truncate" href="">Sello 47x18mm</a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        <h6>$150.00</h6><h6 class="text-muted ml-2"><del>$180.00</del></h6>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star-half-alt text-primary"></small>
+                                        <small>(87)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Producto 3 -->
+                        <div class="col-lg-4 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                            <div class="product-item bg-light rounded">
+                                <div class="position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="<?php echo base_url('public/img/productos/sello3.jpg'); ?>" alt="Sello autoentintable 59x23mm">
+                                    <div class="product-action">
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h5 text-decoration-none text-truncate" href="">Sello 59x23mm</a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        <h6>$180.00</h6><h6 class="text-muted ml-2"><del>$210.00</del></h6>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small>(120)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Producto 4 -->
+                        <div class="col-lg-4 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="product-item bg-light rounded">
+                                <div class="position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="<?php echo base_url('public/img/productos/sello4.jpg'); ?>" alt="Sello autoentintable 60x40mm">
+                                    <div class="product-action">
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h5 text-decoration-none text-truncate" href="">Sello 60x40mm</a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        <h6>$220.00</h6><h6 class="text-muted ml-2"><del>$250.00</del></h6>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small>(156)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Producto 5 -->
+                        <div class="col-lg-4 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="product-item bg-light rounded">
+                                <div class="position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="<?php echo base_url('public/img/productos/sello5.jpg'); ?>" alt="Sello autoentintable 50x30mm">
+                                    <div class="product-action">
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h5 text-decoration-none text-truncate" href="">Sello 50x30mm</a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        <h6>$170.00</h6><h6 class="text-muted ml-2"><del>$200.00</del></h6>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star-half-alt text-primary"></small>
+                                        <small>(92)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Producto 6 -->
+                        <div class="col-lg-4 col-md-6 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                            <div class="product-item bg-light rounded">
+                                <div class="position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="<?php echo base_url('public/img/productos/sello6.jpg'); ?>" alt="Sello autoentintable 45mm">
+                                    <div class="product-action">
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h5 text-decoration-none text-truncate" href="">Sello Redondo 45mm</a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        <h6>$190.00</h6><h6 class="text-muted ml-2"><del>$220.00</del></h6>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small class="fa fa-star text-primary"></small>
+                                        <small>(110)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-4">
                     

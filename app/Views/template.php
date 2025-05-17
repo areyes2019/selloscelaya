@@ -74,10 +74,10 @@
     </div>
     <!-- Topbar End -->
      <!-- Navbar Start -->
+    <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
         <a href="<?php echo base_url('/'); ?>" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <img class="mr-3" src="<?php echo base_url('public/img/LOGOciruclos3.png'); ?>" alt="Sello Pronto"  width="50">
-            <h2 class="m-0 text-primary">Sellos Celaya</h2>
+            <img class="mr-3" src="<?php echo base_url('public/img/logoweb.png'); ?>" alt="Sello Pronto" width="250">
         </a>
         <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
@@ -90,12 +90,7 @@
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Nuestros Sellos de Goma</a>
                     <div class="dropdown-menu fade-up m-0">
-                        <a href="<?php echo base_url('autoentitables'); ?>" class="dropdown-item">Autoentitables</a>
-                        <a href="<?php echo base_url('madera'); ?>" class="dropdown-item">En Madera</a>
-                        <a href="<?php echo base_url('fechadores'); ?>" class="dropdown-item">Fechadores</a>
-                        <a href="<?php echo base_url('portatiles'); ?>" class="dropdown-item">Portátiles</a>
-                        <a href="<?php echo base_url('textiles'); ?>" class="dropdown-item">Para ropa</a>
-                        <a href="<?php echo base_url('gigantes'); ?>" class="dropdown-item">Gigantes</a>
+                        <?= view_cell('App\Cells\CategoryMenuCell::render') ?>
                     </div>
                 </div>
                 <a href="<?php echo base_url('#contact'); ?>" class="nav-item nav-link">Contacto</a>
@@ -103,6 +98,7 @@
             <a href="tel:4613581090" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Llamanos 461 358 1090<i class="fa fa-arrow-right ms-3"></i></a>
         </div>
     </nav>
+    <!-- Navbar End -->
     <!-- Navbar End -->
     <?= $this->renderSection('contenido') ?>
      <!-- Footer Start -->

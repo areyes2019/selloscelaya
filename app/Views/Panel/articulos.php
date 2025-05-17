@@ -5,7 +5,7 @@
         <div class="row column_title card rounded-0 shadow-sm">
             <div class="col-md-12">
                 <div class="page_title">
-                    <h2>Lista de precios {{saludo}}</h2>
+                    <h2>Lista de precios</h2>
                 </div>
                 <!-- Mensajes Flash -->
                 <?php if (session()->getFlashdata('success')): ?>
@@ -23,7 +23,8 @@
                 <div class="white_shd full margin_bottom_30">
                     <div class="full graph_head">
                         <div class="heading1 margin_0">
-                            <a class="btn btn-danger rounded-0 mb-5" href="<?php echo base_url('nuevo_art_vista'); ?>">Agregar Articulo</a>
+                            <a class="btn btn-danger rounded-0 btn-sm mb-5" href="<?php echo base_url('nuevo_art_vista'); ?>">Agregar Articulo</a>
+                            <a href="<?php echo base_url('categorias'); ?>" class="btn btn-danger btn-sm rounded-0 mb-5">Categorías</a>
                         </div>
                     </div>
                     <div class="card rounded-0 shadow-sm table_section padding_infor_info">

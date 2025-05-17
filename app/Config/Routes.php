@@ -6,6 +6,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index');
 $routes->get('autoentitables', 'Home::autoentintables');
+$routes->get('articulos/(:any)', 'Home::articulos/$1');
 $routes->get('madera', 'Home::madera');
 $routes->get('fechadores', 'Home::fechadores');
 $routes->get('portatiles', 'Home::portatiles');
