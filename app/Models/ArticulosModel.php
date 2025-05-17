@@ -18,7 +18,8 @@ class ArticulosModel extends Model
         'venta',
         'precio_dist',
         'clave_producto',
-        'visible'
+        'visible',
+        'categoria'
     ];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

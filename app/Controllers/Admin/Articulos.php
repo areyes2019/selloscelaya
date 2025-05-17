@@ -5,6 +5,7 @@ use App\Controllers\BaseController;
 use App\Models\ArticulosModel;
 use App\Models\DescuentosModel;
 use App\Models\ProveedoresModel;
+use App\Models\CategoriasModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 class Articulos extends BaseController
 {
@@ -30,12 +31,20 @@ class Articulos extends BaseController
 	}
 	public function nuevo_art()
 	{
-		$model = new ProveedoresModel();
-		$resultado = $model->findAll();
-		$data = [
-			'proveedores'=> $resultado
-		];
-		return view('Panel/nuevo_articulo', $data);
+	    // Obtener lista de proveedores
+	    $modelProveedores = new ProveedoresModel();
+	    $proveedores = $modelProveedores->findAll();
+	    
+	    // Obtener lista de categorías
+	    $modelCategorias = new CategoriasModel();
+	    $categorias = $modelCategorias->findAll();
+	    
+	    $data = [
+	        'proveedores' => $proveedores,
+	        'categorias' => $categorias  // Agregamos las categorías a los datos
+	    ];
+	    
+	    return view('Panel/nuevo_articulo', $data);
 	}
 	public function nuevo()
 	{
@@ -98,17 +107,27 @@ class Articulos extends BaseController
 	}
 	public function editar($id)
 	{
+	    // Obtener el artículo a editar
+	    $modelArticulos = new ArticulosModel();
+	    $resultado = $modelArticulos->where('id_articulo', $id)->findAll();
+	    $nombre = $resultado[0]['nombre']." - ".$resultado[0]['modelo'];
 
-		$model = new ArticulosModel();
-		$resultado = $model->where('id_articulo',$id)->findAll();
-		$nombre = $resultado[0]['nombre']." - ".$resultado[0]['modelo'];
+	    // Obtener lista de proveedores
+	    $modelProveedores = new ProveedoresModel();
+	    $resultado_prov = $modelProveedores->findAll();
 
-		$modelo = new ProveedoresModel();
-		$resultado_prov = $modelo->findAll();
+	    // Obtener lista de categorías
+	    $modelCategorias = new CategoriasModel();
+	    $categorias = $modelCategorias->findAll();
 
-		$data = ['articulos'=>$resultado,'nombre'=>$nombre,'proveedores'=>$resultado_prov];
-		return view('Panel/editar_articulo',$data);
-
+	    $data = [
+	        'articulos' => $resultado,
+	        'nombre' => $nombre,
+	        'proveedores' => $resultado_prov,
+	        'categorias' => $categorias  // Agregamos las categorías a los datos
+	    ];
+	    
+	    return view('Panel/editar_articulo', $data);
 	}
 	public function actualizar_rapido($idArticulo)
 	{
@@ -169,23 +188,61 @@ class Articulos extends BaseController
 	}
 	public function actualizar()
 	{
-	    // Procesamiento de la imagen (si se sube una nueva)
+	    // Obtener porcentajes para cálculo de precios (si es necesario)
+	    $modelDescuentos = new DescuentosModel();
+	    $porcentajes_dist = $modelDescuentos->find('2');
+	    $porcentaje_venta_distribuidor = 1 + ($porcentajes_dist['descuento'] / 100);
+
+	    // Procesamiento de la imagen
 	    $img = $this->request->getPost('imagen_actual'); // Mantener la imagen actual por defecto
+	    
+	    // Verificar si se solicita eliminar la imagen actual
+	    if ($this->request->getPost('eliminar_imagen')) {
+	        if ($img && file_exists(FCPATH . 'public/img/catalogo/' . $img)) {
+	            unlink(FCPATH . 'public/img/catalogo/' . $img);
+	        }
+	        $img = ''; // Eliminar referencia a la imagen
+	    }
+
 	    $file = $this->request->getFile('img');
 	    
 	    if ($file && $file->isValid() && !$file->hasMoved()) {
 	        // Eliminar la imagen anterior si existe
 	        $imagenAnterior = $this->request->getPost('imagen_actual');
-	        if ($imagenAnterior && file_exists(WRITEPATH . 'uploads/articulos/' . $imagenAnterior)) {
-	            unlink(WRITEPATH . 'uploads/articulos/' . $imagenAnterior);
+	        if ($imagenAnterior && file_exists(FCPATH . 'public/img/catalogo/' . $imagenAnterior)) {
+	            unlink(FCPATH . 'public/img/catalogo/' . $imagenAnterior);
 	        }
 	        
-	        // Subir la nueva imagen
+	        // Procesar y comprimir la nueva imagen
 	        $newName = $file->getRandomName();
-	        $file->move(WRITEPATH . 'uploads/articulos', $newName);
+	        $maxSize = 70 * 1024; // 70KB en bytes
+	        $quality = 70; // Calidad inicial
+	        
+	        // Primera compresión
+	        \Config\Services::image()
+	            ->withFile($file->getPathname())
+	            ->resize(800, 800, true, 'height')
+	            ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
+	        
+	        // Verificar tamaño y ajustar si es necesario
+	        $fileSize = filesize(FCPATH . 'public/img/catalogo/' . $newName);
+	        
+	        if ($fileSize > $maxSize) {
+	            // Calcular nueva calidad proporcionalmente
+	            $quality = 70 - (($fileSize - $maxSize) / $maxSize * 20);
+	            $quality = max($quality, 10); // No bajar de 10 de calidad
+	            
+	            // Segunda compresión con calidad ajustada
+	            \Config\Services::image()
+	                ->withFile($file->getPathname())
+	                ->resize(800, 800, true, 'height')
+	                ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
+	        }
+	        
 	        $img = $newName;
 	    }
 
+	    // Actualizar datos del artículo
 	    $modelo = new ArticulosModel();
 	    $id = $this->request->getPost('idarticulo');
 	    
@@ -199,7 +256,9 @@ class Articulos extends BaseController
 	        'clave_producto' => $this->request->getPost('clave_producto'),
 	        'stock' => (int)$this->request->getPost('stock'),
 	        'venta' => $this->request->getPost('venta') ? 1 : 0,
-	        'img' => $img
+	        'img' => $img,
+	        'proveedor' => $this->request->getPost('proveedor'),
+	        'categoria' => $this->request->getPost('categoria')
 	    ];
 	    
 	    $modelo->update($id, $data);

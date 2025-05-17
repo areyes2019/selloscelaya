@@ -42,33 +42,52 @@
                                required onchange="calcularPrecios()">
                     </div>
                 </div>
+                
                 <div class="form-group">
-                    <label for="precio_prov">Precio Público*</label>
+                    <label for="precio_pub">Precio Público*</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">$</span>
                         </div>
-                        <input type="number" step="0.01" name="precio_pub" id="precio_prov" 
-                               class="form-control rounded-0" value="<?= old('precio_prov') ?>" 
+                        <input type="number" step="0.01" name="precio_pub" id="precio_pub" 
+                               class="form-control rounded-0" value="<?= old('precio_pub') ?>" 
                                required onchange="calcularPrecios()">
                     </div>
                 </div>
+                
+                <!-- Campo de Proveedor corregido -->
                 <div class="form-group">
-                    <label for="">Proveedor</label>
-                    <select name="" id="" class="form-control rounded-0 form-control-sm shadow-none">
+                    <label for="proveedor">Proveedor*</label>
+                    <select name="proveedor" id="proveedor" class="form-control rounded-0 form-control-sm shadow-none" required>
                         <option value="">Selecciona un proveedor...</option>
-                        <?php foreach ($proveedores as $person):?>
-                        <option value="<?= $person['id_proveedor'] ?>"><?php echo $person['empresa'] ?></option> 
+                        <?php foreach ($proveedores as $proveedor): ?>
+                        <option value="<?= $proveedor['id_proveedor'] ?>" <?= old('proveedor') == $proveedor['id_proveedor'] ? 'selected' : '' ?>>
+                            <?= esc($proveedor['empresa']) ?>
+                        </option> 
                         <?php endforeach ?>
                     </select>
                 </div>
+                
+                <!-- Nuevo campo de Categoría -->
+                <div class="form-group">
+                    <label for="categoria">Categoría*</label>
+                    <select name="categoria" id="categoria" class="form-control rounded-0 form-control-sm shadow-none" required>
+                        <option value="">Selecciona una categoría...</option>
+                        <?php foreach ($categorias as $categoria): ?>
+                        <option value="<?= $categoria['id_categoria'] ?>" <?= old('categoria') == $categoria['id_categoria'] ? 'selected' : '' ?>>
+                            <?= esc($categoria['nombre']) ?>
+                        </option>
+                        <?php endforeach ?>
+                    </select>
+                </div>
+                
                 <div class="form-group">
                     <label for="img">Imagen del Artículo</label>
                     <div class="custom-file">
-                        <input type="file" name="img" id="img" class="custom-file-input">
+                        <input type="file" name="img" id="img" class="custom-file-input" accept="image/jpeg, image/png, image/gif">
                         <label class="custom-file-label rounded-0" for="img">Seleccionar imagen</label>
                     </div>
-                    <small class="text-muted">Tamaño máximo: 2MB (JPG, PNG, GIF)</small>
+                    <small class="text-muted">Tamaño máximo: 2MB (JPG, PNG, GIF). Se redimensionará automáticamente.</small>
                 </div>
                 
                 <div class="form-group form-check">
@@ -76,6 +95,7 @@
                            <?= old('venta', 1) ? 'checked' : '' ?>>
                     <label class="form-check-label" for="venta">Disponible para venta</label>
                 </div>
+                
                 <div class="form-group">
                     <button type="submit" class="btn btn-danger rounded-0 mt-3">
                         <i class="fas fa-save"></i> Guardar
@@ -85,6 +105,7 @@
                     </a>
                 </div>
             </form>
+
         </div>
         <div class="col-md-6">   
             <h4 class="mt-3">Importacion maisva</h4>
@@ -164,5 +185,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 });
+</script>
+<!-- Script para mostrar el nombre del archivo seleccionado -->
+<script>
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var fileName = document.getElementById("img").files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
 </script>
 <?= $this->endSection() ?>
