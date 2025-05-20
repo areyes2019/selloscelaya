@@ -123,7 +123,7 @@ class Cotizaciones extends BaseController
 	    }
 
 	    // Seleccionar el precio según el tipo de venta
-	    $precioBase = ($tipoVenta == 2) ? $query_articulo['precio_prov'] : $query_articulo['precio_pub'];
+	    $precioBase = ($tipoVenta == 2) ? $query_articulo['precio_dist'] : $query_articulo['precio_pub'];
 	    
 	    // Cálculos de precios
 	    $precioConDescuento = $precioBase / 1.16; // Precio sin IVA (16%)

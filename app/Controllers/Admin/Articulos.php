@@ -58,9 +58,34 @@ class Articulos extends BaseController
 	    // Procesamiento de la imagen
 	    $img = '';
 	    $file = $this->request->getFile('img');
+	    
 	    if ($file && $file->isValid() && !$file->hasMoved()) {
+	        // Procesar y comprimir la nueva imagen
 	        $newName = $file->getRandomName();
-	        $file->move(WRITEPATH . 'uploads/articulos', $newName);
+	        $maxSize = 70 * 1024; // 70KB en bytes
+	        $quality = 70; // Calidad inicial
+	        
+	        // Primera compresión
+	        \Config\Services::image()
+	            ->withFile($file->getPathname())
+	            ->resize(800, 800, true, 'height')
+	            ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
+	        
+	        // Verificar tamaño y ajustar si es necesario
+	        $fileSize = filesize(FCPATH . 'public/img/catalogo/' . $newName);
+	        
+	        if ($fileSize > $maxSize) {
+	            // Calcular nueva calidad proporcionalmente
+	            $quality = 70 - (($fileSize - $maxSize) / $maxSize * 20);
+	            $quality = max($quality, 10); // No bajar de 10 de calidad
+	            
+	            // Segunda compresión con calidad ajustada
+	            \Config\Services::image()
+	                ->withFile($file->getPathname())
+	                ->resize(800, 800, true, 'height')
+	                ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
+	        }
+	        
 	        $img = $newName;
 	    }
 
@@ -77,8 +102,10 @@ class Articulos extends BaseController
 	        'precio_pub' => $precio_pub,
 	        'precio_dist' => $precio_dist,
 	        'venta' => $this->request->getPost('venta') ? 1 : 0,
+	        'visible' => $this->request->getPost('visible') ? 1 : 0,
 	        'img' => $img,
-	        'proveedor' => $this->request->getPost('proveedor') // Añadir el campo proveedor
+	        'proveedor' => $this->request->getPost('proveedor'),
+	        'categoria' => $this->request->getPost('categoria')
 	    ];
 	    
 	    $model->insert($data);
@@ -194,14 +221,14 @@ class Articulos extends BaseController
 	    $porcentaje_venta_distribuidor = 1 + ($porcentajes_dist['descuento'] / 100);
 
 	    // Procesamiento de la imagen
-	    $img = $this->request->getPost('imagen_actual'); // Mantener la imagen actual por defecto
+	    $img = $this->request->getPost('imagen_actual');
 	    
 	    // Verificar si se solicita eliminar la imagen actual
 	    if ($this->request->getPost('eliminar_imagen')) {
 	        if ($img && file_exists(FCPATH . 'public/img/catalogo/' . $img)) {
 	            unlink(FCPATH . 'public/img/catalogo/' . $img);
 	        }
-	        $img = ''; // Eliminar referencia a la imagen
+	        $img = '';
 	    }
 
 	    $file = $this->request->getFile('img');
@@ -215,24 +242,20 @@ class Articulos extends BaseController
 	        
 	        // Procesar y comprimir la nueva imagen
 	        $newName = $file->getRandomName();
-	        $maxSize = 70 * 1024; // 70KB en bytes
-	        $quality = 70; // Calidad inicial
+	        $maxSize = 70 * 1024;
+	        $quality = 70;
 	        
-	        // Primera compresión
 	        \Config\Services::image()
 	            ->withFile($file->getPathname())
 	            ->resize(800, 800, true, 'height')
 	            ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
 	        
-	        // Verificar tamaño y ajustar si es necesario
 	        $fileSize = filesize(FCPATH . 'public/img/catalogo/' . $newName);
 	        
 	        if ($fileSize > $maxSize) {
-	            // Calcular nueva calidad proporcionalmente
 	            $quality = 70 - (($fileSize - $maxSize) / $maxSize * 20);
-	            $quality = max($quality, 10); // No bajar de 10 de calidad
+	            $quality = max($quality, 10);
 	            
-	            // Segunda compresión con calidad ajustada
 	            \Config\Services::image()
 	                ->withFile($file->getPathname())
 	                ->resize(800, 800, true, 'height')
@@ -255,7 +278,8 @@ class Articulos extends BaseController
 	        'minimo' => (int)$this->request->getPost('minimo'),
 	        'clave_producto' => $this->request->getPost('clave_producto'),
 	        'stock' => (int)$this->request->getPost('stock'),
-	        'venta' => $this->request->getPost('venta') ? 1 : 0,
+	        'venta' => $this->request->getPost('venta') == '1' ? 1 : 0, // Modificado para select
+	        'visible' => $this->request->getPost('visible') == '1' ? 1 : 0, // Modificado para select
 	        'img' => $img,
 	        'proveedor' => $this->request->getPost('proveedor'),
 	        'categoria' => $this->request->getPost('categoria')

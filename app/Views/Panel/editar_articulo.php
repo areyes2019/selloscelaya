@@ -52,7 +52,6 @@
                        value="<?= old('clave_producto', $articulo['clave_producto']) ?>">
             </div>
             
-            <!-- Campo de Categoría añadido -->
             <div class="col-md-4">
                 <label class="form-label">Categoría*</label>
                 <select class="form-select my-input shadow-none form-control p-1" name="categoria" required>
@@ -110,6 +109,15 @@
                 <select class="form-select my-input shadow-none form-control p-1" name="venta" required>
                     <option value="1" <?= old('venta', $articulo['venta']) == 1 ? 'selected' : '' ?>>Sí</option>
                     <option value="0" <?= old('venta', $articulo['venta']) == 0 ? 'selected' : '' ?>>No</option>
+                </select>
+            </div>
+            
+            <!-- Nuevo checkbox para visibilidad -->
+            <div class="col-md-3">
+                <label class="form-label">Visible en catálogo*</label>
+                <select class="form-select my-input shadow-none form-control p-1" name="visible" required>
+                    <option value="1" <?= old('visible', $articulo['visible'] ?? 1) == 1 ? 'selected' : '' ?>>Sí</option>
+                    <option value="0" <?= old('visible', $articulo['visible'] ?? 1) == 0 ? 'selected' : '' ?>>No</option>
                 </select>
             </div>
             

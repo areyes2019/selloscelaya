@@ -55,7 +55,6 @@
                     </div>
                 </div>
                 
-                <!-- Campo de Proveedor corregido -->
                 <div class="form-group">
                     <label for="proveedor">Proveedor*</label>
                     <select name="proveedor" id="proveedor" class="form-control rounded-0 form-control-sm shadow-none" required>
@@ -68,7 +67,6 @@
                     </select>
                 </div>
                 
-                <!-- Nuevo campo de Categoría -->
                 <div class="form-group">
                     <label for="categoria">Categoría*</label>
                     <select name="categoria" id="categoria" class="form-control rounded-0 form-control-sm shadow-none" required>
@@ -94,6 +92,13 @@
                     <input type="checkbox" name="venta" id="venta" class="form-check-input" 
                            <?= old('venta', 1) ? 'checked' : '' ?>>
                     <label class="form-check-label" for="venta">Disponible para venta</label>
+                </div>
+                
+                <!-- Nuevo checkbox para visibilidad -->
+                <div class="form-group form-check">
+                    <input type="checkbox" name="visible" id="visible" class="form-check-input" 
+                           <?= old('visible', 1) ? 'checked' : '' ?>>
+                    <label class="form-check-label" for="visible">Visible en catálogo</label>
                 </div>
                 
                 <div class="form-group">
