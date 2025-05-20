@@ -612,63 +612,58 @@ class Cotizaciones extends BaseController
 
 	}
 	public function cotizacion_pdf($id)
-	{
-		$db = \Config\Database::connect();
-		$cliente_query = new CotizacionesModel();
+    {
+        $db = \Config\Database::connect();
+        $cliente_query = new CotizacionesModel();
 
-		//datos del cliente
-		$cliente_query->where('id_cotizacion',$id);
-		$resultado_cotizacion = $cliente_query->findAll();
+        //datos del cliente
+        $cliente_query->where('id_cotizacion', $id);
+        $resultado_cotizacion = $cliente_query->findAll();
 
-		$cliente = new ClientesModel();
-		$cliente->where('id_cliente',$resultado_cotizacion[0]['cliente']);
-		$resultado = $cliente->findAll();
+        $cliente = new ClientesModel();
+        $cliente->where('id_cliente', $resultado_cotizacion[0]['cliente']);
+        $resultado = $cliente->findAll();
 
-		//mostrar los articulos
-		$builder = $db->table('sellopro_detalles');
-		$builder->where('id_cotizacion',$id);
-		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles.id_articulo');
-		$resultado_lineas = $builder->get()->getResultArray();
+        //mostrar los articulos
+        $builder = $db->table('sellopro_detalles');
+        $builder->where('id_cotizacion', $id);
+        $builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles.id_articulo');
+        $resultado_lineas = $builder->get()->getResultArray();
 
-		//mostrar independientes
-		//Mostrar articulos independientes
-		$query = new DetalleModel();
-		$query->where('id_cotizacion',$id);
-		$query->where('id_articulo',0);
-		$independiente = $query->findAll();
+        //mostrar independientes
+        $query = new DetalleModel();
+        $query->where('id_cotizacion', $id);
+        $query->where('id_articulo', 0);
+        $independiente = $query->findAll();
 
-		//sacamos los totales 
+        //sacamos los totales 
+        $total = (float)$resultado_cotizacion[0]['total'];
+        $descuento = (float)$resultado_cotizacion[0]['descuento'];
+        $anticipo = (float)$resultado_cotizacion[0]['anticipo'];
 
-		$total = (float)$resultado_cotizacion[0]['total'];
-		$descuento = (float)$resultado_cotizacion[0]['descuento'];
-		$anticipo = (float)$resultado_cotizacion[0]['anticipo'];
+        $totalConDescuento = $total - $descuento;
+        $sub_total = $totalConDescuento / 1.16;
+        $iva = $totalConDescuento - $sub_total;
+        $saldo = $totalConDescuento - $anticipo;
 
-		$totalConDescuento = $total - $descuento;
-		$sub_total = $totalConDescuento / 1.16;
-		$iva = $totalConDescuento - $sub_total;
-		$saldo = $totalConDescuento - $anticipo;
+        $data = [
+            'cliente' => $resultado,
+            'id_cotizacion' => $resultado_cotizacion,
+            'detalles' => $resultado_lineas,
+            'sub_total' => number_format($sub_total, 2),
+            'descuento' => number_format($descuento, 2),
+            'iva' => number_format($iva, 2),
+            'total' => number_format($totalConDescuento, 2),
+            'pagado' => $resultado_cotizacion[0]['pago'] == 1 // Nuevo campo para saber si está pagado
+        ];
 
-		$data = [
-		    'cliente' => $resultado,
-		    'id_cotizacion' => $resultado_cotizacion,
-		    'detalles' => $resultado_lineas,
-		    'sub_total' => number_format($sub_total, 2),
-		    'descuento' => number_format($descuento, 2),
-		    'iva' => number_format($iva, 2),
-		    'total' => number_format($totalConDescuento, 2),
-		];
-
-
-		
-		//return view('Panel/PDF',$data);
-		$doc = new Dompdf();
-		$html = view('Panel/PDF',$data);
-		//return $html;
-		$doc->loadHTML($html);
-		$doc->setPaper('A4','portrait');
-		$doc->render();
-		$doc->stream("QT-".$id.".pdf");
-	}
+        $doc = new Dompdf();
+        $html = view('Panel/PDF', $data);
+        $doc->loadHTML($html);
+        $doc->setPaper('A4', 'portrait');
+        $doc->render();
+        $doc->stream("QT-".$id.".pdf");
+    }
 	public function enviar_pdf($id)
 	{
 		$db = \Config\Database::connect();

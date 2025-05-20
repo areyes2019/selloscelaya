@@ -4,6 +4,20 @@
     body {
         font-family: sans-serif;
         font-size: 10pt;
+        position: relative; /* Necesario para posicionar la marca de agua */
+    }
+
+    /* Estilo para la marca de agua */
+    .watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 80px;
+        color: rgba(0, 128, 0, 0.1); /* Verde tenue */
+        font-weight: bold;
+        z-index: -1; /* Detrás del contenido */
+        pointer-events: none; /* No interferir con el contenido */
     }
 
     p {
@@ -49,6 +63,11 @@
 </head>
 
 <body>
+    <!-- Marca de agua PAGADO (solo visible cuando pagado es true) -->
+    <?php if ($pagado): ?>
+    <div class="watermark">PAGADO</div>
+    <?php endif; ?>
+
     <table width="100%" style="font-family: sans-serif;" cellpadding="10">
         <tr>
             <td width="10%" style="padding: 0px; text-align: left;">
