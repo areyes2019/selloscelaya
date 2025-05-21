@@ -11,9 +11,12 @@ class Articulos extends BaseController
 {
 	public function index()
 	{
-		$model = new ArticulosModel();
-		$data['articulos'] = $model->findAll();
-		return view('Panel/articulos', $data);
+	    $model = new ArticulosModel();
+	    $builder = $model->select('sellopro_articulos.*, sellopro_proveedores.empresa as nombre_proveedor')
+	                     ->join('sellopro_proveedores', 'sellopro_proveedores.id_proveedor = sellopro_articulos.proveedor', 'left');
+	    
+	    $data['articulos'] = $builder->findAll();
+	    return view('Panel/articulos', $data);
 	}
 	public function mostrar()
 	{

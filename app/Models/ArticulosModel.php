@@ -19,7 +19,8 @@ class ArticulosModel extends Model
         'precio_dist',
         'clave_producto',
         'visible',
-        'categoria'
+        'categoria',
+        'proveedor'
     ];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
