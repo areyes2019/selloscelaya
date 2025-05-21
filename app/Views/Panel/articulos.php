@@ -103,6 +103,63 @@
                                                     title="Edición rápida">
                                                 <i class="bi bi-lightning-charge"></i>
                                             </button>
+                                            <!-- Modal de Edición Rápida -->
+                                            <div class="modal fade" id="quickEditModal" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Edición rápida</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form>
+                                                                <div class="mb-3">
+                                                                    <label for="nombre" class="form-label">Nombre del artículo</label>
+                                                                    <input type="text" class="form-control" id="nombre" v-model="articulo.nombre">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="modelo" class="form-label">Modelo</label>
+                                                                    <input type="text" class="form-control" id="modelo" v-model="articulo.modelo">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <div class="row g-2">
+                                                                        <div class="col">
+                                                                            <label class="form-label">Precio Público</label>
+                                                                            <input type="number" step="0.01" class="form-control" placeholder="Público" v-model="articulo.precio_pub">
+                                                                        </div>
+                                                                        <div class="col">
+                                                                            <label class="form-label">Precio Dist.</label>
+                                                                            <input type="number" step="0.01" class="form-control" placeholder="Distribuidor" v-model="articulo.precio_dist">
+                                                                        </div>
+                                                                        <div class="col">
+                                                                            <label class="form-label">Precio Prov</label>
+                                                                            <input type="number" step="0.01" class="form-control" placeholder="Proveedor" v-model="articulo.precio_prov">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <div class="row g-2">
+                                                                        <div class="col">
+                                                                            <label for="" class="form-label">Categoria</label>
+                                                                            <select name="" id="" class="form-control" v-model="articulo.categoria">
+                                                                                <option value="">Seleccione una categoría...</option>
+                                                                                <option value="0">Sin categoria</option>
+                                                                                <option value="1">Autoentintable</option>
+                                                                                <option value="1">Madera</option>
+                                                                                <option value="1">Fechadores</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button @click.prevent = "guardarEdicionRapida(articulo.id_articulo)" class="btn btn-primary">Guardar cambios</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
