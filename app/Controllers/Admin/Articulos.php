@@ -366,11 +366,11 @@ class Articulos extends BaseController
 	                'minimo'         => (int)($row[5] ?? 0),
 	                'stock'          => (int)($row[6] ?? 0),
 	                'img'            => trim($row[7] ?? ''),
-	                'venta'          => strtolower(trim($row[8] ?? '')) === 'si' ? 1 : 0,
-	                'clave_producto' => trim($row[9] ?? ''),
-	                'visible'        => strtolower(trim($row[10] ?? '')) === 'si' ? 1 : 0,
-	                'categoria'      => (int)($row[11] ?? 0),
-	                'proveedor'     => (int)($row[12] ?? 0)
+	                'venta'          => strtolower(trim($row[8] ?? '')) == 'si' ? 1 : 0,
+	                'proveedor'     => (int)($row[9] ?? 0),
+	                'categoria'      => (int)($row[10] ?? 0),
+	                'clave_producto' => trim($row[11] ?? ''),
+	                'visible'        => strtolower(trim($row[12] ?? '')) == 'si' ? 1 : 0,
 	            ];
 
 	            // Validaciones básicas
