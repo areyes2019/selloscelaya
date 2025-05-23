@@ -303,12 +303,12 @@ class Articulos extends BaseController
 
 	public function importArticulos()
 	{
-	    // Validar CSRF token (forma correcta en CI4)
-	    if (!$this->request->getPost(csrf_token())) {
+	    // Validar CSRF token
+	    if (!$this->request->is('post') || !$this->request->getPost(csrf_token())) {
 	        return redirect()->back()->with('error', 'Token CSRF inválido o expirado');
 	    }
 
-	    // Validar que se haya subido un archivo
+	    // Validar archivo
 	    $validation = \Config\Services::validation();
 	    $validation->setRules([
 	        'archivo_excel' => [
@@ -323,87 +323,102 @@ class Articulos extends BaseController
 	    ]);
 
 	    if (!$validation->withRequest($this->request)->run()) {
-	        return redirect()->back()->with('errors', $validation->getErrors());
+	        return redirect()->back()->withInput()->with('errors', $validation->getErrors());
 	    }
 
 	    $file = $this->request->getFile('archivo_excel');
 
 	    try {
-	        // Cargar el archivo Excel
 	        $spreadsheet = IOFactory::load($file->getTempName());
 	        $worksheet = $spreadsheet->getActiveSheet();
 	        $rows = $worksheet->toArray();
 
+	        // Debug: Ver contenido del archivo
+	        // dd($rows); // Descomenta esta línea para ver la estructura de datos
+
 	        // Eliminar encabezados si existen
-	        array_shift($rows);
+	        $header = array_shift($rows);
+	        
+	        // Debug: Ver encabezados
+	        // dd($header); // Descomenta para ver los encabezados
 
 	        $model = new ArticulosModel();
 	        $db = \Config\Database::connect();
-	        $db->transStart(); // Iniciar transacción
+	        $db->transStart();
 
 	        $imported = 0;
 	        $errors = [];
 
-	        // Columnas esperadas en el Excel (13 en total):
-	        // 0: nombre, 1: modelo, 2: precio_prov, 3: precio_pub, 4: precio_dist, 
-	        // 5: minimo, 6: stock, 7: img, 8: venta, 9: clave_producto, 
-	        // 10: visible, 11: categoria, 12: proveedor
-
 	        foreach ($rows as $index => $row) {
+	            // Limpiar valores nulos
+	            $row = array_map(function($value) {
+	                return $value === null ? '' : $value;
+	            }, $row);
+
+	            // Debug: Ver fila actual
+	            // dd($row); // Descomenta para ver los datos de cada fila
+
+	            // Validar que la fila tenga datos
+	            if (empty(array_filter($row))) {
+	                continue; // Saltar filas vacías
+	            }
+
 	            // Validar que la fila tenga al menos 13 columnas
 	            if (count($row) < 13) {
-	                $errors[] = "Fila " . ($index + 1) . ": Debe tener 13 columnas, tiene solo " . count($row);
+	                $errors[] = "Fila " . ($index + 2) . ": Debe tener 13 columnas, tiene solo " . count($row);
 	                continue;
 	            }
 
-	            // Limpiar y validar datos
+	            // Mapeo de columnas (ajustado a tu estructura)
 	            $data = [
-	                'nombre'         => trim($row[0] ?? ''),
-	                'modelo'         => trim($row[1] ?? ''),
-	                'precio_prov'    => (float)($row[2] ?? 0),
-	                'precio_pub'     => (float)($row[3] ?? 0),
-	                'precio_dist'    => (float)($row[4] ?? 0),
-	                'minimo'         => (int)($row[5] ?? 0),
-	                'stock'          => (int)($row[6] ?? 0),
-	                'img'            => trim($row[7] ?? ''),
-	                'venta'          => strtolower(trim($row[8] ?? '')) == 'si' ? 1 : 0,
-	                'proveedor'     => (int)($row[9] ?? 0),
-	                'categoria'      => (int)($row[10] ?? 0),
-	                'clave_producto' => trim($row[11] ?? ''),
-	                'visible'        => strtolower(trim($row[12] ?? '')) == 'si' ? 1 : 0,
+	                'nombre'         => trim($row[0]),
+	                'modelo'         => trim($row[1]),
+	                'precio_prov'    => (float)str_replace(',', '', $row[2]),
+	                'precio_pub'     => (float)str_replace(',', '', $row[3]),
+	                'precio_dist'    => (float)str_replace(',', '', $row[4]),
+	                'minimo'         => (int)$row[5],
+	                'stock'          => (int)$row[6],
+	                'img'            => trim($row[7]),
+	                'venta'          => is_numeric($row[8]) ? (int)$row[8] : (strtolower($row[8]) == 'si' ? 1 : 0),
+	                'proveedor'      => (int)$row[9],
+	                'categoria'      => (int)$row[10],
+	                'clave_producto' => trim($row[11]),
+	                'visible'        => is_numeric($row[12]) ? (int)$row[12] : (strtolower($row[12]) == 'si' ? 1 : 0),
 	            ];
 
 	            // Validaciones básicas
-	            if (empty($data['nombre']) || empty($data['clave_producto'])) {
-	                $errors[] = "Fila " . ($index + 1) . ": Nombre y Clave Producto son obligatorios";
+	            if (empty($data['nombre'])) {
+	                $errors[] = "Fila " . ($index + 2) . ": El nombre es obligatorio";
+	                continue;
+	            }
+
+	            if (empty($data['clave_producto'])) {
+	                $errors[] = "Fila " . ($index + 2) . ": La clave de producto es obligatoria";
 	                continue;
 	            }
 
 	            if ($data['precio_prov'] <= 0) {
-	                $errors[] = "Fila " . ($index + 1) . ": Precio Proveedor debe ser mayor a 0";
+	                $errors[] = "Fila " . ($index + 2) . ": El precio de proveedor debe ser mayor a 0";
 	                continue;
 	            }
 
-	            // Validar que exista la categoría y proveedor (opcional)
-	            // Puedes agregar consultas a sus respectivas tablas aquí
-
-	            // Intentar insertar (usando el modelo para seguridad)
+	            // Intentar insertar
 	            try {
-	                if (!$model->save($data)) {
-	                    $errors[] = "Fila " . ($index + 1) . ": " . implode(', ', $model->errors());
+	                if ($model->insert($data) === false) {
+	                    $modelErrors = $model->errors();
+	                    $errors[] = "Fila " . ($index + 2) . ": " . implode(', ', $modelErrors);
 	                } else {
 	                    $imported++;
 	                }
 	            } catch (\Exception $e) {
-	                $errors[] = "Fila " . ($index + 1) . ": Error al guardar - " . $e->getMessage();
+	                $errors[] = "Fila " . ($index + 2) . ": Error al guardar - " . $e->getMessage();
 	            }
 	        }
 
 	        $db->transComplete();
 
-	        if ($db->transStatus() === false) {
-	            return redirect()->back()->with('error', 'Error en la transacción de base de datos');
-	        }
+	        // Debug: Ver resultados
+	        // dd(['imported' => $imported, 'errors' => $errors]);
 
 	        $message = "Importación completada: $imported registros importados";
 	        if (!empty($errors)) {
