@@ -7,6 +7,8 @@ use App\Models\DescuentosModel;
 use App\Models\ProveedoresModel;
 use App\Models\CategoriasModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Config\Services; // Agrega esto al inicio de tu controlador
+
 class Articulos extends BaseController
 {
 	public function index()
@@ -298,98 +300,123 @@ class Articulos extends BaseController
 		return redirect()->to('/articulos');
 
 	}
+
 	public function importArticulos()
 	{
-	    $file = $this->request->getFile('archivo_excel');
-	    
-	    // Validar archivo Excel
-	    if (!$file || !$file->isValid() || !in_array($file->getExtension(), ['xlsx', 'xls'])) {
-	        return redirect()->back()->with('error', 'Archivo no válido. Solo se permiten .xlsx o .xls');
+	    // Validar CSRF token (forma correcta en CI4)
+	    if (!$this->request->getPost(csrf_token())) {
+	        return redirect()->back()->with('error', 'Token CSRF inválido o expirado');
 	    }
 
-	    try {
-	        // Obtener porcentajes de descuento
-	        $descuentosModel = new DescuentosModel();
-	        $porcentajes_publico = $descuentosModel->find('1');
-	        $porcentajes_dist = $descuentosModel->find('2');
-	        
-	        $porcentaje_publico = 1 + ($porcentajes_publico['descuento'] / 100);
-	        $porcentaje_distribuidor = 1 + ($porcentajes_dist['descuento'] / 100);
+	    // Validar que se haya subido un archivo
+	    $validation = \Config\Services::validation();
+	    $validation->setRules([
+	        'archivo_excel' => [
+	            'label' => 'Archivo Excel',
+	            'rules' => 'uploaded[archivo_excel]|max_size[archivo_excel,5120]|ext_in[archivo_excel,xls,xlsx]',
+	            'errors' => [
+	                'uploaded' => 'Debes seleccionar un archivo Excel',
+	                'max_size' => 'El archivo no debe exceder 5MB',
+	                'ext_in' => 'Solo se permiten archivos .xls o .xlsx'
+	            ]
+	        ]
+	    ]);
 
-	        // Procesar Excel
-	        $spreadsheet = IOFactory::load($file->getPathname());
-	        $sheet = $spreadsheet->getActiveSheet();
-	        $rows = $sheet->toArray();
-	        
-	        // Eliminar encabezados
+	    if (!$validation->withRequest($this->request)->run()) {
+	        return redirect()->back()->with('errors', $validation->getErrors());
+	    }
+
+	    $file = $this->request->getFile('archivo_excel');
+
+	    try {
+	        // Cargar el archivo Excel
+	        $spreadsheet = IOFactory::load($file->getTempName());
+	        $worksheet = $spreadsheet->getActiveSheet();
+	        $rows = $worksheet->toArray();
+
+	        // Eliminar encabezados si existen
 	        array_shift($rows);
 
-	        $articulosModel = new ArticulosModel();
+	        $model = new ArticulosModel();
+	        $db = \Config\Database::connect();
+	        $db->transStart(); // Iniciar transacción
+
 	        $imported = 0;
 	        $errors = [];
-	        $now = date('Y-m-d H:i:s');
+
+	        // Columnas esperadas en el Excel (13 en total):
+	        // 0: nombre, 1: modelo, 2: precio_prov, 3: precio_pub, 4: precio_dist, 
+	        // 5: minimo, 6: stock, 7: img, 8: venta, 9: clave_producto, 
+	        // 10: visible, 11: categoria, 12: proveedor
 
 	        foreach ($rows as $index => $row) {
-	            $rowNumber = $index + 2; // +2 por encabezados y base 0
-	            
-	            // Validar fila mínima
-	            if (empty($row[0])) {
-	                $errors[] = "Fila {$rowNumber}: Falta el nombre del artículo";
+	            // Validar que la fila tenga al menos 13 columnas
+	            if (count($row) < 13) {
+	                $errors[] = "Fila " . ($index + 1) . ": Debe tener 13 columnas, tiene solo " . count($row);
 	                continue;
 	            }
 
-	            // Calcular precios automáticamente
-	            $precio_prov = is_numeric($row[2] ?? 0) ? (float)$row[2] : 0.00;
-	            $precio_pub = round($precio_prov * $porcentaje_publico);
-	            $precio_dist = round($precio_prov * $porcentaje_distribuidor);
-
+	            // Limpiar y validar datos
 	            $data = [
-	                'nombre'        => trim($row[0]),
-	                'modelo'        => !empty($row[1]) ? trim($row[1]) : null,
-	                'precio_prov'  => $precio_prov,
-	                'precio_pub'   => $precio_pub,
-	                'precio_dist'  => $precio_dist,
-	                'minimo'       => is_numeric($row[3] ?? 0) ? (int)$row[4] : 0,
-	                'stock'        => is_numeric($row[4] ?? 0) ? (int)$row[5] : 0,
-	                'clave_producto' => trim($row[5] ?? ''),
-	                'img'          => trim($row[6] ?? ''), // Nombre de imagen (sin procesar)
-	                'venta'        => (strtolower(trim($row[7] ?? '')) === 'no') ? 0 : 1,
-	                'created_at'   => $now,
-	                'updated_at'   => $now
+	                'nombre'         => trim($row[0] ?? ''),
+	                'modelo'         => trim($row[1] ?? ''),
+	                'precio_prov'    => (float)($row[2] ?? 0),
+	                'precio_pub'     => (float)($row[3] ?? 0),
+	                'precio_dist'    => (float)($row[4] ?? 0),
+	                'minimo'         => (int)($row[5] ?? 0),
+	                'stock'          => (int)($row[6] ?? 0),
+	                'img'            => trim($row[7] ?? ''),
+	                'venta'          => strtolower(trim($row[8] ?? '')) === 'si' ? 1 : 0,
+	                'clave_producto' => trim($row[9] ?? ''),
+	                'visible'        => strtolower(trim($row[10] ?? '')) === 'si' ? 1 : 0,
+	                'categoria'      => (int)($row[11] ?? 0),
+	                'proveedor'     => (int)($row[12] ?? 0)
 	            ];
 
-	            // Validación adicional
-	            if (empty($data['nombre'])) {
-	                $errors[] = "Fila {$rowNumber}: El nombre no puede estar vacío";
+	            // Validaciones básicas
+	            if (empty($data['nombre']) || empty($data['clave_producto'])) {
+	                $errors[] = "Fila " . ($index + 1) . ": Nombre y Clave Producto son obligatorios";
 	                continue;
 	            }
 
+	            if ($data['precio_prov'] <= 0) {
+	                $errors[] = "Fila " . ($index + 1) . ": Precio Proveedor debe ser mayor a 0";
+	                continue;
+	            }
+
+	            // Validar que exista la categoría y proveedor (opcional)
+	            // Puedes agregar consultas a sus respectivas tablas aquí
+
+	            // Intentar insertar (usando el modelo para seguridad)
 	            try {
-	                if ($articulosModel->insert($data)) {
-	                    $imported++;
+	                if (!$model->save($data)) {
+	                    $errors[] = "Fila " . ($index + 1) . ": " . implode(', ', $model->errors());
 	                } else {
-	                    $errors[] = "Fila {$rowNumber}: " . implode(', ', $articulosModel->errors());
+	                    $imported++;
 	                }
 	            } catch (\Exception $e) {
-	                $errors[] = "Fila {$rowNumber}: Error al insertar - " . $e->getMessage();
+	                $errors[] = "Fila " . ($index + 1) . ": Error al guardar - " . $e->getMessage();
 	            }
 	        }
 
-	        // Preparar resultado
-	        $message = "Importación completada: {$imported} artículos importados";
+	        $db->transComplete();
+
+	        if ($db->transStatus() === false) {
+	            return redirect()->back()->with('error', 'Error en la transacción de base de datos');
+	        }
+
+	        $message = "Importación completada: $imported registros importados";
 	        if (!empty($errors)) {
-	            $message .= ". Errores en " . count($errors) . " filas";
-	            return redirect()->back()
-	                ->with('warning', $message)
-	                ->with('error_details', array_slice($errors, 0, 20));
+	            $message .= "<br>Errores encontrados: " . count($errors);
+	            session()->setFlashdata('import_errors', $errors);
 	        }
 
 	        return redirect()->back()->with('success', $message);
 
 	    } catch (\Exception $e) {
-	        log_message('error', 'Error en importArticulos: ' . $e->getMessage());
-	        return redirect()->back()->with('error', 'Error al procesar: ' . $e->getMessage());
+	        return redirect()->back()->with('error', 'Error al procesar el archivo: ' . $e->getMessage());
 	    }
 	}
+
 
 }

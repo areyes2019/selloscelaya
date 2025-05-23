@@ -2,27 +2,56 @@
 <?= $this->section('contenido') ?>
 <div class="container mt-3">
     <h1>Nuevo Artículo</h1>
-    
+    <!-- Mensajes de sesión -->
     <?php if(session('error')): ?>
-        <div class="alert alert-danger"><?= session('error') ?></div>
-    <?php endif ?>
-    
-    <?php if(session('errors')): ?>
-        <div class="alert alert-danger">
-            <ul>
-                <?php foreach(session('errors') as $error): ?>
-                    <li><?= $error ?></li>
-                <?php endforeach ?>
-            </ul>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <?= session('error') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    <?php endif ?>
+    <?php endif; ?>
+
+    <?php if(session('errors')): ?>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <ul class="mb-0">
+                <?php foreach(session('errors') as $error): ?>
+                    <li><?= esc($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <?php if(session('success')): ?>
+        <div class="alert alert-success alert-dismissible fade show">
+            <?= session('success') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
     <div class="row">
         <div class="col-md-6">
             <form action="<?= base_url('nuevo_articulo') ?>" method="post" enctype="multipart/form-data">
+                <?= csrf_field() ?>
+                <!-- Mostrar errores generales -->
+                <?php if (session('error')): ?>
+                    <div class="alert alert-danger">
+                        <?= session('error') ?>
+                    </div>
+                <?php endif; ?>
+                
+                <!-- Mostrar errores de validación -->
+                <?php if (session('errors')): ?>
+                    <div class="alert alert-danger">
+                        <ul>
+                            <?php foreach (session('errors') as $error): ?>
+                                <li><?= esc($error) ?></li>
+                            <?php endforeach ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
                 <div class="form-group">
                     <label for="nombre">Nombre*</label>
                     <input type="text" name="nombre" class="form-control rounded-0" 
-                           value="<?= old('nombre') ?>" required>
+                           value="<?= old('nombre') ?>" required maxlength="255">
                 </div>
                 
                 <div class="form-group">
@@ -82,10 +111,11 @@
                 <div class="form-group">
                     <label for="img">Imagen del Artículo</label>
                     <div class="custom-file">
-                        <input type="file" name="img" id="img" class="custom-file-input" accept="image/jpeg, image/png, image/gif">
+                        <input type="file" name="img" id="img" class="custom-file-input" 
+                               accept="image/jpeg, image/png, image/gif, image/webp">
                         <label class="custom-file-label rounded-0" for="img">Seleccionar imagen</label>
                     </div>
-                    <small class="text-muted">Tamaño máximo: 2MB (JPG, PNG, GIF). Se redimensionará automáticamente.</small>
+                    <small class="text-muted">Tamaño máximo: 2MB (JPG, PNG, GIF). Se convertirá a WebP automáticamente.</small>
                 </div>
                 
                 <div class="form-group form-check">
@@ -115,6 +145,7 @@
         <div class="col-md-6">   
             <h4 class="mt-3">Importacion maisva</h4>
             <form action="<?= base_url('import_masivo') ?>" method="post" enctype="multipart/form-data">
+                <?= csrf_field() ?>
                 <div class="drop-zone mb-3" id="dropZone">
                     <p id="dropZoneText">Arrastra y suelta tu archivo aquí o haz clic para seleccionarlo</p>
                     <input type="file" name="archivo_excel" class="d-none" id="fileInput" accept=".xlsx,.xls" required>
@@ -199,4 +230,5 @@ document.addEventListener('DOMContentLoaded', function() {
         nextSibling.innerText = fileName;
     });
 </script>
+
 <?= $this->endSection() ?>
