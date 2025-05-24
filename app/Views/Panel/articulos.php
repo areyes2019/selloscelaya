@@ -53,19 +53,19 @@
                                         <td>
                                             <?php if(!empty($articulo['img'])): ?>
                                             <a href="#" data-bs-toggle="modal" data-bs-target="#imagenModal" 
-                                               data-imagen="<?= base_url('public/img/catalogo/'.$articulo['img']) ?>"
-                                               data-nombre="<?= $articulo['nombre'] ?>">
-                                               <img src="<?= base_url('public/img/catalogo/'.$articulo['img']) ?>" 
-                                                    alt="<?= $articulo['nombre'] ?>" 
+                                               data-imagen="<?= esc(base_url('public/img/catalogo/'.$articulo['img'])) ?>"
+                                               data-nombre="<?= esc($articulo['nombre']) ?>">
+                                               <img src="<?= esc(base_url('public/img/catalogo/'.$articulo['img'])) ?>" 
+                                                    alt="<?= esc($articulo['nombre']) ?>" 
                                                     style="width: 50px; height: 50px; object-fit: contain;">
                                             </a>
                                             <?php else: ?>
                                                 <span class="text-muted">Sin imagen</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td><?= $articulo['nombre']; ?></td>
-                                        <td><?= $articulo['modelo']; ?></td>
-                                        <td><?= $articulo['nombre_proveedor'] ?? 'No especificado'; ?></td>
+                                        <td><?= esc($articulo['nombre']); ?></td>
+                                        <td><?= esc($articulo['modelo']); ?></td>
+                                        <td><?= esc($articulo['nombre_proveedor'] ?? 'No especificado'); ?></td>
                                         <td>$<?= number_format($articulo['precio_prov'], 2); ?></td>
                                         <td><strong class="text-primary">$<?= number_format($articulo['precio_dist'], 2); ?></strong></td>
                                         <td><strong>$<?= number_format($articulo['precio_pub'], 2); ?></strong></td>
@@ -82,7 +82,7 @@
                                         </td>
                                         <td class="d-flex gap-1">
                                             <!-- Eliminar -->
-                                            <a href="eliminar_articulo/<?= $articulo['id_articulo'] ?>" 
+                                            <a href="<?= base_url('eliminar_articulo/'.$articulo['id_articulo']) ?>" 
                                                onclick="return confirm('¿Seguro que quieres eliminar este registro?')" 
                                                class="btn btn-sm btn-danger rounded-0"
                                                title="Eliminar">
@@ -90,7 +90,7 @@
                                             </a>
                                             
                                             <!-- Editar --> 
-                                            <a href="editar_articulo/<?= $articulo['id_articulo'] ?>" 
+                                            <a href="<?= base_url('editar_articulo/'.$articulo['id_articulo']) ?>" 
                                                class="btn btn-sm btn-success rounded-0"
                                                title="Editar">
                                                 <i class="bi bi-pencil"></i>
@@ -99,67 +99,10 @@
                                             <!-- Edición rápida -->
                                             <button type="button" 
                                                     class="btn btn-sm btn-primary rounded-0" 
-                                                    @click="cambio_rapido('<?= $articulo['id_articulo']?>')"
+                                                    @click="cambio_rapido(<?= $articulo['id_articulo'] ?>)"
                                                     title="Edición rápida">
                                                 <i class="bi bi-lightning-charge"></i>
                                             </button>
-                                            <!-- Modal de Edición Rápida -->
-                                            <div class="modal fade" id="quickEditModal" tabindex="-1" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Edición rápida</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form>
-                                                                <div class="mb-3">
-                                                                    <label for="nombre" class="form-label">Nombre del artículo</label>
-                                                                    <input type="text" class="form-control" id="nombre" v-model="articulo.nombre">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="modelo" class="form-label">Modelo</label>
-                                                                    <input type="text" class="form-control" id="modelo" v-model="articulo.modelo">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <div class="row g-2">
-                                                                        <div class="col">
-                                                                            <label class="form-label">Precio Público</label>
-                                                                            <input type="number" step="0.01" class="form-control" placeholder="Público" v-model="articulo.precio_pub">
-                                                                        </div>
-                                                                        <div class="col">
-                                                                            <label class="form-label">Precio Dist.</label>
-                                                                            <input type="number" step="0.01" class="form-control" placeholder="Distribuidor" v-model="articulo.precio_dist">
-                                                                        </div>
-                                                                        <div class="col">
-                                                                            <label class="form-label">Precio Prov</label>
-                                                                            <input type="number" step="0.01" class="form-control" placeholder="Proveedor" v-model="articulo.precio_prov">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <div class="row g-2">
-                                                                        <div class="col">
-                                                                            <label for="" class="form-label">Categoria</label>
-                                                                            <select name="" id="" class="form-control" v-model="articulo.categoria">
-                                                                                <option value="">Seleccione una categoría...</option>
-                                                                                <option value="0">Sin categoria</option>
-                                                                                <option value="1">Autoentintable</option>
-                                                                                <option value="1">Madera</option>
-                                                                                <option value="1">Fechadores</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                    <button @click.prevent = "guardarEdicionRapida(articulo.id_articulo)" class="btn btn-primary">Guardar cambios</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -191,6 +134,63 @@
                 <a href="#" id="descargarImagenBtn" class="btn btn-primary">
                     <i class="fas fa-download"></i> Descargar imagen
                 </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal de Edición Rápida -->
+<div class="modal fade" id="quickEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edición rápida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre del artículo</label>
+                        <input type="text" class="form-control" id="nombre" v-model="articulo.nombre">
+                    </div>
+                    <div class="mb-3">
+                        <label for="modelo" class="form-label">Modelo</label>
+                        <input type="text" class="form-control" id="modelo" v-model="articulo.modelo">
+                    </div>
+                    <div class="mb-3">
+                        <div class="row g-2">
+                            <div class="col">
+                                <label class="form-label">Precio Público</label>
+                                <input type="number" step="0.01" class="form-control" placeholder="Público" v-model="articulo.precio_pub">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Precio Dist.</label>
+                                <input type="number" step="0.01" class="form-control" placeholder="Distribuidor" v-model="articulo.precio_dist">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Precio Prov</label>
+                                <input type="number" step="0.01" class="form-control" placeholder="Proveedor" v-model="articulo.precio_prov">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row g-2">
+                            <div class="col">
+                                <label for="" class="form-label">Categoria</label>
+                                <select name="" id="" class="form-control" v-model="articulo.categoria">
+                                    <option value="">Seleccione una categoría...</option>
+                                    <option value="0">Sin categoria</option>
+                                    <option value="1">Autoentintable</option>
+                                    <option value="1">Madera</option>
+                                    <option value="1">Fechadores</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button @click.prevent="guardarEdicionRapida(articulo.id_articulo)" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -268,9 +268,7 @@ $(document).ready(function() {
             alertDiv.remove();
         }, 5000);
     }
-
 });
 </script>
 <script src="<?php echo base_url('public/js/articulos.js'); ?>"></script>
-<!-- Script para el drag and drop -->
 <?php echo $this->endSection()?>
