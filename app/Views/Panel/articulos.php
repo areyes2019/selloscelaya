@@ -70,8 +70,14 @@
                                         <td><strong class="text-primary">$<?= number_format($articulo['precio_dist'], 2); ?></strong></td>
                                         <td><strong>$<?= number_format($articulo['precio_pub'], 2); ?></strong></td>
                                         <td>$<?= number_format($articulo['precio_pub'] - $articulo['precio_prov'], 2); ?></td>
-                                        <td class="<?= $articulo['stock'] > 0 ? 'text-success' : 'text-danger' ?>">
-                                            <?= $articulo['stock'] ?>
+                                        <td>
+                                            <?php if($articulo['stock'] > 0): ?>
+                                                <span class="badge bg-success">Disponible</span>
+                                                <small class="d-block">Inventario: <?= $articulo['stock'] ?></small>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary">Pedido especial</span>
+                                                <small class="d-block">Sobre pedido</small>
+                                            <?php endif; ?>
                                         </td>
                                         <td>
                                             <?php if($articulo['visible'] == 1): ?>

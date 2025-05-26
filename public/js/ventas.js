@@ -38,10 +38,6 @@ const {createApp, ref} = Vue
 			    return saldoCalculado > 0 ? saldoCalculado : 0;
 			 }
 	    },
-	    mounted(){
-			this.listarArticulos();
-			this.listarBancos();
-		},
 		methods:{
 			async listarBancos() {
 			    try {
@@ -224,8 +220,12 @@ const {createApp, ref} = Vue
 			      style: 'currency',
 			      currency: 'MXN',
 			    }).format(value);
-			}
+			},
 
-		}
+		},
+		mounted(){
+			this.listarArticulos();
+			this.listarBancos();
+		},
 		
 }).mount('#app')
