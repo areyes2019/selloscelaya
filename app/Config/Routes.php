@@ -225,7 +225,7 @@ $routes->group('',static function($routes){
 	    // Rutas para el CRUD de Existencias/Inventario
 	    $routes->get('existencias', 'Admin\Existencias::index');
 	    $routes->get('nuevo', 'Admin\Existencias::nuevo');         // Muestra form para crear
-	    $routes->post('crear', 'Admin\Existencias::crear');        // Procesa creación (POST)
+	    $routes->post('crear', 'Admin\Existencias::agregar');        // Procesa creación (POST)
 	    $routes->get('editar/(:num)', 'Admin\Existencias::editar/$1'); // Muestra form para editar
 	    $routes->post('actualizar/(:num)', 'Admin\Existencias::actualizar/$1'); // Procesa actualización (POST)
 	    $routes->post('eliminar/(:num)', 'Admin\Existencias::eliminar/$1');  // Procesa eliminación (POST)

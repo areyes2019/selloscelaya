@@ -6,6 +6,11 @@
 
 <?= $this->section('contenido') ?>
 <div class="container-fluid">
+    <select name="" id="">
+        <option value="">Opcion 10</option>
+        <option value="">Opcion 10</option>
+        <option value="">Opcion 10</option>
+    </select>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
              <h6 class="m-0 font-weight-bold text-primary"><?= esc($titulo_pagina) ?></h6>
@@ -24,7 +29,6 @@
             $is_editing = isset($inventario); // Si la variable $inventario existe, estamos editando
             $form_action = $is_editing ? site_url('/existencias/actualizar/' . $inventario['id_inventario']) : site_url('/existencias/crear');
             ?>
-
             <?= form_open($form_action) ?>
                 <?= csrf_field() ?>
 

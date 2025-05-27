@@ -24,13 +24,25 @@ class Existencias extends BaseController
 
     public function index()
     {
-        // Obtener inventario con detalles del artículo usando el método del modelo
+        // Obtener inventario con detalles del artículo
         $listaInventario = $this->inventarioModel->getInventarioConArticulos();
 
-        // Calcular los valores para el dashboard
-        $valorTotalInventario = 0; // Basado en precio público
-        $valorNetoInventario = 0;  // Basado en precio proveedor (costo)
-        $valorUtilidades = 0;      // Diferencia
+        // Paso 1: Obtener los IDs de artículos que ya están en el inventario
+        $idsEnInventario = array_column($listaInventario, 'id_articulo');
+
+        // Paso 2: Obtener artículos que NO están en el inventario
+        $articulosStock = [];
+        if (!empty($idsEnInventario)) {
+            $articulosStock = $this->articulosModel->whereNotIn('id_articulo', $idsEnInventario)->findAll();
+        } else {
+            // Si no hay artículos en inventario, mostrar todos
+            $articulosStock = $this->articulosModel->findAll();
+        }
+
+        // Calcular valores para el dashboard
+        $valorTotalInventario = 0;
+        $valorNetoInventario = 0;
+        $valorUtilidades = 0;
 
         foreach ($listaInventario as $item) {
             $valorTotalItem = ($item['precio_pub'] ?? 0) * ($item['cantidad'] ?? 0);
@@ -40,21 +52,70 @@ class Existencias extends BaseController
             $valorNetoInventario += $valorNetoItem;
         }
 
-        // La utilidad es la diferencia entre el valor total (venta) y el valor neto (costo)
         $valorUtilidades = $valorTotalInventario - $valorNetoInventario;
 
         $data = [
             'lista' => $listaInventario,
+            'articulos_stock' => $articulosStock, // Solo artículos no presentes en inventario
             'valor_total_inventario' => $valorTotalInventario,
-            'valor_neto_inventario'  => $valorNetoInventario,
-            'valor_utilidades'       => $valorUtilidades,
-            'titulo_pagina' => 'Gestión de Existencias' // Ejemplo de título
+            'valor_neto_inventario' => $valorNetoInventario,
+            'valor_utilidades' => $valorUtilidades,
+            'titulo_pagina' => 'Gestión de Existencias',
+            // Pasar mensajes flash a la vista
+            'success' => session()->getFlashdata('success'),
+            'error' => session()->getFlashdata('error'),
+            'errors' => session()->getFlashdata('errors')
+
         ];
 
         return view('Panel/existencias', $data);
     }
 
-    // Muestra el formulario para añadir una nueva entrada de inventario
+    //funcion para agregar articulos desde el modal
+    public function agregar()
+    {
+        if (!$this->request->is('post')) {
+            return redirect()->to('/inventario');
+        }
+
+        $idArticulo = $this->request->getPost('id_articulo');
+        $cantidad = $this->request->getPost("cantidad_{$idArticulo}"); // Cambio importante aquí
+
+        $validation = \Config\Services::validation();
+        
+        $rules = [
+            'id_articulo' => 'required|numeric',
+            "cantidad_{$idArticulo}" => 'required|numeric|greater_than[0]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        try {
+            $existe = $this->inventarioModel->where('id_articulo', $idArticulo)->first();
+
+            if ($existe) {
+                $this->inventarioModel->update($existe['id_entrada'], [
+                    'cantidad' => $existe['cantidad'] + $cantidad
+                ]);
+                $mensaje = "Se agregaron {$cantidad} piezas al artículo";
+            } else {
+                $this->inventarioModel->insert([
+                    'id_articulo' => $idArticulo,
+                    'cantidad' => $cantidad,
+                    'fecha_movimiento' => date('Y-m-d H:i:s')
+                ]);
+                $mensaje = "Artículo agregado con {$cantidad} piezas";
+            }
+
+            return redirect()->to('/existencias/existencias_admin')->with('success', $mensaje);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Error al agregar artículo: ' . $e->getMessage());
+        }
+    }
+    // Muestra el formulario para añadir una nueva entrada de inventario, (estoy ya no funciona)
     public function nuevo()
     {
         // Obtener IDs de artículos YA en inventario

@@ -34,7 +34,6 @@
         </div>
     <?php endif; ?>
 
-
     <!-- Paneles de Resumen -->
     <div class="row mb-4 d-flex align-items-stretch">
         <!-- Valor Total Inventario (Precio Público) -->
@@ -88,9 +87,7 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Existencias en Inventario</h6>
-            <a href="<?= site_url('existencias/nuevo') ?>" class="btn btn-primary btn-sm">
-                <i class="fas fa-plus"></i> Añadir Artículo al Inventario
-            </a>
+            <button class="btn btn-primary rounded-0 btn-sm" data-bs-toggle = "modal" data-bs-target = "#agregar_articulo">Añadir Artículo al Inventario</button>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -103,7 +100,7 @@
                             <th>Modelo</th>
                             <th>Cant</th>
                             <th>Mín</th>
-                            <th>Var</th>
+                            <th>Dif</th>
                             <th>Precio Púb.</th>
                             <th>Precio Prov.</th>
                             <th>Valor Total (Púb.)</th>
@@ -173,6 +170,52 @@
             </div>
         </div>
     </div>
+    <!--  Modal agregar articulos -->  
+    <div class="modal fade" id="agregar_articulo" tabindex="-1" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-0">
+                <?= form_open('existencias/crear', ['id' => 'form-agregar']) ?>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Seleccione un artículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table w-100" id="articulos">
+                        <thead>
+                            <tr>
+                                <th>Artículo</th>
+                                <th>Modelo</th>
+                                <th>Cantidad</th>
+                                <th>Agregar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($articulos_stock as $articulo): ?>
+                            <tr>
+                                <td><?= esc($articulo['nombre']) ?></td>
+                                <td><?= esc($articulo['modelo']) ?></td>
+                                <td>
+                                    <input type="number" name="cantidad_<?= $articulo['id_articulo'] ?>" value="1" min="1" style="width: 50px;">
+                                </td>
+                                <td>
+                                    <button type="submit" name="id_articulo" value="<?= $articulo['id_articulo'] ?>" class="btn btn-success btn-sm">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar
+                    </button>
+                </div>
+                <?= form_close() ?>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Incluye tu JS si tienes inicialización de DataTables u otros -->
@@ -181,6 +224,18 @@
 <script>
     $(document).ready(function() {
         $('#dataTable').DataTable(); // Descomenta si usas DataTables y está incluido en tu template
+        $('#articulos').DataTable({
+            "pageLength": 5, // Muestra 5 registros por página
+            "lengthMenu": [5, 10, 25, 50], // Opciones para cambiar cantidad de registros por página
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json" // Español (opcional)
+            },
+            "dom": '<"top"f>rt<"bottom"lip><"clear">', // Diseño compacto
+            "searching": true, // Habilitar búsqueda
+            "ordering": true, // Habilitar ordenamiento
+            "info": true, // Mostrar información de paginación
+            "autoWidth": false // Deshabilitar auto-ancho para mejor control
+        });
     });
 </script>
 
