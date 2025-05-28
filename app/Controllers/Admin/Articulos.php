@@ -8,9 +8,11 @@ use App\Models\ProveedoresModel;
 use App\Models\CategoriasModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Config\Services; // Agrega esto al inicio de tu controlador
+use CodeIgniter\API\ResponseTrait;
 
 class Articulos extends BaseController
 {
+	use ResponseTrait; 
 	public function index()
 	{
 	    $model = new ArticulosModel();
@@ -432,6 +434,47 @@ class Articulos extends BaseController
 	        return redirect()->back()->with('error', 'Error al procesar el archivo: ' . $e->getMessage());
 	    }
 	}
+	public function cambiarVisibilidad($id_articulo = null)
+    {
+        // Verificar que sea una petición AJAX y POST
+        if (!$this->request->isAJAX() || $this->request->getMethod(true) !== 'POST') {
+            return $this->failForbidden('Acceso no permitido.');
+        }
+
+        $articulosModel = new ArticulosModel();
+        $articulo = $articulosModel->find($id_articulo);
+
+        if (!$articulo) {
+            return $this->failNotFound('Artículo no encontrado.');
+        }
+
+        // Obtener el nuevo estado de visibilidad del cuerpo de la solicitud JSON
+        $jsonData = $this->request->getJSON();
+
+        if (!isset($jsonData->visible) || !in_array($jsonData->visible, [0, 1])) {
+            return $this->failValidationErrors('El estado de visibilidad no es válido. Debe ser 0 o 1.');
+        }
+
+        $nuevoEstadoVisible = (int) $jsonData->visible;
+
+        try {
+            $data = [
+                'visible' => $nuevoEstadoVisible
+            ];
+
+            if ($articulosModel->update($id_articulo, $data)) {
+                $mensaje = $nuevoEstadoVisible == 1 ? 'Artículo marcado como visible.' : 'Artículo marcado como oculto.';
+                return $this->respond(['success' => true, 'message' => $mensaje]);
+            } else {
+                // Esto podría ocurrir si la actualización no afecta filas, o hay un error de DB no capturado
+                log_message('error', 'Error al actualizar visibilidad del artículo ID: ' . $id_articulo . ' - Errores del modelo: ' . json_encode($articulosModel->errors()));
+                return $this->fail('No se pudo actualizar la visibilidad del artículo. Revise los logs.', 500);
+            }
+        } catch (\Exception $e) {
+            log_message('error', '[ERROR] ArticuloController::cambiarVisibilidad: ' . $e->getMessage());
+            return $this->failServerError('Ocurrió un error en el servidor al intentar actualizar la visibilidad.');
+        }
+    }
 
 
 }

@@ -96,6 +96,12 @@
                 </a>
             </li>
             <li>
+                <a href="<?php echo base_url('administracion'); ?>">
+                <i class="bi bi-file-earmark-plus"></i>
+                <span>Panel de Trabajo</span>
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo base_url('ordenes'); ?>">
                 <i class="bi bi-gear"></i>
                 <span>Ordenes de Trabajo</span>

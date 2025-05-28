@@ -80,11 +80,19 @@
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <?php if($articulo['visible'] == 1): ?>
-                                                <span class="badge bg-success">Visible</span>
-                                            <?php else: ?>
-                                                <span class="badge bg-secondary">Oculto</span>
-                                            <?php endif; ?>
+                                            <div class="form-check form-switch d-flex justify-content-center">
+                                                <input class="form-check-input" 
+                                                       type="checkbox" 
+                                                       role="switch" 
+                                                       id="visibleSwitch_<?= $articulo['id_articulo']; ?>"
+                                                       <?= ($articulo['visible'] == 1) ? 'checked' : ''; ?>
+                                                       @click="cambiar_visible(<?= $articulo['id_articulo']; ?>, $event)"
+                                                       title="<?= ($articulo['visible'] == 1) ? 'Marcar como Oculto' : 'Marcar como Visible'; ?>">
+                                                <label class="form-check-label visually-hidden" 
+                                                       for="visibleSwitch_<?= $articulo['id_articulo']; ?>">
+                                                       Visibilidad del artículo <?= $articulo['id_articulo']; ?>
+                                                </label>
+                                            </div>
                                         </td>
                                         <td class="d-flex gap-1">
                                             <!-- Eliminar -->
@@ -277,4 +285,5 @@ $(document).ready(function() {
 });
 </script>
 <script src="<?php echo base_url('public/js/articulos.js'); ?>"></script>
+<script src="<?php echo base_url('public/js/notify.js'); ?>"></script>
 <?php echo $this->endSection()?>

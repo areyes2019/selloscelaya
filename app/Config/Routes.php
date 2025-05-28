@@ -66,6 +66,7 @@ $routes->group('',static function($routes){
 	$routes->get('ver_imagen/(:any)', 'Admin\Articulos::verImagen/$1');
 	$routes->get('nuevo_art_vista', 'Admin\Articulos::nuevo_art');
 	$routes->post('import_masivo', 'Admin\Articulos::importArticulos');
+	$routes->post('cambiar-visibilidad/(:num)', 'Admin\Articulos::cambiarVisibilidad/$1');
 	
 	/*Cotizaciones*/
 	$routes->get('cotizaciones', 'Admin\Cotizaciones::index');
@@ -219,7 +220,14 @@ $routes->group('',static function($routes){
 	    $routes->post('eliminar/(:num)', 'Admin\GastosController::eliminar/$1');
 	    $routes->post('procesar', 'Admin\GastosController::procesar');
 	});
+	$routes->group('administracion', ['namespace' => 'App\Controllers\Admin'], function($routes) {
+	    $routes->get('/', 'AdministracionController::index');
+	    $routes->get('cargar_ordenes', 'AdministracionController::cargar_ordenes');
+	    $routes->post('(:num)/actualizar-estado', 'AdministracionController::actualizarEstado/$1');
+	    $routes->delete('(:num)/eliminar', 'AdministracionController::eliminar/$1');
+	    $routes->post('(:num)/pagar', 'AdministracionController::pagar/$1');
 
+	});
 	$routes->group('existencias',static function($routes) {
 		$routes->get('existencias_admin', 'Admin\Existencias::index');
 	    // Rutas para el CRUD de Existencias/Inventario
