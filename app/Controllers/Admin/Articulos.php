@@ -191,7 +191,7 @@ class Articulos extends BaseController
 	        'precio_pub' => 'required|decimal',
 	        'precio_dist' => 'required|decimal',
 	        'precio_prov' => 'required|decimal',
-	        'categoria' => 'permit_empty|max_length[1]'
+	        'categoria' => 'permit_empty|max_length[3]'
 	    ];
 
 	    if (!$this->validate($reglas)) {
