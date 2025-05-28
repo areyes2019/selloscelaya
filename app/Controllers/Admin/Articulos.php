@@ -14,14 +14,25 @@ class Articulos extends BaseController
 {
 	use ResponseTrait; 
 	public function index()
-	{
-	    $model = new ArticulosModel();
-	    $builder = $model->select('sellopro_articulos.*, sellopro_proveedores.empresa as nombre_proveedor')
-	                     ->join('sellopro_proveedores', 'sellopro_proveedores.id_proveedor = sellopro_articulos.proveedor', 'left');
-	    
-	    $data['articulos'] = $builder->findAll();
-	    return view('Panel/articulos', $data);
-	}
+    {
+        $articulosModel = new ArticulosModel();
+        $categoriasModel = new CategoriasModel();
+        
+        // Obtener artículos con información de proveedores
+        $builder = $articulosModel->select('sellopro_articulos.*, sellopro_proveedores.empresa as nombre_proveedor')
+                                 ->join('sellopro_proveedores', 'sellopro_proveedores.id_proveedor = sellopro_articulos.proveedor', 'left');
+        
+        // Obtener todas las categorías
+        $categorias = $categoriasModel->findAll();
+        
+        // Preparar datos para la vista
+        $data = [
+            'articulos' => $builder->findAll(),
+            'categorias' => $categorias
+        ];
+        
+        return view('Panel/articulos', $data);
+    }
 	public function mostrar()
 	{
 		$modelo = new ArticulosModel();

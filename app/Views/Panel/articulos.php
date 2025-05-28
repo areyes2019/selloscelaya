@@ -190,12 +190,13 @@
                         <div class="row g-2">
                             <div class="col">
                                 <label for="" class="form-label">Categoria</label>
-                                <select name="" id="" class="form-control" v-model="articulo.categoria">
+                                <select name="categoria" id="categoria" class="form-control" v-model="articulo.categoria">
                                     <option value="">Seleccione una categoría...</option>
-                                    <option value="0">Sin categoria</option>
-                                    <option value="1">Autoentintable</option>
-                                    <option value="1">Madera</option>
-                                    <option value="1">Fechadores</option>
+                                    <?php foreach ($categorias as $categoria): ?>
+                                        <option value="<?= esc($categoria['id_categoria']) ?>">
+                                            <?= esc($categoria['nombre']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
