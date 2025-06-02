@@ -25,7 +25,12 @@ class AdministracionController extends BaseController
     }
     public function cargar_ordenes($value='')
     {
-        $ordenes = $this->model->findAll();
+        $db = \Config\Database::connect();
+        $builder = $db->table('sellopro_ordenes_trabajo ot');
+        $builder->select('ot.*, p.total, p.estado as estado_pedido, p.anticipo');
+        $builder->join('pedidos p', 'p.id = ot.pedido_id', 'left');
+        $ordenes = $builder->get()->getResult();
+        
         return json_encode($ordenes);
     }
     public function actualizarEstado($id)
@@ -43,7 +48,7 @@ class AdministracionController extends BaseController
         }
 
         // Lista de estados permitidos
-        $estadosPermitidos = ['Dibujo', 'Elaboracion', 'Entrega', 'Entregado'];
+        $estadosPermitidos = ['Dibujo', 'Elaboracion', 'Entrega', 'Facturacion','Entregado'];
         if(!in_array($data->status, $estadosPermitidos)) {
             return $this->fail("Estado no válido");
         }
@@ -91,7 +96,9 @@ class AdministracionController extends BaseController
     // PedidoController.php
     public function pagar($id)
     {
-        $pedido = $this->pedidoModel->find($id);
+        $model = new PedidoModel();
+        $pedido = $model->find($id);
+
 
         if (!$pedido) {
             return $this->response->setJSON(['error' => 'Pedido no encontrado'])->setStatusCode(404);

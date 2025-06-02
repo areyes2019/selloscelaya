@@ -347,13 +347,13 @@ class Articulos extends BaseController
 	        $rows = $worksheet->toArray();
 
 	        // Debug: Ver contenido del archivo
-	        // dd($rows); // Descomenta esta línea para ver la estructura de datos
+	        //dd($rows); // Descomenta esta línea para ver la estructura de datos
 
 	        // Eliminar encabezados si existen
 	        $header = array_shift($rows);
 	        
 	        // Debug: Ver encabezados
-	        // dd($header); // Descomenta para ver los encabezados
+	        //dd($header); // Descomenta para ver los encabezados
 
 	        $model = new ArticulosModel();
 	        $db = \Config\Database::connect();

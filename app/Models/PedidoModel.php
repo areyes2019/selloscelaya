@@ -9,7 +9,7 @@ class PedidoModel extends Model
     protected $table            = 'pedidos';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $useSoftDeletes   = true; // Habilitar soft deletes si la columna deleted_at existe
+    protected $useSoftDeletes   = false; // Habilitar soft deletes si la columna deleted_at existe
     protected $protectFields    = true;
     protected $allowedFields    = ['cliente_nombre', 'cliente_telefono', 'total', 'estado', 'anticipo'];
 

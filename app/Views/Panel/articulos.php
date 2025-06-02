@@ -25,6 +25,12 @@
                         <div class="heading1 margin_0">
                             <a class="btn btn-danger rounded-0 btn-sm mb-5" href="<?php echo base_url('nuevo_art_vista'); ?>">Agregar Articulo</a>
                             <a href="<?php echo base_url('categorias'); ?>" class="btn btn-danger btn-sm rounded-0 mb-5">Categorías</a>
+                            <a class="btn btn-danger rounded-0 btn-sm mb-5" 
+                               href="#" 
+                               @click="eliminarSeleccionados" 
+                               :disabled="selectedItems.length === 0">
+                               Eliminar seleccionados
+                            </a>
                         </div>
                     </div>
                     <div class="card rounded-0 shadow-sm table_section padding_infor_info">
@@ -32,6 +38,9 @@
                             <table id="example" class="table table-bordered">
                                 <thead>
                                     <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAll" @click="toggleSelectAll">
+                                        </th>
                                         <th>#</th>
                                         <th>Img</th>
                                         <th>Nombre</th>
@@ -49,6 +58,11 @@
                                 <tbody>
                                     <?php foreach ($articulos as $articulo): ?>
                                     <tr>
+                                        <td>
+                                            <input type="checkbox" class="item-checkbox" 
+                                                   :value="<?= $articulo['id_articulo'] ?>" 
+                                                   v-model="selectedItems">
+                                        </td>
                                         <td><?= $articulo['id_articulo']; ?></td>
                                         <td>
                                             <?php if(!empty($articulo['img'])): ?>

@@ -6,7 +6,9 @@ const {createApp, ref} = Vue
 				pedido:[],
 				articulo:[],
 				articulos:[],
-				saludo:"hola"
+				saludo:"hola",
+                selectedItems: [], // Array para almacenar los IDs seleccionados
+                selectAll: false
 			}
 		},
 		methods:{
@@ -119,7 +121,64 @@ const {createApp, ref} = Vue
                 
                 const color = colores[tipo] || colores.info;
                 notify(mensaje, color);
-            }
+            },
+            // Método para seleccionar/deseleccionar todos los checkboxes
+            toggleSelectAll(event) {
+                this.selectAll = event.target.checked;
+                const checkboxes = document.querySelectorAll('.item-checkbox');
+                const visibleCheckboxes = Array.from(checkboxes).filter(checkbox => {
+                    // Solo considerar checkboxes visibles (por la paginación)
+                    return checkbox.closest('tr').style.display !== 'none';
+                });
+                
+                if (this.selectAll) {
+                    visibleCheckboxes.forEach(checkbox => {
+                        checkbox.checked = true;
+                        if (!this.selectedItems.includes(parseInt(checkbox.value))) {
+                            this.selectedItems.push(parseInt(checkbox.value));
+                        }
+                    });
+                } else {
+                    visibleCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                        this.selectedItems = this.selectedItems.filter(id => id !== parseInt(checkbox.value));
+                    });
+                }
+            },
+            // Método para eliminar los artículos seleccionados
+            async eliminarSeleccionados() {
+                if (this.selectedItems.length === 0) {
+                    this.mostrarNotificacion('warning', 'No hay artículos seleccionados');
+                    return;
+                }
+                
+                const confirmar = confirm(`¿Estás seguro de que deseas eliminar los ${this.selectedItems.length} artículos seleccionados? Esta acción no se puede deshacer.`);
+                
+                if (!confirmar) return;
+                
+                try {
+                    const response = await axios.post('/eliminar_masivo', {
+                        ids: this.selectedItems
+                    });
+                    
+                    if (response.data.success) {
+                        this.mostrarNotificacion('success', `${response.data.deleted} artículos eliminados correctamente`);
+                        // Recargar la página después de 1.5 segundos
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        this.mostrarNotificacion('error', response.data.message || 'Error al eliminar artículos');
+                    }
+                } catch (error) {
+                    console.error('Error al eliminar artículos:', error);
+                    let errorMessage = 'Ocurrió un error al eliminar los artículos';
+                    if (error.response && error.response.data && error.response.data.message) {
+                        errorMessage = error.response.data.message;
+                    }
+                    this.mostrarNotificacion('error', errorMessage);
+                }
+            },
 		},
 		mounted(){
 

@@ -13,6 +13,7 @@
 	<div class="card rounded-0 shadow-sm">
         <div class="car-body d-flex align-items-center justify-content-between">
     		<h2>Ordenes de Compra</h2>
+            <small class="text-muted">Mostrando de <?= esc($mes_actual) ?></small>
             <!-- Button trigger modal -->
             <button  class="btn btn-primary btn-icon-split" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <span class="icon text-white-50">

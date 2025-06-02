@@ -14,35 +14,37 @@ use CodeIgniter\API\ResponseTrait;
 class Compras extends BaseController
 {
 	use ResponseTrait;
-    public function index()
+   	public function index()
 	{
 	    $db = \Config\Database::connect();
 	    $proveedor = new ProveedoresModel();
-	    
-	    // Obtener el primer y último día del mes actual
-	    $primerDiaMes = date('Y-m-01');
-	    $ultimoDiaMes = date('Y-m-t');
-	    
+
+	    // Obtener el primer día del mes pasado
+	    $primerDiaMesPasado = date('Y-m-01', strtotime('first day of last month'));
+
+	    // Obtener el último día del mes actual
+	    $ultimoDiaMesActual = date('Y-m-t');
+
 	    $builder = $db->table('sellopro_pedidos');
 	    $builder->select('sellopro_pedidos.*, sellopro_proveedores.empresa');
 	    $builder->join('sellopro_proveedores', 'sellopro_proveedores.id_proveedor = sellopro_pedidos.proveedor');
-	    
-	    // Filtrar por pedidos del mes actual
-	    $builder->where('sellopro_pedidos.created_at >=', $primerDiaMes);
-	    $builder->where('sellopro_pedidos.created_at <=', $ultimoDiaMes . ' 23:59:59');
-	    
-	    // Opcional: ordenar por fecha descendente (más recientes primero)
+
+	    // Filtrar desde el primer día del mes pasado hasta el último día del mes actual
+	    $builder->where('sellopro_pedidos.created_at >=', $primerDiaMesPasado);
+	    $builder->where('sellopro_pedidos.created_at <=', $ultimoDiaMesActual . ' 23:59:59');
+
+	    // Ordenar por fecha descendente
 	    $builder->orderBy('sellopro_pedidos.created_at', 'DESC');
-	    
+
 	    $pedidos = $builder->get()->getResultArray();
 
 	    $data['proveedor'] = $proveedor->findAll();
 	    $data['pedidos'] = $pedidos;
-	    $data['mes_actual'] = date('F Y'); // Para mostrar en la vista (ej: "July 2023")
+	    $data['mes_actual'] = date('F Y', strtotime('first day of last month')) . ' - ' . date('F Y');
 
 	    return view('Panel/compras', $data);
 	}
-	
+
 	public function pedido($id)
 	{
 		$query = new PedidosModel();
