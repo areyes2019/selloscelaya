@@ -99,12 +99,10 @@
                                         <td>{{ articulo.id_articulo }}</td>
                                         <td>
                                             <template v-if="articulo.img">
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#imagenModal" 
-                                                   :data-imagen="'public/img/catalogo/' + articulo.img"
-                                                   :data-nombre="articulo.nombre">
-                                                   <img :src="'public/img/catalogo/' + articulo.img" 
-                                                        :alt="articulo.nombre" 
-                                                        style="width: 50px; height: 50px; object-fit: contain;">
+                                                <a href="#" @click.prevent="abrirModal(articulo)">
+                                                    <img :src="'<?= base_url('public/img/catalogo/') ?>' + articulo.img" 
+                                                         :alt="articulo.nombre" 
+                                                         style="width: 50px; height: 50px; object-fit: contain;">
                                                 </a>
                                             </template>
                                             <template v-else>
@@ -208,16 +206,25 @@
                 <h5 class="modal-title" id="imagenModalLabel">Imagen del producto</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-center">
-                <img id="modalImagen" src="" class="img-fluid" alt="Imagen ampliada" style="max-height: 70vh;">
-                <h5 id="modalNombre" class="mt-3"></h5>
+            <div class="modal-body text-center" id="modalImagen">
+                <img :src="imagenModalUrl" class="img-fluid" alt="Imagen ampliada" style="max-height: 70vh;">
+                <div class="product-info mt-3">
+                    <h5>{{ nombreModal }}</h5>
+                    <div class="price-container bg-light p-2 rounded mt-2">
+                        <h1 class="text-danger mb-0">
+                            <strong>{{ formatNumber(precioModal) }}</strong>
+                        </h1>
+                        <small class="text-muted">Precio público</small>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-success" id="copiarImagenBtn">
-                    <i class="fab fa-whatsapp"></i> Copiar para WhatsApp
+                <button type="button" class="btn btn-success" @click="copiarParaWhatsApp" :disabled="isCopyingWhatsApp">
+                    <i class="fab fa-whatsapp"></i> 
+                    {{ isCopyingWhatsApp ? 'Copiando...' : 'Compartir por WhatsApp' }}
                 </button>
-                <a href="#" id="descargarImagenBtn" class="btn btn-primary">
+                <a :href="imagenModalUrl" download class="btn btn-primary">
                     <i class="fas fa-download"></i> Descargar imagen
                 </a>
             </div>

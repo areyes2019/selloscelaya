@@ -17,7 +17,12 @@ const {createApp, ref} = Vue
                 totalItems: 0,
                 allArticles: [], // Aquí guardaremos todos los artículos sin filtrar
                 filteredArticles: [], // Artículos después de aplicar filtro
-                isLoading: false
+                isLoading: false,
+                magenModalUrl: '',
+                nombreModal: '',
+                precioModal: 0,
+                modalInstance: null,
+                isCopyingWhatsApp: false
 			}
 		},
 		methods:{
@@ -32,6 +37,37 @@ const {createApp, ref} = Vue
                     this.mostrarNotificacion('error', 'Error al cargar los artículos');
                 }
             },
+            abrirModal(articulo) {
+                this.imagenModalUrl = 'public/img/catalogo/' + articulo.img;
+                this.nombreModal = articulo.nombre;
+                this.precioModal = articulo.precio_pub; // Agregamos el precio
+                
+                // Inicializar el modal si no existe la instancia
+                if (!this.modalInstance) {
+                    const modalElement = document.getElementById('imagenModal');
+                    this.modalInstance = new bootstrap.Modal(modalElement);
+                }
+                
+                this.modalInstance.show();
+            },
+
+            // Método para copiar imagen para WhatsApp
+            copiarParaWhatsApp() {
+                // Lógica para copiar imagen para WhatsApp
+                // Puedes implementar lo que necesites aquí
+                console.log('Copiando imagen para WhatsApp:', this.imagenModalUrl);
+                
+                // Ejemplo básico: copiar URL al portapapeles
+                navigator.clipboard.writeText(this.imagenModalUrl)
+                    .then(() => {
+                        this.mostrarNotificacion('success', 'URL de la imagen copiada al portapapeles');
+                    })
+                    .catch(err => {
+                        console.error('Error al copiar:', err);
+                        this.mostrarNotificacion('error', 'Error al copiar la imagen');
+                    });
+            },
+
             filtrarArticulos() {
                 // Si no hay filtros, mostrar todos los artículos
                 if (!this.filtroNombre && !this.filtroModelo && !this.filtroProveedor) {
@@ -254,6 +290,33 @@ const {createApp, ref} = Vue
                 
                 selectAllCheckbox.checked = allSelected;
             },
+            async copiarParaWhatsApp() {
+                this.isCopyingWhatsApp = true;
+                try {
+                    const modalImagen = document.querySelector('#modalImagen');
+
+                    const canvas = await html2canvas(modalImagen, {
+                        backgroundColor: '#fff', // o null para fondo transparente
+                        scale: 2
+                    });
+
+                    canvas.toBlob(async (blob) => {
+                        if (!blob) throw new Error('No se pudo generar la imagen');
+
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ [blob.type]: blob })
+                        ]);
+
+                        this.mostrarNotificacion('success', 'Captura copiada al portapapeles');
+                    }, 'image/png');
+                } catch (error) {
+                    console.error('Error al copiar:', error);
+                    this.mostrarNotificacion('error', 'No se pudo copiar la imagen');
+                } finally {
+                    this.isCopyingWhatsApp = false;
+                }
+            }
+
 		},
 		mounted(){
             this.cargarArticulos();
