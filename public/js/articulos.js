@@ -151,9 +151,7 @@ const {createApp, ref} = Vue
                     if (modal) modal.hide();
                     
                     // Recargar la página después de 1 segundo
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    this.cargarArticulos();
                     
                 } catch (error) {
                     console.error('Error al actualizar el artículo:', error);
