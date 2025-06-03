@@ -8,10 +8,78 @@ const {createApp, ref} = Vue
 				articulos:[],
 				saludo:"hola",
                 selectedItems: [], // Array para almacenar los IDs seleccionados
-                selectAll: false
+                selectAll: false,
+                filtroNombre: '',
+                filtroModelo: '',
+                filtroProveedor: '',
+                currentPage: 1,
+                itemsPerPage: 10, // Puedes ajustar este número
+                totalItems: 0,
+                allArticles: [], // Aquí guardaremos todos los artículos sin filtrar
+                filteredArticles: [], // Artículos después de aplicar filtro
+                isLoading: false
 			}
 		},
 		methods:{
+            async cargarArticulos() {
+                try {
+                    const response = await axios.get('mostrar_articulos');
+                    this.allArticles = response.data;
+                    this.totalItems = this.allArticles.length;
+                    this.filtrarArticulos();
+                } catch (error) {
+                    console.error('Error al cargar artículos:', error);
+                    this.mostrarNotificacion('error', 'Error al cargar los artículos');
+                }
+            },
+            filtrarArticulos() {
+                // Si no hay filtros, mostrar todos los artículos
+                if (!this.filtroNombre && !this.filtroModelo && !this.filtroProveedor) {
+                    this.filteredArticles = [...this.allArticles];
+                } else {
+                    this.filteredArticles = this.allArticles.filter(articulo => {
+                        const nombreMatch = this.filtroNombre ? 
+                            articulo.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase()) : true;
+                        
+                        const modeloMatch = this.filtroModelo ? 
+                            (articulo.modelo ? articulo.modelo.toLowerCase().includes(this.filtroModelo.toLowerCase()) : false) : true;
+                        
+                        const proveedorMatch = this.filtroProveedor ? 
+                            (articulo.nombre_proveedor ? articulo.nombre_proveedor.toLowerCase().includes(this.filtroProveedor.toLowerCase()) : false) : true;
+                        
+                        return nombreMatch && modeloMatch && proveedorMatch;
+                    });
+                }
+                
+                this.totalItems = this.filteredArticles.length;
+                this.currentPage = 1; // Resetear a la primera página al filtrar
+            },
+            formatNumber(num) {
+                // Convertir a número y verificar si es válido
+                const number = parseFloat(num);
+                
+                // Si no es un número válido, retornar $0.00
+                if (isNaN(number)) {
+                    return '$0.00';
+                }
+                
+                // Formatear el número válido
+                return '$' + number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            },
+            // Métodos para la paginación
+            paginatedArticles() {
+                const start = (this.currentPage - 1) * this.itemsPerPage;
+                const end = start + this.itemsPerPage;
+                return this.filteredArticles.slice(start, end);
+            },
+
+            changePage(page) {
+                this.currentPage = page;
+            },
+
+            totalPages() {
+                return Math.ceil(this.totalItems / this.itemsPerPage);
+            },
 			cambio_rapido(data){
 				axios.get('/editar_rapido/'+data).then((response)=>{
 					this.articulo = response.data.data[0];
@@ -124,24 +192,23 @@ const {createApp, ref} = Vue
             },
             // Método para seleccionar/deseleccionar todos los checkboxes
             toggleSelectAll(event) {
-                this.selectAll = event.target.checked;
-                const checkboxes = document.querySelectorAll('.item-checkbox');
-                const visibleCheckboxes = Array.from(checkboxes).filter(checkbox => {
-                    // Solo considerar checkboxes visibles (por la paginación)
-                    return checkbox.closest('tr').style.display !== 'none';
-                });
+                const isChecked = event.target.checked;
+                this.selectedItems = [];
                 
-                if (this.selectAll) {
-                    visibleCheckboxes.forEach(checkbox => {
+                if (isChecked) {
+                    // Seleccionar todos los artículos visibles en la página actual
+                    this.paginatedArticles().forEach(articulo => {
+                        this.selectedItems.push(articulo.id_articulo);
+                    });
+                    
+                    // Marcar visualmente los checkboxes
+                    document.querySelectorAll('.item-checkbox').forEach(checkbox => {
                         checkbox.checked = true;
-                        if (!this.selectedItems.includes(parseInt(checkbox.value))) {
-                            this.selectedItems.push(parseInt(checkbox.value));
-                        }
                     });
                 } else {
-                    visibleCheckboxes.forEach(checkbox => {
+                    // Desmarcar todos los checkboxes
+                    document.querySelectorAll('.item-checkbox').forEach(checkbox => {
                         checkbox.checked = false;
-                        this.selectedItems = this.selectedItems.filter(id => id !== parseInt(checkbox.value));
                     });
                 }
             },
@@ -152,35 +219,43 @@ const {createApp, ref} = Vue
                     return;
                 }
                 
-                const confirmar = confirm(`¿Estás seguro de que deseas eliminar los ${this.selectedItems.length} artículos seleccionados? Esta acción no se puede deshacer.`);
-                
+                const confirmar = confirm(`¿Estás seguro de eliminar los ${this.selectedItems.length} artículos seleccionados?`);
                 if (!confirmar) return;
                 
                 try {
-                    const response = await axios.post('/eliminar_masivo', {
+                    this.isLoading = true;
+                    const response = await axios.post('eliminar_masivo', {
                         ids: this.selectedItems
                     });
                     
                     if (response.data.success) {
-                        this.mostrarNotificacion('success', `${response.data.deleted} artículos eliminados correctamente`);
-                        // Recargar la página después de 1.5 segundos
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
+                        this.mostrarNotificacion('success', `Se eliminaron ${response.data.deleted} artículos`);
+                        // Recargar los artículos después de eliminar
+                        await this.cargarArticulos();
+                        this.selectedItems = []; // Limpiar selección
                     } else {
                         this.mostrarNotificacion('error', response.data.message || 'Error al eliminar artículos');
                     }
                 } catch (error) {
                     console.error('Error al eliminar artículos:', error);
-                    let errorMessage = 'Ocurrió un error al eliminar los artículos';
-                    if (error.response && error.response.data && error.response.data.message) {
-                        errorMessage = error.response.data.message;
-                    }
-                    this.mostrarNotificacion('error', errorMessage);
+                    this.mostrarNotificacion('error', 'Ocurrió un error al eliminar los artículos');
+                } finally {
+                    this.isLoading = false;
                 }
+            },
+            updateSelectAllState() {
+                const selectAllCheckbox = document.getElementById('selectAll');
+                if (!selectAllCheckbox) return;
+                
+                // Verificar si todos los artículos en la página están seleccionados
+                const allSelected = this.paginatedArticles().every(articulo => 
+                    this.selectedItems.includes(articulo.id_articulo)
+                );
+                
+                selectAllCheckbox.checked = allSelected;
             },
 		},
 		mounted(){
-
+            this.cargarArticulos();
 		}
 }).mount('#app')

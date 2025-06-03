@@ -35,9 +35,28 @@ class Articulos extends BaseController
     }
 	public function mostrar()
 	{
-		$modelo = new ArticulosModel();
-		$query = $modelo->findAll();
-		return json_encode($query);
+	    try {
+	        $modelo = new ArticulosModel();
+	        $articulos = $modelo->select('sellopro_articulos.*, sellopro_proveedores.empresa as nombre_proveedor')
+	                           ->join('sellopro_proveedores', 'sellopro_proveedores.id_proveedor = sellopro_articulos.proveedor', 'left')
+	                           ->findAll();
+	        
+	        if (empty($articulos)) {
+	            return $this->response->setJSON([
+	                'success' => false,
+	                'message' => 'No se encontraron artículos'
+	            ]);
+	        }
+	        
+	        return $this->response->setJSON($articulos);
+	        
+	    } catch (\Exception $e) {
+	        log_message('error', 'Error al obtener artículos: ' . $e->getMessage());
+	        return $this->response->setStatusCode(500)->setJSON([
+	            'success' => false,
+	            'message' => 'Error interno del servidor'
+	        ]);
+	    }
 	}
 	public function mostrar_compras($id)
 	{
@@ -313,7 +332,32 @@ class Articulos extends BaseController
 		return redirect()->to('/articulos');
 
 	}
-
+	public function eliminarMasivo()
+	{
+	    $ids = $this->request->getVar('ids');
+	    
+	    if (empty($ids)) {
+	        return $this->response->setJSON([
+	            'success' => false,
+	            'message' => 'No se recibieron IDs para eliminar'
+	        ]);
+	    }
+	    
+	    $modelo = new ArticulosModel();
+	    $deleted = 0;
+	    
+	    foreach ($ids as $id) {
+	        if ($modelo->delete($id)) {
+	            $deleted++;
+	        }
+	    }
+	    
+	    return $this->response->setJSON([
+	        'success' => true,
+	        'deleted' => $deleted,
+	        'message' => 'Artículos eliminados correctamente'
+	    ]);
+	}
 	public function importArticulos()
 	{
 	    // Validar CSRF token

@@ -39,7 +39,9 @@
                                 <thead>
                                     <tr>
                                         <th>
-                                            <input type="checkbox" id="selectAll" @click="toggleSelectAll">
+                                            <input type="checkbox" id="selectAll" 
+                                                   @change="toggleSelectAll"
+                                                   :checked="selectedItems.length === paginatedArticles().length && paginatedArticles().length > 0">
                                         </th>
                                         <th>#</th>
                                         <th>Img</th>
@@ -54,63 +56,96 @@
                                         <th>Visible</th>
                                         <th>Acciones</th>
                                     </tr>
+                                    <!-- Fila de búsqueda -->
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   placeholder="Buscar por nombre" 
+                                                   v-model="filtroNombre"
+                                                   @input="filtrarArticulos">
+                                        </th>
+                                        <th>
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   placeholder="Buscar por modelo" 
+                                                   v-model="filtroModelo"
+                                                   @input="filtrarArticulos">
+                                        </th>
+                                        <th>
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   placeholder="Buscar por proveedor" 
+                                                   v-model="filtroProveedor"
+                                                   @input="filtrarArticulos">
+                                        </th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($articulos as $articulo): ?>
-                                    <tr>
+                                    <tr v-for="articulo in paginatedArticles()" :key="articulo.id_articulo">
                                         <td>
                                             <input type="checkbox" class="item-checkbox" 
-                                                   :value="<?= $articulo['id_articulo'] ?>" 
-                                                   v-model="selectedItems">
+                                                   :value="articulo.id_articulo" 
+                                                   v-model="selectedItems"
+                                                   @change="updateSelectAllState">
                                         </td>
-                                        <td><?= $articulo['id_articulo']; ?></td>
+                                        <td>{{ articulo.id_articulo }}</td>
                                         <td>
-                                            <?php if(!empty($articulo['img'])): ?>
-                                            <a href="#" data-bs-toggle="modal" data-bs-target="#imagenModal" 
-                                               data-imagen="<?= esc(base_url('public/img/catalogo/'.$articulo['img'])) ?>"
-                                               data-nombre="<?= esc($articulo['nombre']) ?>">
-                                               <img src="<?= esc(base_url('public/img/catalogo/'.$articulo['img'])) ?>" 
-                                                    alt="<?= esc($articulo['nombre']) ?>" 
-                                                    style="width: 50px; height: 50px; object-fit: contain;">
-                                            </a>
-                                            <?php else: ?>
+                                            <template v-if="articulo.img">
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#imagenModal" 
+                                                   :data-imagen="'public/img/catalogo/' + articulo.img"
+                                                   :data-nombre="articulo.nombre">
+                                                   <img :src="'public/img/catalogo/' + articulo.img" 
+                                                        :alt="articulo.nombre" 
+                                                        style="width: 50px; height: 50px; object-fit: contain;">
+                                                </a>
+                                            </template>
+                                            <template v-else>
                                                 <span class="text-muted">Sin imagen</span>
-                                            <?php endif; ?>
+                                            </template>
                                         </td>
-                                        <td><?= esc($articulo['nombre']); ?></td>
-                                        <td><?= esc($articulo['modelo']); ?></td>
-                                        <td><?= esc($articulo['nombre_proveedor'] ?? 'No especificado'); ?></td>
-                                        <td>$<?= number_format($articulo['precio_prov'], 2); ?></td>
-                                        <td><strong class="text-primary">$<?= number_format($articulo['precio_dist'], 2); ?></strong></td>
-                                        <td><strong>$<?= number_format($articulo['precio_pub'], 2); ?></strong></td>
-                                        <td>$<?= number_format($articulo['precio_pub'] - $articulo['precio_prov'], 2); ?></td>
+                                        <td>{{ articulo.nombre }}</td>
+                                        <td>{{ articulo.modelo }}</td>
+                                        <td>{{ articulo.nombre_proveedor || 'No especificado' }}</td>
+                                        <td>{{ formatNumber(articulo.precio_prov) }}</td>
+                                        <td><strong class="text-primary">{{ formatNumber(articulo.precio_dist) }}</strong></td>
+                                        <td><strong>{{ formatNumber(articulo.precio_pub) }}</strong></td>
+                                        <td>{{ formatNumber(articulo.precio_pub - articulo.precio_prov) }}</td>
                                         <td>
-                                            <?php if($articulo['stock'] > 0): ?>
+                                            <template v-if="articulo.stock > 0">
                                                 <span class="badge bg-success">Disponible</span>
-                                                <small class="d-block">Inventario: <?= $articulo['stock'] ?></small>
-                                            <?php else: ?>
+                                                <small class="d-block">Inventario: {{ articulo.stock }}</small>
+                                            </template>
+                                            <template v-else>
                                                 <span class="badge bg-secondary">Pedido especial</span>
                                                 <small class="d-block">Sobre pedido</small>
-                                            <?php endif; ?>
+                                            </template>
                                         </td>
                                         <td>
                                             <div class="form-check form-switch d-flex justify-content-center">
                                                 <input class="form-check-input" 
                                                        type="checkbox" 
                                                        role="switch" 
-                                                       id="visibleSwitch_<?= $articulo['id_articulo']; ?>"
-                                                       <?= ($articulo['visible'] == 1) ? 'checked' : ''; ?>
-                                                       @click="cambiar_visible(<?= $articulo['id_articulo']; ?>, $event)"
-                                                       title="<?= ($articulo['visible'] == 1) ? 'Marcar como Oculto' : 'Marcar como Visible'; ?>">
+                                                       :id="'visibleSwitch_' + articulo.id_articulo"
+                                                       :checked="articulo.visible == 1"
+                                                       @click="cambiar_visible(articulo.id_articulo, $event)"
+                                                       :title="articulo.visible == 1 ? 'Marcar como Oculto' : 'Marcar como Visible'">
                                                 <label class="form-check-label visually-hidden" 
-                                                       for="visibleSwitch_<?= $articulo['id_articulo']; ?>">
-                                                       Visibilidad del artículo <?= $articulo['id_articulo']; ?>
+                                                       :for="'visibleSwitch_' + articulo.id_articulo">
+                                                       Visibilidad del artículo {{ articulo.id_articulo }}
                                                 </label>
                                             </div>
                                         </td>
                                         <td class="d-flex gap-1">
                                             <!-- Eliminar -->
-                                            <a href="<?= base_url('eliminar_articulo/'.$articulo['id_articulo']) ?>" 
+                                            <a :href="'eliminar_articulo/' + articulo.id_articulo" 
                                                onclick="return confirm('¿Seguro que quieres eliminar este registro?')" 
                                                class="btn btn-sm btn-danger rounded-0"
                                                title="Eliminar">
@@ -118,7 +153,7 @@
                                             </a>
                                             
                                             <!-- Editar --> 
-                                            <a href="<?= base_url('editar_articulo/'.$articulo['id_articulo']) ?>" 
+                                            <a :href="'editar_articulo/' + articulo.id_articulo" 
                                                class="btn btn-sm btn-success rounded-0"
                                                title="Editar">
                                                 <i class="bi bi-pencil"></i>
@@ -127,15 +162,38 @@
                                             <!-- Edición rápida -->
                                             <button type="button" 
                                                     class="btn btn-sm btn-primary rounded-0" 
-                                                    @click="cambio_rapido(<?= $articulo['id_articulo'] ?>)"
+                                                    @click="cambio_rapido(articulo.id_articulo)"
                                                     title="Edición rápida">
                                                 <i class="bi bi-lightning-charge"></i>
                                             </button>
                                         </td>
                                     </tr>
-                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
+                            <!-- Paginación -->
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - 
+                                    {{ Math.min(currentPage * itemsPerPage, totalItems) }} de {{ totalItems }} artículos
+                                </div>
+                                
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination pagination-sm">
+                                        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                            <button class="page-link" @click="changePage(currentPage - 1)">Anterior</button>
+                                        </li>
+                                        
+                                        <li class="page-item" v-for="page in totalPages()" :key="page" 
+                                            :class="{ active: currentPage === page }">
+                                            <button class="page-link" @click="changePage(page)">{{ page }}</button>
+                                        </li>
+                                        
+                                        <li class="page-item" :class="{ disabled: currentPage === totalPages() }">
+                                            <button class="page-link" @click="changePage(currentPage + 1)">Siguiente</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -226,79 +284,6 @@
 </div>
 </div>
 
-<script>
-$(document).ready(function() {
-    new DataTable('#example');
-    // Configurar el modal cuando se muestra
-    $('#imagenModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var imagenUrl = button.data('imagen');
-        var nombreProducto = button.data('nombre');
-        
-        var modal = $(this);
-        modal.find('#modalImagen').attr('src', imagenUrl);
-        modal.find('#modalNombre').text(nombreProducto);
-        
-        // Configurar el enlace de descarga
-        $('#descargarImagenBtn').attr('href', imagenUrl)
-                               .attr('download', nombreProducto.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.jpg');
-    });
-    
-    // Función para copiar la imagen
-    $('#copiarImagenBtn').click(async function() {
-        var img = document.getElementById('modalImagen');
-        var imagenUrl = img.src;
-        
-        try {
-            // Primero intentamos con la API moderna de Clipboard
-            if (navigator.clipboard && window.ClipboardItem) {
-                const response = await fetch(imagenUrl);
-                const blob = await response.blob();
-                await navigator.clipboard.write([
-                    new ClipboardItem({ [blob.type]: blob })
-                ]);
-                showAlert('success', 'Imagen copiada al portapapeles. Ahora puedes pegarla en WhatsApp.');
-            } 
-            // Si falla, ofrecemos alternativa
-            else {
-                // Creamos un elemento temporal para copiar el enlace
-                const tempInput = document.createElement('input');
-                document.body.appendChild(tempInput);
-                tempInput.value = imagenUrl;
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                
-                showAlert('info', 'Enlace de la imagen copiado. En WhatsApp, pega este enlace para compartir la imagen.');
-            }
-        } catch (error) {
-            console.error('Error al copiar:', error);
-            showAlert('danger', 'No se pudo copiar la imagen. Intenta descargarla y compartirla manualmente.');
-        }
-    });
-    
-    // Función para mostrar alertas
-    function showAlert(type, message) {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-        alertDiv.style.position = 'fixed';
-        alertDiv.style.bottom = '20px';
-        alertDiv.style.right = '20px';
-        alertDiv.style.zIndex = '9999';
-        alertDiv.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        
-        document.body.appendChild(alertDiv);
-        
-        // Eliminar la alerta después de 5 segundos
-        setTimeout(() => {
-            alertDiv.remove();
-        }, 5000);
-    }
-});
-</script>
 <script src="<?php echo base_url('public/js/articulos.js'); ?>"></script>
 <script src="<?php echo base_url('public/js/notify.js'); ?>"></script>
 <?php echo $this->endSection()?>
