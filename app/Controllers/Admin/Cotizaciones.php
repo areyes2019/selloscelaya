@@ -612,58 +612,86 @@ class Cotizaciones extends BaseController
 
 	}
 	public function cotizacion_pdf($id)
-    {
-        $db = \Config\Database::connect();
-        $cliente_query = new CotizacionesModel();
+	{
+	    $db = \Config\Database::connect();
+	    
+	    // Obtener cotización
+	    $cotizacionesModel = new CotizacionesModel();
+	    $cotizacion = $cotizacionesModel->where('id_cotizacion', $id)->first();
 
-        //datos del cliente
-        $cliente_query->where('id_cotizacion', $id);
-        $resultado_cotizacion = $cliente_query->findAll();
+	    if (!$cotizacion) {
+	        throw new \CodeIgniter\Exceptions\PageNotFoundException("Cotización no encontrada.");
+	    }
 
-        $cliente = new ClientesModel();
-        $cliente->where('id_cliente', $resultado_cotizacion[0]['cliente']);
-        $resultado = $cliente->findAll();
+	    // Obtener cliente
+	    $clientesModel = new ClientesModel();
+	    $cliente = $clientesModel->find($cotizacion['cliente']);
 
-        //mostrar los articulos
-        $builder = $db->table('sellopro_detalles');
-        $builder->where('id_cotizacion', $id);
-        $builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles.id_articulo');
-        $resultado_lineas = $builder->get()->getResultArray();
+	    if (!$cliente) {
+	        throw new \CodeIgniter\Exceptions\PageNotFoundException("Cliente no encontrado.");
+	    }
 
-        //mostrar independientes
-        $query = new DetalleModel();
-        $query->where('id_cotizacion', $id);
-        $query->where('id_articulo', 0);
-        $independiente = $query->findAll();
+	    // Obtener los artículos de la cotización
+	    $detalles = $db->table('sellopro_detalles')
+	        ->where('id_cotizacion', $id)
+	        ->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles.id_articulo')
+	        ->get()
+	        ->getResultArray();
 
-        //sacamos los totales 
-        $total = (float)$resultado_cotizacion[0]['total'];
-        $descuento = (float)$resultado_cotizacion[0]['descuento'];
-        $anticipo = (float)$resultado_cotizacion[0]['anticipo'];
+	    // Cálculos de totales - VERSIÓN CORREGIDA
+	    // 1. Calcular subtotal sumando todos los productos (sin IVA)
+	    $subtotal_productos = array_reduce($detalles, function($carry, $item) {
+	        return $carry + ($item['p_unitario'] * $item['cantidad']);
+	    }, 0);
 
-        $totalConDescuento = $total - $descuento;
-        $sub_total = $totalConDescuento / 1.16;
-        $iva = $totalConDescuento - $sub_total;
-        $saldo = $totalConDescuento - $anticipo;
+	    // 2. Aplicar descuento (si existe)
+	    $descuento = (float)$cotizacion['descuento'];
+	    $subtotal_con_descuento = $subtotal_productos - $descuento;
 
-        $data = [
-            'cliente' => $resultado,
-            'id_cotizacion' => $resultado_cotizacion,
-            'detalles' => $resultado_lineas,
-            'sub_total' => number_format($sub_total, 2),
-            'descuento' => number_format($descuento, 2),
-            'iva' => number_format($iva, 2),
-            'total' => number_format($totalConDescuento, 2),
-            'pagado' => $resultado_cotizacion[0]['pago'] == 1 // Nuevo campo para saber si está pagado
-        ];
+	    // 3. Calcular IVA (16% del subtotal con descuento)
+	    $iva = $subtotal_con_descuento * 0.16;
 
-        $doc = new Dompdf();
-        $html = view('Panel/PDF', $data);
-        $doc->loadHTML($html);
-        $doc->setPaper('A4', 'portrait');
-        $doc->render();
-        $doc->stream("QT-".$id.".pdf");
-    }
+	    // 4. Calcular total (subtotal con descuento + IVA)
+	    $total = $subtotal_con_descuento + $iva;
+
+	    // 5. Calcular saldo (total - anticipo)
+	    $anticipo = (float)$cotizacion['anticipo'];
+	    $saldo = $total - $anticipo;
+
+	    // Preparar datos para la vista PDF
+	    $data = [
+	        'cliente' => $cliente,
+	        'cot' => $cotizacion,
+	        'id_cotizacion' => $cotizacion['id_cotizacion'],
+	        'detalles' => $detalles,
+	        'sub_total' => number_format($subtotal_productos, 2),        // Subtotal sin descuento
+	        'sub_total_con_descuento' => number_format($subtotal_con_descuento, 2), // Subtotal con descuento
+	        'descuento' => number_format($descuento, 2),
+	        'iva' => number_format($iva, 2),
+	        'total' => number_format($total, 2),
+	        'pagado' => $cotizacion['pago'] == 1,
+	        'anticipo' => number_format($anticipo, 2),
+	        'saldo' => number_format($saldo, 2),
+	    ];
+
+	    // Generar PDF
+	    $dompdf = new \Dompdf\Dompdf();
+	    
+	    // Opciones de Dompdf
+	    $options = $dompdf->getOptions();
+	    $options->set('isRemoteEnabled', true);
+	    $dompdf->setOptions($options);
+	    
+	    $html = view('Panel/PDF', $data);
+	    $dompdf->loadHtml($html);
+	    $dompdf->setPaper('A4', 'portrait');
+	    $dompdf->render();
+	    
+	    // Forzar descarga del PDF
+	    $dompdf->stream("QT-{$id}.pdf", [
+	        "Attachment" => true
+	    ]);
+	}
 	public function enviar_pdf($id)
 	{
 		$db = \Config\Database::connect();

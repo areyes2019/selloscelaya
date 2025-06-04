@@ -306,6 +306,51 @@ body {
   width: 0;
   pointer-events: none;
 }
+/*estilos para el select de el pos*/
+
+/* Contenedor principal - posición relativa para el dropdown */
+.col-md-4 {
+    position: relative;
+}
+
+/* Dropdown con mismo ancho que el input */
+.autocomplete-dropdown {
+    position: absolute;
+    width: calc(100% - 2px); /* Resta los bordes */
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ced4da;
+    border-top: none;
+    border-radius: 0 0 0.25rem 0.25rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-top: -1px; /* Para unión visual con el input */
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover, 
+.dropdown-item.active {
+    background-color: #ced4da;
+    color: #212529;
+}
+
+.dropdown-item .small {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+/* Para pantallas pequeñas (responsive) */
+@media (max-width: 768px) {
+    .autocomplete-dropdown {
+        max-height: 200px;
+    }
+}
 /*estilos para el modal existencias*/
 .number-control-group {
     display: flex;

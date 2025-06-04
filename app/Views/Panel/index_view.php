@@ -39,29 +39,31 @@
             </div>
             <!-- Grupo de inputs solicitado -->
             <div class="row g-3 align-items-end mb-3">
-                <div class="col-md-4">
+                <div class="col-md-4 ">
                     <label for="autocomplete_input" class="form-label">Artículo:</label>
                     <input 
-                      id="autocomplete_input"
-                      class="autocomplete-input form-control"
-                      type="text"
-                      placeholder="Buscar servicio..."
-                      v-model="searchQuery"
-                      @input="handleInput"
-                      @keydown="handleKeyDown"
-                      @focus="showResults = true"
-                      @blur="onBlur"
+                        id="autocomplete_input"
+                        class="form-control autocomplete-container"
+                        type="text"
+                        placeholder="Buscar por nombre, modelo o clave..."
+                        v-model="searchQuery"
+                        @input="handleInput"
+                        @focus="showResults = true"
+                        @keydown="handleKeyDown"
                     >
-                    <div class="autocomplete-results" v-if="showResults && filteredArticulos.length > 0">
-                      <div 
-                        v-for="(articulo, index) in filteredArticulos"
-                        :key="articulo.id_articulo"
-                        class="autocomplete-item"
-                        :class="{ selected: index === selectedIndex }"
-                        @mousedown="selectItem(articulo)"
-                      >
-                        {{ articulo.nombre }} - {{ articulo.modelo }}
-                      </div>
+                    <div class="autocomplete-dropdown" v-if="showResults && filteredArticulos.length" ref="dropdownContainer">
+                        <div 
+                            v-for="(articulo, index) in filteredArticulos"
+                            :key="articulo.id_articulo"
+                            class="dropdown-item"
+                            :class="{ 'active': index === selectedIndex }"
+                            @click="selectItem(articulo)"
+                            :ref="index === selectedIndex ? 'activeItem' : null"
+                        >
+                            <div class="d-flex justify-content-between">
+                                <strong>{{articulo.modelo}}</strong>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <input type="hidden" v-model="articuloId">
@@ -76,10 +78,10 @@
                            v-model="precio_unitario">
                 </div>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-primary w-100" @click="agregarArticulo">
+                    <button type="button" class="btn btn-primary w-100 mb-3" @click="agregarArticulo">
                         Agregar
                     </button>
-                </div>             
+                </div>       
             </div>
             <hr>
 

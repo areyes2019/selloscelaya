@@ -159,6 +159,7 @@ $routes->group('',static function($routes){
 	    $routes->get('edit/(:num)', 'Admin\PuntoVentaController::edit/$1');   // (Opcional) Mostrar form edición
 	    $routes->post('update/(:num)', 'Admin\PuntoVentaController::update/$1'); // (Opcional) Procesar edición
 	    $routes->get('delete/(:num)', 'Admin\PuntoVentaController::delete/$1'); // Eliminar pedido (GET para simplicidad, POST/DELETE es mejor)
+	    $routes->get('stock', 'Admin\PuntoVentaController::mostrar_stock');
 	    $routes->post('pagar/(:num)', 'Admin\PuntoVentaController::pagar/$1');
 	    // Si usas resource, ajusta o añade las personalizadas
 	    // $routes->resource('pedidos', ['controller' => 'PedidosController']);

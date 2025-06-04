@@ -90,31 +90,64 @@ class PuntoVentaController extends BaseController
     }
     public function new()
     {
+        // Obtener las cuentas
         $cuentasModel = new CuentasModel();
-        $resultado = $cuentasModel->findAll();
+        $data['cuentas'] = $cuentasModel->findAll();
 
+        // Obtener artículos con su stock (versión mejorada)
         $data['articulos'] = $this->articulosModel
-            ->select('
-                a.id_articulo, 
-                a.nombre, 
-                a.modelo,
-                a.precio_pub as precio_venta,
-                a.img,
-                a.clave_producto,
-                COALESCE(SUM(i.cantidad), 0) as stock_disponible
-            ')
-            ->from('sellopro_articulos a') // 'a' es alias para la tabla de artículos
-            ->join('sellopro_inventario i', 'a.id_articulo = i.id_articulo', 'left')
-            ->where('a.stock', 1)
-            ->where('a.venta', 1) // Asumiendo que este campo indica si está disponible para venta
-            ->groupBy('a.id_articulo, a.nombre, a.modelo, a.precio_pub, a.img, a.clave_producto')
-            ->having('stock_disponible >', 0)
-            ->orderBy('a.nombre', 'ASC')
+            ->select('a.*, SUM(i.cantidad) as stock_inventario')  // SUM por si hay múltiples registros
+            ->from('sellopro_articulos a')
+            ->join('sellopro_inventario i', 'a.id_articulo = i.id_articulo', 'inner') // INNER JOIN explícito
+            ->where('a.venta', 1)
+            ->where('i.id_articulo IS NOT NULL') // Validación adicional
+            ->groupBy('a.id_articulo') // Agrupar para evitar duplicados
             ->findAll();
 
         $data['titulo'] = 'Nuevo Pedido POS';
-        $data['cuentas'] = $resultado;
         return view('Panel/index_view', $data);
+    }
+    public function mostrar_stock()
+    {
+        try {
+            // Consulta optimizada para el autocomplete
+            $articulos = $this->articulosModel
+                ->select('
+                    a.id_articulo,
+                    a.nombre,
+                    a.modelo,
+                    a.precio_pub,
+                    a.clave_producto,
+                    a.categoria,
+                    SUM(i.cantidad) as stock_inventario
+                ')
+                ->from('sellopro_articulos a')
+                ->join('sellopro_inventario i', 'a.id_articulo = i.id_articulo', 'inner')
+                ->where('a.venta', 1)
+                ->groupBy('a.id_articulo, a.nombre, a.modelo, a.precio_pub, a.clave_producto, a.categoria')
+                ->orderBy('a.nombre', 'ASC')
+                ->findAll();
+
+            // Formatear respuesta para el frontend
+            $response = [
+                'success' => true,
+                'data' => $articulos,
+                'total' => count($articulos),
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+
+            return $this->response->setJSON($articulos);
+
+        } catch (\Exception $e) {
+            // Manejo de errores
+            log_message('error', 'Error en mostrar_stock: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error al cargar el stock de artículos',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
     }
     public function articulos()
     {

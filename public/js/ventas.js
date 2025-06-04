@@ -17,26 +17,27 @@ const {createApp, ref} = Vue
 		        showResults: false,
 		        selectedIndex: -1,
 		        articuloSeleccionado: null,
+		        selectedIndex: -1,
 		        bancos: [],
     			bancoSeleccionado: null
 			}
 		},
 		computed: {
-	        filteredArticulos() {
-	          	if (!this.searchQuery) return [];
-	          	const query = this.searchQuery.toLowerCase();
-	          	return this.articulos.filter(articulo => 
-	            	articulo.nombre.toLowerCase().includes(query) || 
-	            	articulo.modelo.toLowerCase().includes(query)
-	          	);
-	        },
 	        total() {
 			    return this.itemsPedido.reduce((sum, item) => sum + parseFloat(item.subtotal), 0);
 			  },
 			  saldo() {
 			    const saldoCalculado = this.total - parseFloat(this.anticipo);
 			    return saldoCalculado > 0 ? saldoCalculado : 0;
-			 }
+			},
+		    filteredArticulos() {
+		        if (!this.searchQuery.trim()) return [];
+		        const query = this.searchQuery.trim().toLowerCase();
+		        return this.articulos.filter(articulo => 
+		            (articulo.nombre && articulo.nombre.toLowerCase().includes(query)) || 
+		            (articulo.modelo && articulo.modelo.toLowerCase().includes(query))
+		        );
+		    }
 	    },
 		methods:{
 			async listarBancos() {
@@ -48,45 +49,101 @@ const {createApp, ref} = Vue
 			      alert('Error al cargar las cuentas bancarias');
 			    }
 			},
-			handleInput() {
-	          this.showResults = this.searchQuery.length > 0;
-	          this.selectedIndex = -1;
-	        },
-	        selectItem(articulo) {
-			  this.articuloSeleccionado = articulo;
-			  this.searchQuery = `${articulo.nombre} - ${articulo.modelo}`;
-			  this.articuloId = articulo.id_articulo;
-			  this.precio_unitario = articulo.precio_pub; // Aquí asignamos el precio
-			  this.showResults = false;
-			},
-	        handleKeyDown(e) {
-	          if (!this.showResults) return;
-	          
-	          if (e.key === 'ArrowDown') {
-	            e.preventDefault();
-	            this.selectedIndex = Math.min(this.selectedIndex + 1, this.filteredArticulos.length - 1);
-	          } else if (e.key === 'ArrowUp') {
-	            e.preventDefault();
-	            this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
-	          } else if (e.key === 'Enter' && this.selectedIndex >= 0) {
-	            e.preventDefault();
-	            this.selectItem(this.filteredArticulos[this.selectedIndex]);
-	          }
-	        },
-	        onBlur() {
-	          setTimeout(() => {
-	            this.showResults = false;
-	          }, 200);
-	        },
-	        onSelectChange() {
-			    if (this.articuloSeleccionado) {
-			      this.searchQuery = `${this.articuloSeleccionado.nombre} - ${this.articuloSeleccionado.modelo}`;
-			      this.actualizarPrecio(); // Actualizamos el precio cuando cambia la selección
-			    } else {
-			      this.searchQuery = '';
-			      this.precio_unitario = '';
+
+			//esto maneja el selec dinamico
+			async cargarArticulos() {
+		        try {
+		            const response = await axios.get('/ventas/stock');
+		            this.articulos = response.data;
+		        } catch (error) {
+		            console.error('Error:', error);
+		            alert('Error al cargar artículos');
+		        }
+		    },
+		    
+	        handleInput() {
+		        this.showResults = this.searchQuery.length > 0;
+		        this.selectedIndex = -1;
+		    },
+		    
+		    handleKeyDown(e) {
+		        // Permitir que ESC funcione siempre
+			    if (e.key === 'Escape') {
+			        this.showResults = false;
+			        this.selectedIndex = -1;
+			        return;
 			    }
-			},
+
+			    // Si el dropdown no está visible o no hay resultados, no hacer nada más
+			    if (!this.showResults || this.filteredArticulos.length === 0) return;
+
+			    // Prevenir comportamiento por defecto solo si se presionan teclas relevantes
+			    if (['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
+			        e.preventDefault();
+			    }
+		        
+		        switch(e.key) {
+		            case 'ArrowDown':
+		                this.selectedIndex = 
+		                    this.selectedIndex < this.filteredArticulos.length - 1 
+		                    ? this.selectedIndex + 1 
+		                    : 0;
+		                this.scrollToItem();
+		                break;
+		                
+		            case 'ArrowUp':
+		                this.selectedIndex = 
+		                    this.selectedIndex > 0 
+		                    ? this.selectedIndex - 1 
+		                    : this.filteredArticulos.length - 1;
+		                this.scrollToItem();
+		                break;
+		                
+		            case 'Enter':
+		                if (this.selectedIndex >= 0) {
+		                    this.selectItem(this.filteredArticulos[this.selectedIndex]);
+		                }
+		                break;
+		        }
+		    },
+		    
+		    scrollToItem() {
+		        this.$nextTick(() => {
+		            const container = this.$refs.dropdownContainer;
+        			const selectedItem = this.$refs.activeItem;
+		            
+		            if (container && selectedItem) {
+		                // Calcular posición para el scroll
+		                const containerTop = container.scrollTop;
+		                const containerBottom = containerTop + container.offsetHeight;
+		                const itemTop = selectedItem.offsetTop;
+		                const itemBottom = itemTop + selectedItem.offsetHeight;
+		                
+		                if (itemTop < containerTop) {
+		                    container.scrollTop = itemTop;
+		                } else if (itemBottom > containerBottom) {
+		                    container.scrollTop = itemBottom - container.offsetHeight;
+		                }
+		            }
+		        });
+		    },
+		    
+		    selectItem(articulo) {
+		        this.articuloSeleccionado = articulo;
+		        this.searchQuery = `${articulo.nombre} - ${articulo.modelo}`;
+		        this.articuloId = articulo.id_articulo;
+		        this.precio_unitario = articulo.precio_pub;
+		        this.showResults = false;
+		        this.selectedIndex = -1;
+		    },
+		    
+		    onBlur() {
+		        setTimeout(() => {
+		            this.showResults = false;
+		        }, 200);
+		    },
+
+			//hata aqui
 			mostrar_existencias(){
 					
 			},
@@ -226,6 +283,7 @@ const {createApp, ref} = Vue
 		mounted(){
 			this.listarArticulos();
 			this.listarBancos();
+			this.cargarArticulos();
 		},
 		
 }).mount('#app')
