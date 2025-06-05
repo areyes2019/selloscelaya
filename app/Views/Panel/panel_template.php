@@ -45,6 +45,16 @@
 <body>
     <header class="header">
         <div class="header-title">Panel de Control</div>
+                <div class="user-dropdown">
+            <button class="user-btn">
+                <span class="username"><?= session()->get('username') ?? 'Usuario' ?></span>
+                <i class="bi bi-person-circle"></i>
+            </button>
+            <div class="dropdown-content">
+                <a href="<?= base_url('perfil') ?>"><i class="bi bi-person"></i> Mi perfil</a>
+                <a href="<?= base_url('logout') ?>"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+            </div>
+        </div>
         <div class="menu-toggle-container">
             <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle menu">
                 <span id="menu-icon">☰</span>
@@ -56,80 +66,97 @@
         <div class="sidebar-header">
             <h2>Sello Pronto</h2>
         </div>
-        <ul>
-            <li>
-                <a href="<?php echo base_url('admin')?>"><i class="bi bi-house"></i>
-                <span>Inicio</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('ventas/pos')?>"><i class="bi bi-cash-coin"></i>
-                <span>POS</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('clientes'); ?>">
-                <i class="bi bi-person"></i>
-                <span>Clientes</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('proveedores'); ?>">
-                <i class="bi bi-people"></i>
-                <span>Proveedores</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('articulos'); ?>">
-                <i class="bi bi-box2"></i>
-                <span>Articulos</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('cotizaciones'); ?>">
-                <i class="bi bi-file-earmark-bar-graph"></i>
-                <span>Cotizaciones</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('compras'); ?>">
-                <i class="bi bi-file-earmark-plus"></i>
-                <span>Ordenes de Compra</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('administracion'); ?>">
-                <i class="bi bi-file-earmark-plus"></i>
-                <span>Panel de Trabajo</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('ordenes'); ?>">
-                <i class="bi bi-gear"></i>
-                <span>Ordenes de Trabajo</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('existencias/existencias_admin'); ?>">
-                <i class="bi bi-bar-chart"></i>
-                <span>Existencias</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('reportes/reporte'); ?>">
-                <i class="bi bi-coin"></i>
-                <span>Finansas</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo base_url('categorias/'); ?>">
-                <i class="bi bi-shop"></i>
-                <span>Catálogo</span>
-                </a>
-            </li>
-            
-            
-        </ul>
+        <!-- Contenedor con scroll -->
+        <div class="sidebar-menu-container">
+            <ul class="sidebar-menu">
+                <!-- Tus elementos del menú actual aquí -->
+                <li>
+                    <a href="<?php echo base_url('admin')?>"><i class="bi bi-house"></i>
+                    <span>Inicio</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('ventas/pos')?>"><i class="bi bi-cash-coin"></i>
+                    <span>POS</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('clientes'); ?>">
+                    <i class="bi bi-person"></i>
+                    <span>Clientes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('proveedores'); ?>">
+                    <i class="bi bi-people"></i>
+                    <span>Proveedores</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('articulos'); ?>">
+                    <i class="bi bi-box2"></i>
+                    <span>Articulos</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('cotizaciones'); ?>">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Cotizaciones</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('compras'); ?>">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    <span>Ordenes de Compra</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('administracion'); ?>">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    <span>Panel de Trabajo</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('ordenes'); ?>">
+                    <i class="bi bi-gear"></i>
+                    <span>Ordenes de Trabajo</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('existencias/existencias_admin'); ?>">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>Existencias</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('reportes/reporte'); ?>">
+                    <i class="bi bi-coin"></i>
+                    <span>Finansas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url('categorias/'); ?>">
+                    <i class="bi bi-shop"></i>
+                    <span>Catálogo</span>
+                    </a>
+                </li>                    
+            </ul>
+        </div>
+        <div class="user-panel">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name"><?= session()->get('username') ?? 'Usuario' ?></span>
+                    <span class="user-email"><?= session()->get('email') ?></span>
+                </div>
+            </div>
+            <a href="<?= base_url('logout') ?>" class="logout-btn" title="Cerrar sesión">
+                <i class="bi bi-box-arrow-right"></i>
+                <span class="logout-text">Salir</span>
+            </a>
+        </div>
     </nav>
     
     <main class="content" id="content">

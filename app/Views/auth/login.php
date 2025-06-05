@@ -23,7 +23,7 @@
                 </div>
             <?php endif; ?>
             
-            <form action="<?= site_url('login') ?>" method="post">
+            <form action="<?php echo base_url('entrar'); ?>" method="post">
                 <?= csrf_field() ?>
                 
                 <div class="mb-4">

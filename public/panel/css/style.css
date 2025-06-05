@@ -17,20 +17,103 @@ body {
     min-height: 100vh;
     background-color: #f5f5f5;
 }
+/*Estructura principal del sidebar*/
+/* Estructura principal del sidebar */
 .sidebar {
-    width: var(--sidebar-width);
-    height: 100vh;
-    background: var(--sidebar-bg);
-    color: white;
-    padding: 20px 0;
     position: fixed;
-    left: 0;
     top: 0;
-    transition: transform var(--transition-time) ease-in-out;
-    z-index: 100;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    transform: translateX(0);
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: all 0.3s ease;
 }
+
+/* Contenedor del menú con scroll */
+.sidebar-menu-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 150px; /* Espacio para el user-panel */
+}
+
+/* Estilos para la lista del menú */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    padding: 9px 9px;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.sidebar-menu li a:hover {
+    background: #34495e;
+}
+
+.sidebar-menu li a i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+/* User panel fijo en la parte inferior */
+.user-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 250px;
+    padding: 15px;
+    background: #1a252f;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos para el scrollbar */
+.sidebar-menu-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-menu-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-menu-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.sidebar-menu-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.visible {
+        transform: translateX(0);
+        width: 280px;
+    }
+    
+    .user-panel {
+        width: 280px;
+    }
+    
+    .content {
+        margin-left: 0;
+    }
+}
+/*hasta aqui el nuevo ajuste */
 
 .sidebar.hidden {
     transform: translateX(-100%);
@@ -370,7 +453,95 @@ body {
     align-items: center;
     justify-content: center;
 }
+/* Panel de usuario en sidebar */
+.user-panel {
+    position: fixed;
+    bottom: 0;
+    width: var(--sidebar-width);
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 500;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.user-email {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.logout-text {
+    font-size: 0.9rem;
+}
+
+/* Ajuste para el contenido principal cuando el sidebar está abierto */
+.content {
+    margin-bottom: 80px; /* Espacio para el user-panel */
+}
+
+@media (max-width: 768px) {
+    .user-panel {
+        width: 100%;
+        left: 0;
+    }
+    
+    .sidebar.hidden ~ .content {
+        margin-bottom: 0;
+    }
+    
+    .sidebar.hidden .user-panel {
+        display: none;
+    }
+}
 /* Ajustes para móviles */
 @media (max-width: 768px) {
     .modern-drop-zone {

@@ -1,4 +1,3 @@
-// app/Controllers/Auth/Register.php
 <?php
 
 namespace App\Controllers\Auth;
@@ -49,6 +48,6 @@ class Register extends BaseController
         
         $this->userModel->save($data);
         
-        return redirect()->to('/login')->with('message', 'Registration successful. Please login.');
+        return redirect()->to('/login')->with('message', 'Registro exitoso. Valla inicio.');
     }
 }

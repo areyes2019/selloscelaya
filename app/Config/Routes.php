@@ -18,24 +18,21 @@ $routes->get('maestros', 'Home::catalogo');
 $routes->post('contacto', 'Home::contacto');
 
 //logeo
-$routes->group('', ['namespace' => 'App\Controllers\Auth'], function($routes) {
-    $routes->get('register', 'Register::index');
-    $routes->post('register', 'Register::index');
-    
-    $routes->get('login', 'Login::index');
-    $routes->post('login', 'Login::index');
-    $routes->get('logout', 'Login::logout');
-    
-    $routes->get('forgot-password', 'ForgotPassword::index');
-    $routes->post('forgot-password', 'ForgotPassword::index');
-    $routes->get('reset-password', 'ForgotPassword::resetPassword');
-    $routes->post('reset-password', 'ForgotPassword::resetPassword');
-});
+$routes->get('register', 'Auth\Register::index');
+$routes->post('register', 'Auth\Register::index');
 
-$routes->group('',static function($routes){
+$routes->get('login', 'auth\Login::index');
+$routes->post('entrar', 'auth\Login::processLogin');
+$routes->get('logout', 'auth\Login::logout');
+
+$routes->get('forgot-password', 'ForgotPassword::index');
+$routes->post('forgot-password', 'ForgotPassword::index');
+$routes->get('reset-password', 'ForgotPassword::resetPassword');
+$routes->post('reset-password', 'ForgotPassword::resetPassword');
+
+$routes->group('',['filter'=>'AuthFilter'], function($routes){
 	
 	$routes->get('admin', 'Admin\Admin::index');
-	$routes->get('migrar956_56', 'Admin\EjecutarMigraciones::index');
 	
 	/*Clientes*/
 	$routes->get('clientes', 'Admin\Clientes::index');
