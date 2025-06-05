@@ -45,16 +45,6 @@
 <body>
     <header class="header">
         <div class="header-title">Panel de Control</div>
-                <div class="user-dropdown">
-            <button class="user-btn">
-                <span class="username"><?= session()->get('username') ?? 'Usuario' ?></span>
-                <i class="bi bi-person-circle"></i>
-            </button>
-            <div class="dropdown-content">
-                <a href="<?= base_url('perfil') ?>"><i class="bi bi-person"></i> Mi perfil</a>
-                <a href="<?= base_url('logout') ?>"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
-            </div>
-        </div>
         <div class="menu-toggle-container">
             <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle menu">
                 <span id="menu-icon">☰</span>
