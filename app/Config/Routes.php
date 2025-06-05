@@ -21,9 +21,9 @@ $routes->post('contacto', 'Home::contacto');
 $routes->get('register', 'Auth\Register::index');
 $routes->post('register', 'Auth\Register::index');
 
-$routes->get('login', 'auth\Login::index');
-$routes->post('entrar', 'auth\Login::processLogin');
-$routes->get('logout', 'auth\Login::logout');
+$routes->get('login', 'Auth\Login::index');
+$routes->post('entrar', 'Auth\Login::processLogin');
+$routes->get('logout', 'Auth\Login::logout');
 
 $routes->get('forgot-password', 'ForgotPassword::index');
 $routes->post('forgot-password', 'ForgotPassword::index');
