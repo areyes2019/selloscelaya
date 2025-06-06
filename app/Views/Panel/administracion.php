@@ -67,17 +67,19 @@
                 </tbody>
             </table>
         </div>
-
         <!-- Pestaña Elaboración -->
         <div class="tab-pane fade" id="elaboracion" role="tabpanel">
-            <div class="mb-3">
+            <!-- Mostrar botones solo si hay órdenes en elaboración -->
+            <div class="mb-3" v-if="ordenes.elaboracion.length > 0">
                 <a href="<?= site_url('ordenes/descargar_ordenes') ?>" target="_blank" class="btn btn-danger rounded-0 me-2">
-                <i class="bi bi-file-earmark-pdf"></i> Descargar Órdenes (PDF)
+                    <i class="bi bi-file-earmark-pdf"></i> Descargar Órdenes (PDF)
                 </a>
                 <a href="<?= site_url('ordenes/pedidos-pendientes') ?>" class="btn btn-warning rounded-0" target="_blank">
                     <i class="fas fa-tags"></i> Generar Etiquetas Pendientes (PDF)
                 </a>
             </div>
+
+            <!-- Tabla de órdenes -->
             <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
