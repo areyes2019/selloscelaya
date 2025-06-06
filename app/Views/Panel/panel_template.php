@@ -53,8 +53,14 @@
     </header>
     
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2>Sello Pronto</h2>
+        <div class="sidebar-header d-flex justify-content-between align-items-center p-3 border-bottom">
+            <!-- Logo + Nombre de la empresa (izquierda) -->
+            <div class="d-flex align-items-center">
+                <a href="<?php echo base_url('admin');?>">
+                    <img src="<?= base_url('public/img/logo2.png') ?>" alt="Logo" class="img-fluid me-2" style="height: 30px;">
+                </a>
+                <h4 class="m-0 text-white">Sello Pronto</h4>
+            </div>
         </div>
         <!-- Contenedor con scroll -->
         <div class="sidebar-menu-container">
