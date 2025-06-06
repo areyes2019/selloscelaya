@@ -4,6 +4,7 @@
     <h2 class="mb-3">Flujo de Trabajo</h2>
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
+    
     <!-- Pestañas y contenido -->
     <ul class="nav nav-tabs" id="ordenesTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -69,6 +70,14 @@
 
         <!-- Pestaña Elaboración -->
         <div class="tab-pane fade" id="elaboracion" role="tabpanel">
+            <div class="mb-3">
+                <a href="<?= site_url('ordenes/descargar_ordenes') ?>" target="_blank" class="btn btn-danger rounded-0 me-2">
+                <i class="bi bi-file-earmark-pdf"></i> Descargar Órdenes (PDF)
+                </a>
+                <a href="<?= site_url('ordenes/pedidos-pendientes') ?>" class="btn btn-warning rounded-0" target="_blank">
+                    <i class="fas fa-tags"></i> Generar Etiquetas Pendientes (PDF)
+                </a>
+            </div>
             <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
@@ -210,7 +219,7 @@
     </div>
 
     <!-- Modal para detalles de la orden -->
-    <div class="modal fade" id="ordenModal" tabindex="-1" aria-labelledby="ordenModalLabel" aria-hidden="true">
+    <div class="modal fade" id="ordenModal" tabindex="-1" aria-labelledby="ordenModalLabel">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">

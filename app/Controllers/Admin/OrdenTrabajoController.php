@@ -268,7 +268,7 @@ class OrdenTrabajoController extends BaseController
         // 1. Instanciar el Modelo Principal
         $pedidoModel = new PedidoModel();
 
-        // 2. Construir la Consulta con JOIN
+        // 2. Construir la Consulta con JOINs necesarios
         $query = $pedidoModel
             ->select([
                 'pedidos.id as pedido_id_col',
@@ -276,14 +276,17 @@ class OrdenTrabajoController extends BaseController
                 'pedidos.cliente_telefono',
                 'pedidos.total',
                 'pedidos.anticipo',
-                'pedidos.estado', // Este campo podría ser diferente al status de OT
+                'pedidos.estado',
                 'ot.imagen_path',
                 'ot.color_tinta',
                 'ot.observaciones',
-                'ot.status' // Asegúrate de incluir este campo si lo necesitas mostrar
+                'ot.status',
+                'art.modelo' // <-- AÑADIDO
             ])
             ->join('sellopro_ordenes_trabajo ot', 'ot.pedido_id = pedidos.id', 'left')
-            ->where('ot.status', 'Elaboracion'); // Filtramos por el status en la tabla de órdenes de trabajo
+            ->join('detalle_pedido dp', 'dp.pedido_id = pedidos.id', 'left')
+            ->join('sellopro_articulos art', 'art.id_articulo = dp.id_articulo', 'left')
+            ->where('ot.status', 'Elaboracion');
 
         // 3. Ejecutar la consulta y obtener resultados
         $resultadosCombinados = $query->get()->getResultObject();
@@ -322,6 +325,7 @@ class OrdenTrabajoController extends BaseController
                                  <th>Imagen</th>
                                  <th>Saldo</th>
                                  <th>Color Tinta</th>
+                                 <th>Modelo</th>
                                  <th>Observaciones OT</th>
                              </tr>
                          </thead>
@@ -338,7 +342,7 @@ class OrdenTrabajoController extends BaseController
                 $saldoClass = 'pagado';
             } else {
                 $saldoCalculado = $total - $anticipo;
-                $saldoDisplay = number_format($saldoCalculado, 2, ',', '.') . ' €';
+                $saldoDisplay = number_format($saldoCalculado, 2, ',', '.') . ' $';
             }
 
             $html .= '<tr>';
@@ -367,8 +371,8 @@ class OrdenTrabajoController extends BaseController
 
             $html .= '<td class="' . $saldoClass . '">' . $saldoDisplay . '</td>';
             $html .= '<td>' . esc($item->color_tinta ?? '<span class="na">N/D</span>') . '</td>';
+            $html .= '<td>' . esc($item->modelo ?? '<span class="na">N/D</span>') . '</td>';
             $html .= '<td class="observaciones-cell">' . nl2br(esc($item->observaciones ?? '<span class="na">N/D</span>')) . '</td>';
-
             $html .= '</tr>';
         }
 
@@ -398,6 +402,7 @@ class OrdenTrabajoController extends BaseController
         $dompdf->stream($nombreArchivo, ['Attachment' => 0]);
         exit();
     }
+
     public function new($pedido_id = null)
     {
         if ($pedido_id === null) {
@@ -553,7 +558,7 @@ class OrdenTrabajoController extends BaseController
 
         // --- Guardar en la BD ---
         if ($this->ordenTrabajoModel->insert($dataToSave)) {
-            return redirect()->to('/ordenes')->with('success', 'Orden de Trabajo creada con éxito.'); // Redirigir al dashboard
+            return redirect()->to('/administracion')->with('success', 'Orden de Trabajo creada con éxito.'); // Redirigir al dashboard
         } else {
             // Si falla la inserción (raro si la validación pasó, pero posible)
              // Eliminar imagen si se subió pero no se guardó el registro
@@ -695,7 +700,7 @@ class OrdenTrabajoController extends BaseController
             return redirect()->back()->with('error', 'Error al eliminar la orden: ' . $e->getMessage());
         }
     }
-    public function mostrar($id = null)
+    public function mostrar($id)
     {
         $builder = $this->ordenTrabajoModel->builder('sellopro_ordenes_trabajo');
 
@@ -715,6 +720,7 @@ class OrdenTrabajoController extends BaseController
         $builder->join('pedidos', 'pedidos.id = sellopro_ordenes_trabajo.pedido_id');
         $builder->join('detalle_pedido', 'detalle_pedido.pedido_id = pedidos.id');
         $builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = detalle_pedido.id_articulo');
+        $builder->where('sellopro_ordenes_trabajo.id_ot', $id);
         $builder->orderBy('sellopro_ordenes_trabajo.created_at', 'DESC');
 
         $query = $builder->get();
