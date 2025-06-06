@@ -143,7 +143,6 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->get('nueva_cotizacion', 'admin\Cotizaciones::nueva');
 
 
-	/*Pos experimental*/
 	// Rutas para el módulo de Pedidos POS
 	$routes->group('ventas', static function ($routes) {
 	    $routes->get('pos', 'Admin\PuntoVentaController::index');          // Listar pedidos (historial)
@@ -163,7 +162,6 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    // $routes->get('pedidos/download/(:num)', 'PedidosController::downloadTicket/$1');
 	});
 
-	/*Pos experimental*/
 	// Rutas para el módulo de Pedidos POS
 	$routes->group('reportes', static function ($routes) {
 	    $routes->get('reporte', 'Admin\BalanceController::index'); //reporte de utilidede
@@ -205,6 +203,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 		$routes->post('actualizar-status/(:num)', 'OrdenTrabajoController::actualizarStatus/$1');
 		$routes->get('eliminar/(:num)', 'OrdenTrabajoController::eliminar/$1');
 		$routes->get('crear_orden_trabajo/(:num)', 'OrdenTrabajoController::crear_orden_trabajo/$1');
+	    $routes->get('mostrar/(:num)', 'OrdenTrabajoController::mostrar/$1'); // (Futuro) Eliminar
 
 	});
 	//gastos

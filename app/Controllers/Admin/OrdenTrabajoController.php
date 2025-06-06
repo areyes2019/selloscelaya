@@ -9,11 +9,12 @@ use App\Models\CotizacionesModel; // Para obtener datos del cliente
 use App\Models\ClientesModel; // Para obtener datos del cliente
 use CodeIgniter\Exceptions\PageNotFoundException;
 use Dompdf\Dompdf;
-
+use CodeIgniter\API\ResponseTrait; // Añade esta línea
 class OrdenTrabajoController extends BaseController
 {
     protected $ordenTrabajoModel;
     protected $pedidoModel;
+    use ResponseTrait;
 
     public function __construct()
     {
@@ -693,6 +694,34 @@ class OrdenTrabajoController extends BaseController
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al eliminar la orden: ' . $e->getMessage());
         }
+    }
+    public function mostrar($id = null)
+    {
+        $builder = $this->ordenTrabajoModel->builder('sellopro_ordenes_trabajo');
+
+        $builder->select('
+            sellopro_ordenes_trabajo.*, 
+            pedidos.cliente_nombre AS pedido_cliente, 
+            pedidos.total, 
+            pedidos.estado, 
+            detalle_pedido.descripcion, 
+            detalle_pedido.cantidad, 
+            detalle_pedido.precio_unitario, 
+            sellopro_articulos.nombre AS nombre_articulo,
+            sellopro_articulos.modelo, 
+            sellopro_articulos.precio_pub
+        ');
+
+        $builder->join('pedidos', 'pedidos.id = sellopro_ordenes_trabajo.pedido_id');
+        $builder->join('detalle_pedido', 'detalle_pedido.pedido_id = pedidos.id');
+        $builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = detalle_pedido.id_articulo');
+        $builder->orderBy('sellopro_ordenes_trabajo.created_at', 'DESC');
+
+        $query = $builder->get();
+        $resultado = $query->getResult();
+
+        return json_encode($resultado);
+
     }
 
 

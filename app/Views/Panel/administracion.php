@@ -34,6 +34,7 @@
             <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
+                        <th># Orden</th>
                         <th>Nombre</th>
                         <th>Teléfono</th>
                         <th>Img</th>
@@ -42,6 +43,11 @@
                 </thead>
                 <tbody>
                     <tr v-for="orden in ordenes.dibujo" :key="orden.id_ot">
+                        <td>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#ordenModal" @click="cargarDetalleOrden(orden.id_ot)">
+                                {{ orden.id_ot }}
+                            </a>
+                        </td>
                         <td>{{ orden.cliente_nombre }}</td>
                         <td>{{ orden.cliente_telefono }}</td>
                         <td>
@@ -66,6 +72,7 @@
             <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
+                        <th># Orden</th>
                         <th>Nombre</th>
                         <th>Teléfono</th>
                         <th>Img</th>
@@ -74,6 +81,11 @@
                 </thead>
                 <tbody>
                     <tr v-for="orden in ordenes.elaboracion" :key="orden.id_ot">
+                        <td>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#ordenModal" @click="cargarDetalleOrden(orden.id_ot)">
+                                {{ orden.id_ot }}
+                            </a>
+                        </td>
                         <td>{{ orden.cliente_nombre }}</td>
                         <td>{{ orden.cliente_telefono }}</td>
                         <td>
@@ -98,6 +110,7 @@
             <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
+                        <th># Orden</th>
                         <th>Nombre</th>
                         <th>Teléfono</th>
                         <th>Img</th>
@@ -107,6 +120,11 @@
                 </thead>
                 <tbody>
                     <tr v-for="orden in ordenes.entrega" :key="orden.id_ot">
+                        <td>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#ordenModal" @click="cargarDetalleOrden(orden.id_ot)">
+                                {{ orden.id_ot }}
+                            </a>
+                        </td>
                         <td>{{ orden.cliente_nombre }}</td>
                         <td>{{ orden.cliente_telefono }}</td>
                         <td>
@@ -143,11 +161,12 @@
             </table>
         </div>
 
-        <!-- Nueva Pestaña Facturación -->
+        <!-- Pestaña Facturación -->
         <div class="tab-pane fade" id="facturacion" role="tabpanel">
             <table class="table table-bordered">
                 <thead class="table-light">
                     <tr>
+                        <th># Orden</th>
                         <th>Nombre</th>
                         <th>Teléfono</th>
                         <th>Img</th>
@@ -157,6 +176,11 @@
                 </thead>
                 <tbody>
                     <tr v-for="orden in ordenes.facturacion" :key="orden.id_ot">
+                        <td>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#ordenModal" @click="cargarDetalleOrden(orden.id_ot)">
+                                {{ orden.id_ot }}
+                            </a>
+                        </td>
                         <td>{{ orden.cliente_nombre }}</td>
                         <td>{{ orden.cliente_telefono }}</td>
                         <td>
@@ -184,6 +208,72 @@
             </table>
         </div>
     </div>
+
+    <!-- Modal para detalles de la orden -->
+    <div class="modal fade" id="ordenModal" tabindex="-1" aria-labelledby="ordenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ordenModalLabel">Detalles de la Orden #{{ ordenSeleccionada.id_ot }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div v-if="cargandoDetalle" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <!-- Aquí irá el contenido del detalle de la orden -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Información del Cliente</h6>
+                                <p><strong>Nombre:</strong> {{ ordenSeleccionada.cliente_nombre }}</p>
+                                <p><strong>Teléfono:</strong> {{ ordenSeleccionada.cliente_telefono }}</p>
+                                <p><strong>Color de tinta:</strong> {{ ordenSeleccionada.color_tinta}}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Detalles de la Orden</h6>
+                                <p><strong>Observaciones</strong></p>
+                                <p>{{ordenSeleccionada.observaciones}}</p>
+                                <p><strong>Modelo</strong></p>
+                                <p>{{ordenSeleccionada.modelo}}</p>
+                                <p><strong>Estado:</strong> 
+                                    <span class="badge" :class="{
+                                        'bg-primary': ordenSeleccionada.status === 'Dibujo',
+                                        'bg-warning': ordenSeleccionada.status === 'Elaboracion',
+                                        'bg-success': ordenSeleccionada.status === 'Entregado',
+                                        'bg-info': ordenSeleccionada.status === 'Facturacion'
+                                    }">
+                                        {{ ordenSeleccionada.status }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h6>Imagen de referencia</h6>
+                                <div v-if="ordenSeleccionada.imagen_path" class="text-center">
+                                    <img :src="'/writable/uploads/ordenes/' + ordenSeleccionada.imagen_path" class="img-fluid" style="max-height: 300px;">
+                                </div>
+                                <div v-else class="alert alert-warning">
+                                    No hay imagen adjunta
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Más detalles pueden agregarse aquí -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" @click="imprimirOrden(ordenSeleccionada.id_ot)">
+                        <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 <script src="<?php echo base_url('public/js/admin.js'); ?>"></script>
 <?php echo $this->endSection()?>
