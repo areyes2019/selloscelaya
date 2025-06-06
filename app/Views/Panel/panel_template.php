@@ -123,13 +123,7 @@
                     <i class="bi bi-coin"></i>
                     <span>Finansas</span>
                     </a>
-                </li>
-                <li>
-                    <a href="<?php echo base_url('categorias/'); ?>">
-                    <i class="bi bi-shop"></i>
-                    <span>Catálogo</span>
-                    </a>
-                </li>                    
+                </li>                
             </ul>
         </div>
         <div class="user-panel">
