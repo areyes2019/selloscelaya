@@ -218,6 +218,9 @@ const {createApp, ref} = Vue
             currency: 'MXN',
           }).format(value);
         },
+        ejemplo() {
+          // body...
+        }
     },
     mounted(){
       this.listarArticulos();
