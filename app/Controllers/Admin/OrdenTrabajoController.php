@@ -1,5 +1,5 @@
 <?php
-
+//cambio para subir
 namespace App\Controllers\Admin; // Ajusta si es necesario
 
 use App\Controllers\BaseController;
