@@ -195,8 +195,33 @@ const {createApp, ref} = Vue
             document.getElementById('autocomplete_input').focus();
           });
         },
+        resetearCamposArticulo() {
+          this.articuloId = null;
+          this.articuloSeleccionado = null;
+          this.searchQuery = '';
+          this.precio_unitario = '';
+          this.cantidad = 1;
+          this.showResults = false;
+        },
+        eliminarItem(index) {
+          if (confirm('¿Está seguro que desea eliminar este artículo?')) {
+            if (index >= 0 && index < this.itemsPedido.length) {
+              this.itemsPedido.splice(index, 1);
+              this.aplicarDescuento(); // Recalcular descuentos
+            }
+          }
+        },
+        formatCurrency(value) {
+          if (value === null || value === undefined) return '$0.00';
+          return new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+          }).format(value);
+        },
     },
     mounted(){
-      this.mostrar_balance();
+      this.listarArticulos();
+      this.listarBancos();
+      this.cargarArticulos();
     }
 }).mount('#app')
