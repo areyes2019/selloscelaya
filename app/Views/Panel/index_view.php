@@ -52,18 +52,23 @@
                         @keydown="handleKeyDown"
                     >
                     <div class="autocomplete-dropdown" v-if="showResults && filteredArticulos.length" ref="dropdownContainer">
-                        <div 
-                            v-for="(articulo, index) in filteredArticulos"
-                            :key="articulo.id_articulo"
-                            class="dropdown-item"
-                            :class="{ 'active': index === selectedIndex }"
-                            @click="selectItem(articulo)"
-                            :ref="index === selectedIndex ? 'activeItem' : null"
-                        >
-                            <div class="d-flex justify-content-between">
-                                <strong>{{articulo.modelo}}</strong>
-                            </div>
+                      <div 
+                        v-for="(articulo, index) in filteredArticulos"
+                        :key="articulo.id_articulo"
+                        class="dropdown-item"
+                        :class="{ 'active': index === selectedIndex }"
+                        @click="selectItem(articulo)"
+                        :ref="index === selectedIndex ? 'activeItem' : null"
+                      >
+                        <div>
+                          <strong>{{articulo.nombre}} - {{articulo.modelo}}</strong>
+                          <div class="small text-muted">Clave: {{articulo.clave || 'N/A'}}</div>
+                          <div class="d-flex justify-content-between">
+                            <span>Precio: {{formatCurrency(articulo.precio_pub)}}</span>
+                            <span>Stock: {{articulo.stock || 0}}</span>
+                          </div>
                         </div>
+                      </div>
                     </div>
                 </div>
                 <input type="hidden" v-model="articuloId">
