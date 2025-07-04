@@ -706,13 +706,9 @@ class OrdenTrabajoController extends BaseController
 
         $builder->select('
             sellopro_ordenes_trabajo.*, 
-            pedidos.id AS pedido_id,
-            pedidos.cliente_nombre AS pedido_cliente,
-            pedidos.cliente_telefono,
+            pedidos.cliente_nombre AS pedido_cliente, 
             pedidos.total, 
-            pedidos.estado,
-            pedidos.anticipo,
-            (pedidos.total - pedidos.anticipo) AS saldo_calculado,
+            pedidos.estado, 
             detalle_pedido.descripcion, 
             detalle_pedido.cantidad, 
             detalle_pedido.precio_unitario, 
@@ -730,21 +726,8 @@ class OrdenTrabajoController extends BaseController
         $query = $builder->get();
         $resultado = $query->getResult();
 
-        if(empty($resultado)) {
-            return json_encode([]);
-        }
-
-        // Convertir a float para asegurar el cálculo correcto
-        $total = (float)$resultado[0]->total;
-        $anticipo = (float)$resultado[0]->anticipo;
-        $saldo = $total - $anticipo;
-
-        // Formatear valores numéricos
-        $resultado[0]->total = number_format($total, 2);
-        $resultado[0]->anticipo = number_format($anticipo, 2);
-        $resultado[0]->saldo = ($saldo <= 0.00) ? 'Pagado' : number_format($saldo, 2);
-
         return json_encode($resultado);
+
     }
 
 

@@ -172,14 +172,14 @@ class PuntoVentaController extends BaseController
     }
     public function create()
     {
+
         // Validar los datos del formulario
         $rules = [
             'cliente_nombre' => 'required|min_length[3]',
             'cliente_telefono' => 'permit_empty|numeric',
             'anticipo' => 'required|numeric|greater_than[0]',
             'detalle' => 'required',
-            'banco_id' => 'required|numeric',
-            'descuento' => 'required|numeric|greater_than_equal_to[0]|less_than_equal_to[100]'
+            'banco_id' => 'required|numeric'
         ];
 
         if (!$this->validate($rules)) {
@@ -187,18 +187,10 @@ class PuntoVentaController extends BaseController
         }
 
         // Obtener datos del formulario
-        $descuento = (float)$this->request->getPost('descuento');
-        $totalSinDescuento = (float)$this->request->getPost('total_final_hidden');
-        $montoDescuento = $totalSinDescuento * ($descuento / 100);
-        $totalConDescuento = $totalSinDescuento - $montoDescuento;
-
         $data = [
             'cliente_nombre' => $this->request->getPost('cliente_nombre'),
             'cliente_telefono' => $this->request->getPost('cliente_telefono'),
-            'total' => $totalConDescuento, // Guardamos el total con descuento aplicado
-            'total_sin_descuento' => $totalSinDescuento, // Guardamos el total original
-            'descuento' => $descuento, // Porcentaje de descuento aplicado
-            'monto_descuento' => $montoDescuento, // Monto descontado
+            'total' => $this->request->getPost('total_final_hidden'),
             'estado' => 'pendiente',
             'anticipo' => $this->request->getPost('anticipo')
         ];
@@ -227,7 +219,7 @@ class PuntoVentaController extends BaseController
                 throw new \Exception('Error al insertar el pedido: ' . implode(', ', $pedidosModel->errors()));
             }
 
-            // 3. Guardar detalles del pedido (con precios originales)
+            // 3. Guardar detalles del pedido
             $detalleModel = new DetallePedidoModel();
             $detalles = $this->request->getPost('detalle');
 
@@ -237,8 +229,8 @@ class PuntoVentaController extends BaseController
                     'id_articulo' => $item['id_articulo'],
                     'descripcion' => $item['descripcion'],
                     'cantidad' => $item['cantidad'],
-                    'precio_unitario' => $item['precio_unitario'], // Guardamos el precio unitario original
-                    'subtotal' => $item['cantidad'] * $item['precio_unitario'] // Subtotal sin descuento
+                    'precio_unitario' => $item['precio_unitario'],
+                    'subtotal' => $item['cantidad'] * $item['precio_unitario']
                 ];
                 
                 if (!$detalleModel->insert($detalleData)) {
