@@ -45,14 +45,29 @@ const {createApp, ref} = Vue
       }
     },
     methods:{
-      mostrar_balance(){
-        if (this.periodo == 1) {
-          //hacemos la consulta del mes
-          axios.get('/reportes/este_mes').then((response)=>{
-            this.resumen = response.data;
-          })
-        }
-      }
+      async listarBancos() {
+          try {
+            const response = await axios.get('/cuentas/listar');
+            this.bancos = response.data;
+          } catch (error) {
+            console.error('Error al obtener las cuentas bancarias:', error);
+            alert('Error al cargar las cuentas bancarias');
+          }
+      },
+      async cargarArticulos() {
+              try {
+                  const response = await axios.get('/ventas/stock');
+                  this.articulos = response.data;
+              } catch (error) {
+                  console.error('Error:', error);
+                  alert('Error al cargar artículos');
+              }
+          },
+          
+      handleInput() {
+              this.showResults = this.searchQuery.length > 0;
+              this.selectedIndex = -1;
+      },
     },
     mounted(){
       this.mostrar_balance();
