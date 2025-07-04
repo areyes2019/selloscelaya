@@ -1,4 +1,4 @@
-<?= $this->extend('Panel/panel_template') //?>
+<?= $this->extend('Panel/panel_template') ?>
 
 <?= $this->section('contenido') ?>
 <div id="app">
@@ -146,25 +146,63 @@
                                 <label for="anticipo" class="form-label"><strong>Anticipo:</strong></label>
                             </div>
                             <div class="col-6">
-                              <input 
-                                type="number" 
-                                step="0.01" 
-                                min="0" 
-                                :max="total"
-                                class="form-control" 
-                                id="anticipo" 
-                                name="anticipo" 
-                                v-model.number="anticipo"
-                                @input="actualizarAnticipo"
-                              >
+                                  <input 
+                                    type="number" 
+                                    step="0.01" 
+                                    min="0" 
+                                    :max="total"
+                                    class="form-control" 
+                                    id="anticipo" 
+                                    name="anticipo" 
+                                    v-model.number="anticipo"
+                                    @input="actualizarAnticipo"
+                                  >
                             </div>
-                          </div>
-                          
-                          <div class="row mb-4">
-                            <div class="col-6"><strong>Saldo:</strong></div>
-                            <div class="col-6 text-end">{{ formatCurrency(saldo) }}</div>
-                          </div>
-                          <!-- En la sección de Resumen de Pago, agrega esto: -->
+                            </div>
+                            <!-- Sección de descuento -->
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <label for="descuento" class="form-label"><strong>Descuento:</strong></label>
+                                </div>
+                                <div class="col-6">
+                                    <select 
+                                        class="form-select" 
+                                        id="descuento" 
+                                        name="descuento"
+                                        v-model="descuento"
+                                        @change="aplicarDescuento"
+                                    >
+                                        <option value="0">Sin descuento</option>
+                                        <option value="5">5%</option>
+                                        <option value="10">10%</option>
+                                        <option value="15">15%</option>
+                                        <option value="20">20%</option>
+                                        <option value="25">25%</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-6"><strong>Subtotal:</strong></div>
+                                <div class="col-6 text-end">{{ formatCurrency(subtotal) }}</div>
+                            </div>
+
+                            <div class="row mb-4" v-if="descuento > 0">
+                                <div class="col-6"><strong>Descuento ({{ descuento }}%):</strong></div>
+                                <div class="col-6 text-end">- {{ formatCurrency(montoDescuento) }}</div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-6"><strong>Total con descuento:</strong></div>
+                                <div class="col-6 text-end">{{ formatCurrency(totalConDescuento) }}</div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-6"><strong>Saldo:</strong></div>
+                                <div class="col-6 text-end">{{ formatCurrency(saldo) }}</div>
+                            </div>
+                            
+                            <!-- Select de bancos -->
                             <div class="row mb-2 mt-2">
                                 <div class="col-6"><strong>Banco:</strong></div>
                                 <div class="col-6">
