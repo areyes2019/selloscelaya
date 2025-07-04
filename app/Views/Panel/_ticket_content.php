@@ -1,4 +1,4 @@
-<?php // Helper para formatear números
+<?php // Helper para formatear números (comentario para subir)
 helper('number'); ?>
 
 <div class="ticket-header">
