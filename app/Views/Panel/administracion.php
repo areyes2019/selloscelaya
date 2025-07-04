@@ -1,4 +1,4 @@
-<?php echo $this->extend('Panel/panel_template')?>
+<?php echo $this->extend('Panel/panel_template') //?>
 <?php echo $this->section('contenido')?>
 <div class="container-fluid p-4" id="app">
     <h2 class="mb-3">Flujo de Trabajo</h2>

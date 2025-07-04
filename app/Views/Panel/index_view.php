@@ -1,4 +1,4 @@
-<?= $this->extend('Panel/panel_template') ?>
+<?= $this->extend('Panel/panel_template') //?>
 
 <?= $this->section('contenido') ?>
 <div id="app">
