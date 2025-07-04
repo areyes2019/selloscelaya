@@ -58,10 +58,9 @@
                             <span v-else class="badge bg-secondary">Sin imagen</span>
                         </td>
                         <td>
-                            <select class="form-select form-select-sm" @change="actualizarEstado(orden.id_ot, $event.target.value)" style="width: auto; display: inline-block;">
-                                <option value="Dibujo" selected>Dibujo</option>
-                                <option value="Elaboracion">Elaboración</option>
-                            </select>
+                            <button class="btn btn-primary btn-sm" @click="actualizarEstado(orden.id_ot, 'Elaboracion')">
+                                A Producción
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -106,16 +105,14 @@
                             <span v-else class="badge bg-secondary">Sin imagen</span>
                         </td>
                         <td>
-                            <select class="form-select form-select-sm" @change="actualizarEstado(orden.id_ot, $event.target.value)" style="width: auto; display: inline-block;">
-                                <option value="Dibujo">Dibujo</option>
-                                <option value="Entrega">Entrega</option>
-                            </select>
+                            <button class="btn btn-success btn-sm" @click="actualizarEstado(orden.id_ot, 'Entrega')">
+                                <i class="bi bi-check-circle me-1"></i> Elaborado
+                            </button>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-
         <!-- Pestaña Entrega -->
         <div class="tab-pane fade" id="entrega" role="tabpanel">
             <table class="table table-bordered">
@@ -126,7 +123,7 @@
                         <th>Teléfono</th>
                         <th>Img</th>
                         <th>Status</th>
-                        <th>Acción</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -147,25 +144,48 @@
                         <td>
                             <span class="badge" :class="{
                                 'bg-success': orden.status.toLowerCase() === 'entregado',
-                                'bg-info': orden.status.toLowerCase() === 'entrega'
+                                'bg-info': orden.status.toLowerCase() === 'entrega',
+                                'bg-warning': orden.status.toLowerCase() === 'facturacion'
                             }">
                                 {{ orden.status }}
                             </span>
+                            <br>
+                            <small class="text-muted" v-if="orden.estado_pedido">
+                                {{ orden.estado_pedido === 'pagado' ? 'Pagado' : 'Pendiente de pago' }}
+                            </small>
                         </td>
                         <td>
-                            <select v-if="orden.status.toLowerCase() === 'entrega'" class="form-select form-select-sm" @change="actualizarEstado(orden.id_ot, $event.target.value)" style="width: auto; display: inline-block;">
-                                <option value="Elaboracion">Elaboración</option>
-                                <option value="Entregado">Marcar como Entregado</option>
-                                <option value="Facturacion">Facturar</option>
-                            </select>
-                            <button v-else class="btn btn-danger btn-sm rounded-0" @click="eliminarOrden(orden.id_ot)">
-                                <i class="bi bi-trash3"></i>
-                            </button>
-                            <div v-if="orden.estado_pedido !== 'pagado'">
-                                <button @click="confirmarPago(orden.pedido_id)" class="btn btn-success btn-sm rounded-0">
-                                    <i class="bi bi-cash"></i>
+                            <!-- Estado: Entrega (pendiente de entrega) -->
+                            <template v-if="orden.status.toLowerCase() === 'entrega'">
+                                <!-- Botón Pagado (solo visible si no está pagado) -->
+                                <button v-if="orden.estado_pedido !== 'pagado'"
+                                        @click="confirmarPago(orden.pedido_id)" 
+                                        class="btn btn-success btn-sm me-1">
+                                    <i class="bi bi-cash"></i> Pagado
                                 </button>
-                            </div>
+                                
+                                <!-- Botón Entregado (solo visible si está pagado) -->
+                                <button v-if="orden.estado_pedido === 'pagado'"
+                                        @click="actualizarEstado(orden.id_ot, 'Entregado')" 
+                                        class="btn btn-primary btn-sm me-1">
+                                    <i class="bi bi-check-circle"></i> Entregado
+                                </button>
+                            </template>
+                            
+                            <!-- Estado: Entregado -->
+                            <template v-else-if="orden.status.toLowerCase() === 'entregado'">
+                                <button @click="actualizarEstado(orden.id_ot, 'Facturacion')" 
+                                        class="btn btn-info btn-sm me-1">
+                                    <i class="bi bi-receipt"></i> Facturar
+                                </button>
+                                <button @click="eliminarOrden(orden.id_ot)" 
+                                        class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </template>
+                            
+                            <!-- Estado: Facturación -->
+                            <span v-else class="text-muted">En proceso de facturación</span>
                         </td>
                     </tr>
                 </tbody>
@@ -275,10 +295,40 @@
                         <!-- Más detalles pueden agregarse aquí -->
                     </div>
                 </div>
+                <!-- Div oculto para copiar (solo para etiquetas) -->
+                <div id="etiquetaOrden" style="position: absolute; left: -9999px; width: 80mm; padding: 10px; background: white; border: 1px solid #000; font-family: Arial, sans-serif;">
+                    <h4 style="text-align: center; margin: 5px 0; font-size: 18px;">PEDIDO #{{ ordenSeleccionada.pedido_id }}</h4>
+                    <hr style="margin: 5px 0; border-color: #000;">
+                    
+                    <p style="margin: 4px 0; font-size: 14px;"><strong>Cliente:</strong> {{ ordenSeleccionada.pedido_cliente }}</p>
+                    <p style="margin: 4px 0; font-size: 14px;"><strong>Teléfono:</strong> {{ ordenSeleccionada.cliente_telefono || 'N/A' }}</p>
+                    <p style="margin: 4px 0; font-size: 14px;"><strong>Modelo:</strong> {{ ordenSeleccionada.modelo || 'N/A' }}</p>
+                    
+                    <hr style="margin: 8px 0; border-color: #000;">
+                    
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                        <p style="margin: 4px 0; font-size: 14px; width: 100%;"><strong>Total:</strong> ${{ ordenSeleccionada.total }}</p>
+                        <p style="margin: 4px 0; font-size: 14px;"><strong>Anticipo:</strong> ${{ ordenSeleccionada.anticipo }}</p>
+                        <p style="margin: 4px 0; font-size: 14px;"><strong>Saldo:</strong> 
+                            <span :style="{color: ordenSeleccionada.saldo > 0 ? 'red' : 'green'}">
+                                ${{ ordenSeleccionada.saldo_calculado }}
+                            </span>
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 10px;">
+                        <p style="margin: 4px 0; font-size: 12px; color: #555;">
+                            {{ new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) }}
+                        </p>
+                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" @click="imprimirOrden(ordenSeleccionada.id_ot)">
                         <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                    <button type="button" class="btn btn-info" @click="copiarEtiqueta" v-if="ordenSeleccionada.id_ot">
+                        <i class="bi bi-tag"></i> Copiar Etiqueta
                     </button>
                 </div>
             </div>
