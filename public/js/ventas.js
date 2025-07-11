@@ -55,14 +55,19 @@ const {createApp, ref} = Vue
           }
       },
       async cargarArticulos() {
-              try {
-                  const response = await axios.get('/ventas/stock');
-                  this.articulos = response.data;
-              } catch (error) {
-                  console.error('Error:', error);
-                  alert('Error al cargar artículos');
-              }
-          },
+        try {
+          const response = await axios.get('/ventas/stock');
+          if (response.data.success) {
+            this.articulos = response.data.data;
+          } else {
+            console.error('Error al cargar artículos:', response.data.message);
+            alert('Error al cargar artículos: ' + response.data.message);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error al cargar artículos');
+        }
+      },
           
       handleInput() {
               this.showResults = this.searchQuery.length > 0;
@@ -219,12 +224,67 @@ const {createApp, ref} = Vue
             currency: 'MXN',
           }).format(value);
         },
-        crearArticulo() {
-          
-        }
+        agregarArticulo() {
+          if (!this.articuloSeleccionado) {
+            alert('Por favor seleccione un artículo válido');
+            return;
+          }
+
+          if (this.cantidad <= 0) {
+            alert('La cantidad debe ser mayor a 0');
+            return;
+          }
+
+          // Verificar si el artículo ya existe en el pedido
+          const articuloExistente = this.itemsPedido.find(
+            item => item.id === this.articuloSeleccionado.id_articulo
+          );
+
+          if (articuloExistente) {
+            if (confirm('Este artículo ya está en la lista. ¿Desea actualizar la cantidad?')) {
+              articuloExistente.cantidad += parseInt(this.cantidad);
+              articuloExistente.subtotal = articuloExistente.cantidad * articuloExistente.precio_unitario;
+            }
+          } else {
+            // Agregar nuevo artículo al pedido
+            this.itemsPedido.push({
+              id: this.articuloSeleccionado.id_articulo,
+              nombre: this.articuloSeleccionado.nombre,
+              modelo: this.articuloSeleccionado.modelo,
+              cantidad: parseInt(this.cantidad),
+              precio_unitario: parseFloat(this.precio_unitario),
+              subtotal: parseFloat(this.precio_unitario) * parseInt(this.cantidad)
+            });
+          }
+
+          // Limpiar campos
+          this.resetearCamposArticulo();
+          this.aplicarDescuento();
+        },
+        actualizarAnticipo() {
+          // Validar que el anticipo no sea mayor al total con descuento
+          if (this.anticipo > this.totalConDescuento) {
+            this.anticipo = this.totalConDescuento;
+          }
+          // Validar que no sea negativo
+          if (this.anticipo < 0) {
+            this.anticipo = 0;
+          }
+        },
+
+        aplicarDescuento() {
+          // Calcular monto de descuento
+          this.montoDescuento = (this.total * this.descuento) / 100;
+          // Calcular total con descuento
+          this.totalConDescuento = this.total - this.montoDescuento;
+          // Asegurar que el anticipo no sea mayor que el nuevo total
+          if (this.anticipo > this.totalConDescuento) {
+            this.anticipo = this.totalConDescuento;
+          }
+        },
     },
     mounted(){
-      this.listarArticulos();
+      this.cargarArticulos();
       this.listarBancos();
       this.cargarArticulos();
     }

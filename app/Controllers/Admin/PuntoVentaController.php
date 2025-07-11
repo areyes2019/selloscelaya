@@ -117,29 +117,23 @@ class PuntoVentaController extends BaseController
                     a.nombre,
                     a.modelo,
                     a.precio_pub,
-                    a.clave_producto,
+                    a.clave_producto as clave,
                     a.categoria,
-                    SUM(i.cantidad) as stock_inventario
+                    COALESCE(SUM(i.cantidad), 0) as stock
                 ')
                 ->from('sellopro_articulos a')
-                ->join('sellopro_inventario i', 'a.id_articulo = i.id_articulo', 'inner')
+                ->join('sellopro_inventario i', 'a.id_articulo = i.id_articulo', 'left')
                 ->where('a.venta', 1)
                 ->groupBy('a.id_articulo, a.nombre, a.modelo, a.precio_pub, a.clave_producto, a.categoria')
                 ->orderBy('a.nombre', 'ASC')
                 ->findAll();
 
-            // Formatear respuesta para el frontend
-            $response = [
+            return $this->response->setJSON([
                 'success' => true,
-                'data' => $articulos,
-                'total' => count($articulos),
-                'timestamp' => date('Y-m-d H:i:s')
-            ];
-
-            return $this->response->setJSON($articulos);
+                'data' => $articulos
+            ]);
 
         } catch (\Exception $e) {
-            // Manejo de errores
             log_message('error', 'Error en mostrar_stock: ' . $e->getMessage());
             
             return $this->response->setJSON([
