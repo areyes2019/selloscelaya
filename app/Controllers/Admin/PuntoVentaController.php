@@ -125,6 +125,7 @@ class PuntoVentaController extends BaseController
                 ->join('sellopro_inventario i', 'a.id_articulo = i.id_articulo', 'left')
                 ->where('a.venta', 1)
                 ->groupBy('a.id_articulo, a.nombre, a.modelo, a.precio_pub, a.clave_producto, a.categoria')
+                ->having('stock >', 0) // Solo artículos con stock disponible
                 ->orderBy('a.nombre', 'ASC')
                 ->findAll();
 
