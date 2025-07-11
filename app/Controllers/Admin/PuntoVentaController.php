@@ -167,14 +167,14 @@ class PuntoVentaController extends BaseController
     }
     public function create()
     {
-
         // Validar los datos del formulario
         $rules = [
             'cliente_nombre' => 'required|min_length[3]',
             'cliente_telefono' => 'permit_empty|numeric',
             'anticipo' => 'required|numeric|greater_than[0]',
             'detalle' => 'required',
-            'banco_id' => 'required|numeric'
+            'banco_id' => 'required|numeric',
+            'descuento' => 'permit_empty|numeric|greater_than_equal_to[0]|less_than_equal_to[100]'
         ];
 
         if (!$this->validate($rules)) {
@@ -182,10 +182,18 @@ class PuntoVentaController extends BaseController
         }
 
         // Obtener datos del formulario
+        $descuento = (float)$this->request->getPost('descuento') ?? 0;
+        $totalSinDescuento = (float)$this->request->getPost('total_final_hidden');
+        $montoDescuento = ($totalSinDescuento * $descuento) / 100;
+        $totalConDescuento = $totalSinDescuento - $montoDescuento;
+
         $data = [
             'cliente_nombre' => $this->request->getPost('cliente_nombre'),
             'cliente_telefono' => $this->request->getPost('cliente_telefono'),
-            'total' => $this->request->getPost('total_final_hidden'),
+            'total' => $totalConDescuento, // Guardamos el total con descuento aplicado
+            'total_sin_descuento' => $totalSinDescuento, // Guardamos el total sin descuento
+            'descuento' => $descuento, // Porcentaje de descuento
+            'monto_descuento' => $montoDescuento, // Cantidad descontada en pesos
             'estado' => 'pendiente',
             'anticipo' => $this->request->getPost('anticipo')
         ];
