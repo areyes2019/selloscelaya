@@ -58,10 +58,9 @@
                             <span v-else class="badge bg-secondary">Sin imagen</span>
                         </td>
                         <td>
-                            <select class="form-select form-select-sm" @change="actualizarEstado(orden.id_ot, $event.target.value)" style="width: auto; display: inline-block;">
-                                <option value="Dibujo" selected>Dibujo</option>
-                                <option value="Elaboracion">Elaboración</option>
-                            </select>
+                            <button class="btn btn-primary btn-sm" @click="actualizarEstado(orden.id_ot, 'Elaboracion')">
+                                A Elaboración
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -106,10 +105,9 @@
                             <span v-else class="badge bg-secondary">Sin imagen</span>
                         </td>
                         <td>
-                            <select class="form-select form-select-sm" @change="actualizarEstado(orden.id_ot, $event.target.value)" style="width: auto; display: inline-block;">
-                                <option value="Dibujo">Dibujo</option>
-                                <option value="Entrega">Entrega</option>
-                            </select>
+                            <button class="btn btn-warning btn-sm" @click="actualizarEstado(orden.id_ot, 'Entrega')">
+                                A Entrega
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -153,19 +151,33 @@
                             </span>
                         </td>
                         <td>
-                            <select v-if="orden.status.toLowerCase() === 'entrega'" class="form-select form-select-sm" @change="actualizarEstado(orden.id_ot, $event.target.value)" style="width: auto; display: inline-block;">
-                                <option value="Elaboracion">Elaboración</option>
-                                <option value="Entregado">Marcar como Entregado</option>
-                                <option value="Facturacion">Facturar</option>
-                            </select>
-                            <button v-else class="btn btn-danger btn-sm rounded-0" @click="eliminarOrden(orden.id_ot)">
+                            <!-- Botón Entregado (visible siempre que status sea 'entrega') -->
+                            <button v-if="orden.status.toLowerCase() === 'entrega'" 
+                                    class="btn btn-success btn-sm me-1" 
+                                    @click="actualizarEstado(orden.id_ot, 'Entregado')">
+                                Entregado
+                            </button>
+                            
+                            <!-- Botón Pagado (solo visible cuando status es 'entregado' y no está pagado) -->
+                            <button v-if="orden.status.toLowerCase() === 'entregado' && orden.estado_pedido !== 'pagado'" 
+                                    class="btn btn-primary btn-sm me-1" 
+                                    @click="confirmarPago(orden.pedido_id)">
+                                Pagado
+                            </button>
+                            
+                            <!-- Botón A Facturar (solo visible cuando está pagado) -->
+                            <button v-if="orden.estado_pedido === 'pagado'" 
+                                    class="btn btn-info btn-sm" 
+                                    @click="actualizarEstado(orden.id_ot, 'Facturacion')">
+                                A Facturar
+                            </button>
+                            
+                            <!-- Botón Eliminar (para órdenes ya entregadas) -->
+                            <button v-if="orden.status.toLowerCase() === 'entregado' && orden.estado_pedido === 'pagado'"
+                                    class="btn btn-danger btn-sm ms-1"
+                                    @click="eliminarOrden(orden.id_ot)">
                                 <i class="bi bi-trash3"></i>
                             </button>
-                            <div v-if="orden.estado_pedido !== 'pagado'">
-                                <button @click="confirmarPago(orden.pedido_id)" class="btn btn-success btn-sm rounded-0">
-                                    <i class="bi bi-cash"></i>
-                                </button>
-                            </div>
                         </td>
                     </tr>
                 </tbody>
