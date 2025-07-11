@@ -35,7 +35,7 @@
     <script src="https://unpkg.com/vue@latest"></script>
 
     <!-- Estilos personalizados -->
-    <link rel="stylesheet" href="<?= base_url('public/panel/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('public/css/style_panel.css'); ?>">
 
     <!--  selec2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
