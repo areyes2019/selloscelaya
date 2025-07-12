@@ -4,6 +4,15 @@
     <h2 class="mb-3">Flujo de Trabajo Excelente</h2>
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
+    <!-- Toast de notificaciones -->
+    <div id="liveToast" class="toast position-fixed bottom-0 end-0 mb-4 me-4" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <span id="toastMessage">Mensaje de notificación</span>
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
     
     <!-- Pestañas y contenido -->
     <ul class="nav nav-tabs" id="ordenesTab" role="tablist">
@@ -36,6 +45,7 @@
                 <thead class="table-light">
                     <tr>
                         <th># Orden</th>
+                        <th>No. Ped.</th>
                         <th>Nombre</th>
                         <th>Teléfono</th>
                         <th>Img</th>
@@ -48,6 +58,15 @@
                             <a href="#" data-bs-toggle="modal" data-bs-target="#ordenModal" @click="cargarDetalleOrden(orden.id_ot)">
                                 {{ orden.id_ot }}
                             </a>
+                        </td>
+                        <td>
+                            <a :href="'/ventas/ticket/' + orden.pedido_id" 
+                               target="_blank" 
+                               class="text-decoration-none" 
+                               v-if="orden.pedido_id">
+                                {{ orden.pedido_id }}
+                            </a>
+                            <span v-else class="text-muted">N/A</span>
                         </td>
                         <td>{{ orden.cliente_nombre }}</td>
                         <td>{{ orden.cliente_telefono }}</td>
@@ -83,6 +102,7 @@
                 <thead class="table-light">
                     <tr>
                         <th># Orden</th>
+                        <th>No. Ped.</th>
                         <th>Nombre</th>
                         <th>Teléfono</th>
                         <th>Img</th>
@@ -95,6 +115,15 @@
                             <a href="#" data-bs-toggle="modal" data-bs-target="#ordenModal" @click="cargarDetalleOrden(orden.id_ot)">
                                 {{ orden.id_ot }}
                             </a>
+                        </td>
+                        <td>
+                            <a :href="'/ventas/ticket/' + orden.pedido_id" 
+                               target="_blank" 
+                               class="text-decoration-none" 
+                               v-if="orden.pedido_id">
+                                {{ orden.pedido_id }}
+                            </a>
+                            <span v-else class="text-muted">N/A</span>
                         </td>
                         <td>{{ orden.cliente_nombre }}</td>
                         <td>{{ orden.cliente_telefono }}</td>
@@ -120,6 +149,7 @@
                 <thead class="table-light">
                     <tr>
                         <th># Orden</th>
+                        <th>No. Ped.</th>
                         <th>Nombre</th>
                         <th>Teléfono</th>
                         <th>Img</th>
@@ -133,6 +163,15 @@
                             <a href="#" data-bs-toggle="modal" data-bs-target="#ordenModal" @click="cargarDetalleOrden(orden.id_ot)">
                                 {{ orden.id_ot }}
                             </a>
+                        </td>
+                        <td>
+                            <a :href="'/ventas/ticket/' + orden.pedido_id" 
+                               target="_blank" 
+                               class="text-decoration-none" 
+                               v-if="orden.pedido_id">
+                                {{ orden.pedido_id }}
+                            </a>
+                            <span v-else class="text-muted">N/A</span>
                         </td>
                         <td>{{ orden.cliente_nombre }}</td>
                         <td>{{ orden.cliente_telefono }}</td>
@@ -190,6 +229,7 @@
                 <thead class="table-light">
                     <tr>
                         <th># Orden</th>
+                        <th>No. Ped.</th>
                         <th>Nombre</th>
                         <th>Teléfono</th>
                         <th>Img</th>
@@ -203,6 +243,15 @@
                             <a href="#" data-bs-toggle="modal" data-bs-target="#ordenModal" @click="cargarDetalleOrden(orden.id_ot)">
                                 {{ orden.id_ot }}
                             </a>
+                        </td>
+                        <td>
+                            <a :href="'/ventas/ticket/' + orden.pedido_id" 
+                               target="_blank" 
+                               class="text-decoration-none" 
+                               v-if="orden.pedido_id">
+                                {{ orden.pedido_id }}
+                            </a>
+                            <span v-else class="text-muted">N/A</span>
                         </td>
                         <td>{{ orden.cliente_nombre }}</td>
                         <td>{{ orden.cliente_telefono }}</td>
@@ -218,11 +267,7 @@
                             </span>
                         </td>
                         <td>
-                            <select class="form-select form-select-sm" @change="actualizarEstado(orden.id_ot, $event.target.value)" style="width: auto; display: inline-block;">
-                                <option value="">Selecconar...</option>
-                                <option value="Entregado">Marcar como Entregado</option>
-                            </select>
-                            <button class="btn btn-success btn-sm rounded-0 ms-2" @click="marcarComoFacturado(orden.id_ot)">
+                            <button class="btn btn-success btn-sm" @click="marcarComoFacturado(orden.id_ot, ordenes.facturacion.indexOf(orden))">
                                 <i class="bi bi-file-earmark-check"></i> Facturado
                             </button>
                         </td>
@@ -297,6 +342,9 @@
         </div>
     </div>
 </div>
-
+<script>
+    window.csrfToken = "<?= csrf_token() ?>";
+    window.csrfHash = "<?= csrf_hash() ?>";
+</script>
 <script src="<?php echo base_url('public/js/admin.js'); ?>"></script>
 <?php echo $this->endSection()?>

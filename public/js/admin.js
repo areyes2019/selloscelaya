@@ -122,33 +122,29 @@ createApp({
             return 'entrega';
         },
 
-        // Método para marcar como facturado
-        async marcarComoFacturado(id_ot) {
+        async marcarComoFacturado(id_ot, index) {
             try {
                 const confirmado = confirm('¿Marcar esta orden como facturada?');
                 if (!confirmado) return;
 
-                this.loading = true;
-                const response = await axios.post(`/administracion/${id_ot}/marcar-facturado`);
+                const response = await axios.post(`/administracion/${id_ot}/actualizar-estado`, {
+                    status: 'Facturado',
+                     [window.csrfToken]: window.csrfHash  // Token CSRF dinámico
+                });
 
                 if (response.data.success) {
-                    // Eliminar de la lista de facturación
-                    const index = this.ordenes.facturacion.findIndex(o => o.id_ot === id_ot);
-                    if (index !== -1) {
-                        this.ordenes.facturacion.splice(index, 1);
-                    }
-                    this.mostrarNotificacion('Orden marcada como facturada', 'success');
+                    // Eliminar de la lista actual sin recargar toda la página
+                    this.ordenes.facturacion.splice(index, 1);
+                    this.mostrarNotificacion('¡Orden facturada correctamente!', 'success');
                 } else {
-                    this.mostrarNotificacion(response.data.message || 'No se pudo marcar como facturada', 'error');
+                    this.mostrarNotificacion(response.data.message || 'Error al facturar', 'error');
                 }
             } catch (error) {
-                console.error("Error al marcar como facturado:", error);
+                console.error("Error al facturar:", error);
                 this.mostrarNotificacion(
-                    error.response?.data?.message || 'Error al marcar como facturado',
+                    error.response?.data?.message || 'Error en el servidor al procesar la facturación',
                     'error'
                 );
-            } finally {
-                this.loading = false;
             }
         },
 
@@ -161,16 +157,37 @@ createApp({
         },
 
         mostrarNotificacion(mensaje, tipo = 'success') {
-            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+            // Verificar si existen los elementos del DOM
             const toastEl = document.getElementById('liveToast');
             const toastMsg = document.getElementById('toastMessage');
+            
+            if (!toastEl || !toastMsg) {
+                console.error('Elementos de notificación no encontrados');
+                alert(mensaje); // Fallback básico
+                return;
+            }
+
+            // Configurar el toast
             toastMsg.textContent = mensaje;
-            toastEl.classList.remove('text-bg-success', 'text-bg-error');
-            toastEl.classList.add(`text-bg-${tipo}`);
+            toastEl.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-warning', 'text-bg-info');
+            
+            // Mapear tipos de notificación a clases de Bootstrap
+            const typeClass = {
+                'success': 'text-bg-success',
+                'error': 'text-bg-danger',
+                'warning': 'text-bg-warning',
+                'info': 'text-bg-info'
+            }[tipo] || 'text-bg-primary';
+
+            toastEl.classList.add(typeClass);
+            
+            // Mostrar el toast
+            const toast = new bootstrap.Toast(toastEl);
             toast.show();
 
+            // Limpiar después de 5 segundos
             setTimeout(() => {
-                toastEl.classList.remove(`text-bg-${tipo}`);
+                toast.hide();
             }, 5000);
         },
         

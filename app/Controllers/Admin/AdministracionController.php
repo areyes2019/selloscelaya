@@ -48,7 +48,7 @@ class AdministracionController extends BaseController
         }
 
         // Lista de estados permitidos
-        $estadosPermitidos = ['Dibujo', 'Elaboracion', 'Entrega', 'Facturacion','Entregado'];
+        $estadosPermitidos = ['Dibujo', 'Elaboracion', 'Entrega', 'Facturacion','Entregado', 'Facturado'];
         if(!in_array($data->status, $estadosPermitidos)) {
             return $this->fail("Estado no válido");
         }
