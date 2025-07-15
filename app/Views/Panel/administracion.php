@@ -276,7 +276,38 @@
             </table>
         </div>
     </div>
-
+    <!-- Modal para seleccionar cuenta bancaria -->
+    <div class="modal fade" id="cuentaModal" tabindex="-1" aria-labelledby="cuentaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cuentaModalLabel">Seleccionar cuenta bancaria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div v-if="cargandoCuentas" class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class="mb-3">
+                            <label for="cuentaSelect" class="form-label">Seleccione una cuenta:</label>
+                            <select class="form-select" id="cuentaSelect" v-model="cuentaSeleccionada">
+                                <option v-for="cuenta in cuentasBancarias" :value="cuenta.id_cuenta">
+                                    {{ cuenta.banco }} - {{ cuenta.cuenta }} (Saldo: ${{ cuenta.saldo }})
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" @click="procesarPago">Confirmar Pago</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Modal para detalles de la orden -->
     <div class="modal fade" id="ordenModal" tabindex="-1" aria-labelledby="ordenModalLabel">
         <div class="modal-dialog modal-lg">
