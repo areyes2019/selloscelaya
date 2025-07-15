@@ -5,8 +5,9 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\OrdenTrabajoModel;
 use App\Models\PedidoModel;
-use CodeIgniter\API\ResponseTrait;
 use App\Models\CuentasModel;
+use App\Models\GastosModel;
+use CodeIgniter\API\ResponseTrait;
 
 class AdministracionController extends BaseController
 {

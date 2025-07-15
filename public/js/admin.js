@@ -37,7 +37,7 @@ createApp({
         },
         cargarDetalleOrden(id_ot) {
             this.cargandoDetalle = true;
-            fetch(`/admin/ordenes/${id_ot}`)
+            fetch(`/ordenes/${id_ot}`)
                 .then(response => response.json())
                 .then(data => {
                     this.ordenSeleccionada = data;
@@ -50,7 +50,7 @@ createApp({
                 });
         },
         actualizarEstado(id_ot, nuevoEstado) {
-            fetch(`/admin/administracion/actualizarEstado/${id_ot}`, {
+            fetch(`/administracion/actualizar-estado/${id_ot}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ createApp({
         },
         obtenerCuentas() {
             this.cargandoCuentas = true;
-            fetch('/admin/administracion/obtenerCuentas')
+            fetch('/cuentas/listar')
                 .then(response => response.json())
                 .then(data => {
                     this.cuentasBancarias = data;
@@ -99,7 +99,7 @@ createApp({
                 return;
             }
 
-            fetch(`/admin/administracion/pagar/${this.ordenSeleccionada.pedido_id}`, {
+            fetch(`/administracion/pagar/${this.ordenSeleccionada.pedido_id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -157,7 +157,7 @@ createApp({
             new bootstrap.Toast(toastElement).show();
         },
         imprimirOrden(id_ot) {
-            window.open(`/admin/ordenes/imprimir/${id_ot}`, '_blank');
+            window.open(`/ordenes/imprimir/${id_ot}`, '_blank');
         },
         marcarComoFacturado(id_ot, index) {
             this.actualizarEstado(id_ot, 'Facturado');
