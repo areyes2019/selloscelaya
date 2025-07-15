@@ -826,6 +826,60 @@
             "install-path": "../fidry/cpu-core-counter"
         },
         {
+            "name": "fiscalapi/fiscalapi",
+            "version": "4.0.142",
+            "version_normalized": "4.0.142.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FiscalAPI/fiscalapi-php.git",
+                "reference": "68527960df33247c443f8157fbc3526dec485f4e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FiscalAPI/fiscalapi-php/zipball/68527960df33247c443f8157fbc3526dec485f4e",
+                "reference": "68527960df33247c443f8157fbc3526dec485f4e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.0",
+                "php": ">=7.4"
+            },
+            "time": "2025-04-08T13:18:53+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Fiscalapi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MPL-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "FISCAL API S DE R.L DE C.V",
+                    "homepage": "https://www.fiscalapi.com"
+                }
+            ],
+            "description": "SDK de PHP para FiscalAPI",
+            "homepage": "https://www.fiscalapi.com",
+            "keywords": [
+                "cfdi",
+                "factura",
+                "facturacion",
+                "fiscalapi",
+                "mexico",
+                "sat"
+            ],
+            "support": {
+                "issues": "https://github.com/FiscalAPI/fiscalapi-php/issues",
+                "source": "https://github.com/FiscalAPI/fiscalapi-php"
+            },
+            "install-path": "../fiscalapi/fiscalapi"
+        },
+        {
             "name": "friendsofphp/php-cs-fixer",
             "version": "v3.57.2",
             "version_normalized": "3.57.2.0",

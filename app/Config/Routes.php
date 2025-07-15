@@ -258,6 +258,22 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    $routes->get('delete/(:num)', 'CategoriasController::delete/$1');
 	});
 
+	/*facturas*/
+	$routes->group('facturas', ['namespace' => 'App\Controllers\Admin'],function($routes) {
+	    $routes->get('/', 'FacturasController::index');
+
+	    $routes->get('verificar-certificados', 'FacturasController::verificarCertificados');
+    
+	    // Probar lectura de certificados (sin enviar a FiscalAPI)
+	    $routes->get('probar-certificados', 'FacturasController::testCertificados');
+	    
+	    // Crear factura de prueba
+	    $routes->get('crear-prueba', 'FacturasController::crearFactura');
+	    
+	    // Descargar factura (necesitas el UUID)
+	    $routes->get('descargar/(:segment)', 'FacturasController::descargarFactura/$1');
+		});
+
 });
 
 

@@ -170,28 +170,43 @@
                             </table>
                             <!-- Paginación -->
                             <div class="d-flex justify-content-between align-items-center mt-3">
-                                <div>
+                                <div class="text-muted small">
                                     Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - 
                                     {{ Math.min(currentPage * itemsPerPage, totalItems) }} de {{ totalItems }} artículos
                                 </div>
                                 
                                 <nav aria-label="Page navigation">
-                                    <ul class="pagination pagination-sm">
+                                    <ul class="pagination pagination-sm mb-0">
                                         <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                                            <button class="page-link" @click="changePage(currentPage - 1)">Anterior</button>
+                                            <button class="page-link" @click="changePage(currentPage - 1)" aria-label="Previous">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </button>
                                         </li>
                                         
-                                        <li class="page-item" v-for="page in totalPages()" :key="page" 
-                                            :class="{ active: currentPage === page }">
-                                            <button class="page-link" @click="changePage(page)">{{ page }}</button>
+                                        <li class="page-item" v-for="(page, index) in getVisiblePages()" :key="index"
+                                            :class="{ 
+                                                active: currentPage === page,
+                                                disabled: page === '...'
+                                            }">
+                                            <button class="page-link" 
+                                                    @click="changePage(page)"
+                                                    v-if="page !== '...'">
+                                                {{ page }}
+                                            </button>
+                                            <span class="page-link" v-else>
+                                                {{ page }}
+                                            </span>
                                         </li>
                                         
                                         <li class="page-item" :class="{ disabled: currentPage === totalPages() }">
-                                            <button class="page-link" @click="changePage(currentPage + 1)">Siguiente</button>
+                                            <button class="page-link" @click="changePage(currentPage + 1)" aria-label="Next">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </button>
                                         </li>
                                     </ul>
                                 </nav>
                             </div>
+                            <!-- Paginación -->
                         </div>
                     </div>
                 </div>

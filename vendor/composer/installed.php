@@ -3,7 +3,7 @@
         'name' => 'codeigniter4/framework',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1891cd10fb30315621e6107171d924014d65a610',
+        'reference' => '50c41668c4b0a0b567ea7607090691d340bd0e94',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'codeigniter4/framework' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1891cd10fb30315621e6107171d924014d65a610',
+            'reference' => '50c41668c4b0a0b567ea7607090691d340bd0e94',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -135,6 +135,15 @@
             'install_path' => __DIR__ . '/../fidry/cpu-core-counter',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'fiscalapi/fiscalapi' => array(
+            'pretty_version' => '4.0.142',
+            'version' => '4.0.142.0',
+            'reference' => '68527960df33247c443f8157fbc3526dec485f4e',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../fiscalapi/fiscalapi',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'friendsofphp/php-cs-fixer' => array(
             'pretty_version' => 'v3.57.2',

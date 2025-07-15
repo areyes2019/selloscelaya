@@ -119,6 +119,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?php echo base_url('facturas'); ?>">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                    <span>Facturas</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?php echo base_url('reportes/reporte'); ?>">
                     <i class="bi bi-coin"></i>
                     <span>Finansas</span>

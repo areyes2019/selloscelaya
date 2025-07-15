@@ -3,6 +3,11 @@ const {createApp, ref} = Vue
 	createApp({
 		data(){
 			return{
+                imagenModalUrl: '',
+                nombreModal: '',
+                precioModal: 0,
+                modalInstance: null,
+                isCopyingWhatsApp: false,
 				pedido:[],
 				articulo:[],
 				articulos:[],
@@ -26,6 +31,46 @@ const {createApp, ref} = Vue
 			}
 		},
 		methods:{
+            getVisiblePages() {
+                const totalPages = this.totalPages();
+                const current = this.currentPage;
+                const range = 2; // Cuántas páginas mostrar alrededor de la actual
+                const visiblePages = [];
+                
+                // Siempre mostrar la primera página
+                visiblePages.push(1);
+                
+                // Calcular páginas alrededor de la actual
+                let start = Math.max(2, current - range);
+                let end = Math.min(totalPages - 1, current + range);
+                
+                // Añadir puntos suspensivos si hay un salto
+                if (start > 2) {
+                    visiblePages.push('...');
+                }
+                
+                // Añadir páginas alrededor de la actual
+                for (let i = start; i <= end; i++) {
+                    visiblePages.push(i);
+                }
+                
+                // Añadir puntos suspensivos si hay un salto al final
+                if (end < totalPages - 1) {
+                    visiblePages.push('...');
+                }
+                
+                // Siempre mostrar la última página si hay más de una
+                if (totalPages > 1) {
+                    visiblePages.push(totalPages);
+                }
+                
+                return visiblePages;
+            },
+            changePage(page) {
+                if (page === '...' || page === this.currentPage) return;
+                this.currentPage = page;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
             async cargarArticulos() {
                 try {
                     const response = await axios.get('mostrar_articulos');
