@@ -128,7 +128,7 @@ createApp({
             if (!confirm('¿Está seguro de eliminar esta orden? Esta acción no se puede deshacer.')) {
                 return;
             }
-            fetch(`/admin/administracion/eliminar/${id_ot}`, {
+            fetch(`/administracion/eliminar/${id_ot}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': window.csrfToken
