@@ -611,7 +611,9 @@ class Cotizaciones extends BaseController
 		return redirect()->to('/cotizaciones');
 
 	}
-	public function cotizacion_pdf($id)
+	
+	//Esta funcion es para descargar PDF
+	public function cotizacion_pdf($id) 
 	{
 	    $db = \Config\Database::connect();
 	    

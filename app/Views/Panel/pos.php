@@ -108,50 +108,6 @@
                         <a href="<?= site_url('ventas/ticket/' . $pedido['id']) ?>" class="btn btn-secondary btn-sm" title="Ver Ticket">
                             <i class="bi bi-receipt"></i>
                         </a>
-                        <!--  Marcar pagado-->
-                        <?php if ($pedido['estado'] != 'pagado'): ?>
-                        <button class="btn btn-success btn-sm rounded-0" data-bs-toggle="modal" data-bs-target="#misCuentas"><span class="bi bi-cash-coin" @click = "abrir_modal_pago(<?php echo $pedido['id']?>)"></span></button>
-                        <?php endif; ?>
-                        <!-- Modal -->
-                        <div class="modal fade" id="misCuentas" tabindex="-1">
-                          <div class="modal-dialog modal-sm">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="miModalLabel">Seleccionar el Banco</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div class="modal-body">
-                                <div class="d-flex align-items-center">
-                                    <!-- Select -->
-                                    <form action="<?= site_url('ventas/pagar/' . $pedido['id']) ?>" method="post">
-                                        <?= csrf_field() ?>
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label for="cuenta_id" class="form-label">Cuenta bancaria</label>
-                                                <input type="hidden" name="pedido_id" :value="pedido">
-                                                <select class="form-select" id="cuenta_id" name="cuenta_id" required>
-                                                    <option value="" selected disabled>Seleccione una cuenta...</option>
-                                                    <?php foreach($cuentasBancarias as $cuenta): ?>
-                                                        <option value="<?= $cuenta['id_cuenta'] ?>">
-                                                            <?= esc($cuenta['banco']) ?> - (Saldo: $<?= number_format($cuenta['saldo'], 2) ?>)
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-primary" onclick="return confirm('¿Confirmar pago del pedido?')">Confirmar Pago</button>
-                                        </div>
-                                    </form>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <a href="<?= site_url('ventas/delete/' . $pedido['id']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de querer eliminar este pedido?');" title="Eliminar">
-                            <i class="bi bi-trash"></i>
-                        </a>
                     </div>
                 </td>
             </tr>

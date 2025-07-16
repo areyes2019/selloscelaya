@@ -18,7 +18,16 @@
         z-index: -1;
         pointer-events: none;
     }
-
+    .footer-info {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 20px; /* Posición más cerca del pie (ajustable) */
+        text-align: center;
+        padding: 15px 0;
+        border-top: 1px solid #eee;
+        margin: 0 90px;
+    }
     p {
         margin: 0pt;
     }
@@ -55,6 +64,35 @@
 
     .items td.cost {
         text-align: center;
+    }
+    
+    /* Estilo para la sección de recibo */
+    .recibo-section {
+        margin-top: 50px;
+        page-break-before: always;
+    }
+    
+    .recibo-title {
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .recibo-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    
+    .recibo-table td {
+        padding: 10px;
+        border: 1px solid #95a5a6;
+    }
+    
+    .recibo-table .label {
+        font-weight: bold;
+        width: 40%;
     }
     </style>
 </head>
@@ -156,41 +194,128 @@
 
     <br>
 
-    <table width="100%" style="font-size: 14px;">
+    <table width="30%" align="right" style="border-collapse: collapse;">
         <tr>
-            <td>
-                <table width="70%" align="left">
-                    <tr>
-                        <td style="padding: 0px; line-height: 20px;">&nbsp;</td>
-                    </tr>
-                </table>
-                <table width="30%" align="right" style="border-collapse: collapse;">
-                    <tr>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>Sub-Total</strong></td>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php echo $sub_total; ?></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>Dcto</strong></td>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php echo $descuento; ?></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>IVA</strong></td>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php echo $iva; ?></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>Total</strong></td>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php echo $total; ?></td>
-                    </tr>
-                </table>
-            </td>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>Sub-Total</strong></td>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php echo $sub_total; ?></td>
         </tr>
+        <tr>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>Dcto</strong></td>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php echo $descuento; ?></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>IVA</strong></td>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php echo $iva; ?></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>Total</strong></td>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php echo $total; ?></td>
+        </tr>
+        <?php if (isset($anticipo) && $anticipo > 0): ?>
+        <tr>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>Anticipo</strong></td>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php 
+                // Aseguramos que el anticipo se muestre correctamente formateado
+                echo is_numeric($anticipo) ? number_format($anticipo, 2) : $anticipo;
+            ?></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px;"><strong>Saldo</strong></td>
+            <td style="border: 1px solid #95a5a6; padding: 10px 8px; text-align: right;">$<?php 
+                // Calculamos el saldo pendiente
+                $total_num = floatval(str_replace(['$', ','], '', $total));
+                $anticipo_num = floatval(str_replace(['$', ','], '', $anticipo));
+                echo number_format(($total_num - $anticipo_num), 2);
+            ?></td>
+        </tr>
+        <?php endif; ?>
     </table>
 
-    <br>
-
-    <div style="position: absolute; bottom: 50px; left: 90px;">
-        <p style="text-align:center;">Real del Seminario 122, Valle del Real Celaya, Gto. 38024. RFC RERA7701272R1. ventas@sellopronto.com.mx</p>
-        <p style="text-align:center;">La siguiente cotización está expresada en pesos mexicanos. Una vez confirmado el pago, comenzamos a trabajar en tu diseño. Nunca fabricamos nada sin tu aprobación.</p>
+    <?php if (isset($anticipo) && $anticipo > 0 && !$pagado): ?>
+    <!-- Sección de Recibo de Anticipo -->
+    <div class="recibo-section">
+        <div class="recibo-title">RECIBO DE ANTICIPO</div>
+        
+        <table width="100%" cellpadding="10">
+            <tr>
+                <td width="49%" style="border: 0.5mm solid #95a5a6;">
+                    <p><strong>Sello Pronto</strong></p>
+                    <p>www.sellopronto.com.mx</p>
+                    <p>Cel: 4613581090</p>
+                    <p>Tel: 461 250 7482</p>
+                    <p>ventas@gmail.com</p>
+                </td>
+                <td width="2%">&nbsp;</td>
+                <td width="49%" style="border: 0.5mm solid #95a5a6; text-align: left;">
+                    <p><strong>Recibo No: <?php echo $id_cotizacion.'-A' ?> </strong></p>
+                    <p><strong>Fecha: <?php echo date('Y-m-d H:i:s') ?> </strong></p>
+                    <p><strong>Cotización No: <?php echo $id_cotizacion ?> </strong></p>
+                </td>
+            </tr>
+        </table>
+        
+        <table class="recibo-table">
+            <tr>
+                <td class="label">Recibí de:</td>
+                <td><?php echo $cliente['nombre'] ?></td>
+            </tr>
+            <tr>
+                <td class="label">La cantidad de:</td>
+                <td>$<?php 
+                    // Primero limpiamos el valor si es string
+                    $anticipo_limpio = is_string($anticipo) ? str_replace(['$', ',', ' '], '', $anticipo) : $anticipo;
+                    // Luego convertimos a float y formateamos
+                    echo number_format((float)$anticipo_limpio, 2);
+                ?></td>
+            </tr>
+            <tr>
+                <td class="label">Por concepto de:</td>
+                <td>Anticipo para cotización No. <?php echo $id_cotizacion ?></td>
+            </tr>
+            <tr>
+                <td class="label">Saldo pendiente:</td>
+                <td>$<?php 
+                    // Convertimos ambos valores a float para asegurarnos que son numéricos
+                    $total_num = floatval(str_replace(['$', ','], '', $total));
+                    $anticipo_num = floatval(str_replace(['$', ','], '', $anticipo));
+                    echo number_format(($total_num - $anticipo_num), 2) 
+                ?></td>
+            </tr>
+            <tr>
+                <td class="label">Forma de pago:</td>
+                <td><?php echo isset($forma_pago) ? $forma_pago : 'No especificado' ?></td>
+            </tr>
+        </table>
+        
+        <br><br>
+        
+        <table width="100%">
+            <tr>
+                <td width="50%" style="text-align: center;">
+                    <p>_________________________</p>
+                    <p>Recibí conforme</p>
+                    <p><?php echo $cliente['nombre'] ?></p>
+                </td>
+                <td width="50%" style="text-align: center;">
+                    <p>_________________________</p>
+                    <p>Entregó</p>
+                    <p>Sello Pronto</p>
+                </td>
+            </tr>
+        </table>
     </div>
+    <?php endif; ?>
+
+    <br>
+    <!-- Contenido del footer -->
+    <div class="footer-info">
+        <p style="margin-bottom: 8px;"><strong>Real del Seminario 122, Valle del Real Celaya, Gto. 38024</strong></p>
+        <p style="margin-bottom: 8px;"><strong>RFC: RERA7701272R1 | ventas@sellopronto.com.mx</strong></p>
+        <p style="margin-bottom: 5px;">Cel: 4613581090 | Tel: 461 250 7482</p>
+        <p style="font-style: italic; margin-top: 12px; font-size: 0.9em;">
+            La siguiente cotización está expresada en pesos mexicanos. Una vez confirmado el pago, comenzamos a trabajar en tu diseño. Nunca fabricamos nada sin tu aprobación.
+        </p>
+    </div>
+    
 </body>
 </html>
