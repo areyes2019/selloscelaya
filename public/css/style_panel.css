@@ -695,7 +695,57 @@ body {
         margin-bottom: 10px;
         color: #0d6efd;
     }
+    .task-list {
+    max-height: 500px;
+    overflow-y: auto;
+    }
 
+    .task-item {
+        transition: all 0.2s;
+    }
+
+    .task-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+
+    .sticky-top {
+        z-index: 1;
+    }
+
+    /* Estilo para botones activos en el filtro */
+    .btn-outline-secondary.active {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    /* Estilo para el grupo de fecha */
+    .input-group {
+        margin-bottom: 0.5rem;
+    }
+
+    .input-group .form-control-sm {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+
+    .input-group .btn {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0;
+    }
+
+    .input-group .btn:last-child {
+        border-top-right-radius: 50rem !important;
+        border-bottom-right-radius: 50rem !important;
+    }
+
+/* Estilo para los iconos */
+.bi {
+    font-size: 0.875rem;
+}
 /* Mejoras para pantallas muy pequeñas */
 
 @media (max-width: 768px) {

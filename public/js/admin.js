@@ -14,8 +14,55 @@ createApp({
             cuentaSeleccionada: null,
             cargandoCuentas: false,
             cargandoDetalle: false,
-            error: null
+            error: null,
+            // ... tus otros datos existentes ...
+            nuevaTarea: '',
+            nuevoTelefono: '',
+            nuevaFecha: this.getFormattedDate(new Date()), // Fecha por defecto (hoy)
+            tareas: [
+                { 
+                    titulo: 'Llamar al cliente', 
+                    descripcion: 'Confirmar diseño', 
+                    telefono: '5551234567', 
+                    fecha: this.getFormattedDate(new Date()), 
+                    completada: false, 
+                    prioridad: 'alta' 
+                },
+                { 
+                    titulo: 'Seguimiento pedido', 
+                    telefono: '5557654321', 
+                    fecha: this.getFormattedDate(this.getTomorrowDate()), 
+                    completada: false, 
+                    prioridad: 'media' 
+                },
+                { 
+                    titulo: 'Materiales proveedor', 
+                    descripcion: 'Confirmar stock', 
+                    telefono: '5559876543', 
+                    fecha: this.getFormattedDate(new Date()), 
+                    completada: true, 
+                    prioridad: 'baja' 
+                }
+            ],
+            filtroTareas: 'todas'
         };
+    },
+    // En computed
+    computed: {
+        fechaHoy() {
+            const options = { weekday: 'long', day: 'numeric', month: 'short' };
+            return new Date().toLocaleDateString('es-ES', options);
+        },
+        tareasFiltradas() {
+            const hoy = this.getFormattedDate(new Date());
+            const mañana = this.getFormattedDate(this.getTomorrowDate());
+            
+            return this.tareas.filter(t => {
+                if (this.filtroTareas === 'hoy') return t.fecha === hoy;
+                if (this.filtroTareas === 'mañana') return t.fecha === mañana;
+                return true;
+            });
+        }
     },
     mounted() {
         this.cargarOrdenes();
@@ -128,8 +175,8 @@ createApp({
             if (!confirm('¿Está seguro de eliminar esta orden? Esta acción no se puede deshacer.')) {
                 return;
             }
-            fetch(`/ordenes/delete/${id_ot}`, {
-                method: 'DELETE',
+            fetch(`ordenes/eliminar/${id_ot}`, {
+                method: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': window.csrfToken
                 }
@@ -161,6 +208,125 @@ createApp({
         },
         marcarComoFacturado(id_ot, index) {
             this.actualizarEstado(id_ot, 'Facturado');
-        }
+        },
+
+        //formulario de tareas
+        establecerFechaHoy() {
+        this.nuevaFecha = this.getFormattedDate(new Date());
+        this.filtroTareas = 'hoy';
+        },
+        
+        establecerFechaManana() {
+            const manana = new Date();
+            manana.setDate(manana.getDate() + 1);
+            this.nuevaFecha = this.getFormattedDate(manana);
+            this.filtroTareas = 'mañana';
+        },
+        
+        actualizarTarea(tarea) {
+            // Aquí iría la llamada axios para actualizar en el servidor
+            console.log('Tarea actualizada:', tarea);
+            this.mostrarNotificacion('Tarea actualizada');
+        },
+        
+        eliminarTarea(index) {
+            if (confirm('¿Estás seguro de eliminar esta tarea?')) {
+                this.tareas.splice(index, 1);
+                this.mostrarNotificacion('Tarea eliminada');
+            }
+        },
+        
+        getFormattedDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        },
+        
+        getTomorrowDate() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return tomorrow;
+        },
+        
+        filtrarTareas(filtro) {
+            this.filtroTareas = filtro;
+        },
+        
+        mostrarNotificacion(mensaje, tipo = 'success') {
+            const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = mensaje;
+            const toastElement = document.getElementById('liveToast');
+            
+            // Limpiar clases anteriores
+            toastElement.classList.remove('bg-success', 'bg-danger', 'bg-info', 'bg-warning');
+            
+            // Añadir clase según el tipo
+            if (tipo === 'success') {
+                toastElement.classList.add('bg-success');
+            } else if (tipo === 'danger') {
+                toastElement.classList.add('bg-danger');
+            } else if (tipo === 'info') {
+                toastElement.classList.add('bg-info');
+            } else if (tipo === 'warning') {
+                toastElement.classList.add('bg-warning');
+            }
+            
+            toast.show();
+        },
+        actualizarFiltroPorFecha() {
+            const hoy = this.getFormattedDate(new Date());
+            const manana = this.getFormattedDate(this.getTomorrowDate());
+            
+            if (this.nuevaFecha === hoy) {
+                this.filtroTareas = 'hoy';
+            } else if (this.nuevaFecha === manana) {
+                this.filtroTareas = 'mañana';
+            } else {
+                this.filtroTareas = 'personalizada';
+            }
+        },
+        agregarTarea() {
+            if (!this.nuevaTarea.trim()) return;
+            
+            const tareaData = {
+                titulo: this.nuevaTarea,
+                telefono: this.nuevoTelefono,
+                fecha: this.nuevaFecha,
+                prioridad: 'media'
+            };
+            
+            // Si estás usando Axios con el backend:
+            axios.post('/api/tareas', tareaData)
+                .then(response => {
+                    this.tareas.unshift(response.data);
+                    this.limpiarFormulario();
+                    this.mostrarNotificacion('Tarea agregada');
+                })
+                .catch(error => {
+                    console.error('Error al agregar tarea:', error);
+                    this.mostrarNotificacion('Error al agregar tarea', 'danger');
+                });
+            
+            // Si estás trabajando solo en frontend:
+            /*
+            this.tareas.unshift({
+                ...tareaData,
+                id_tarea: Date.now(), // ID temporal
+                completada: false,
+                descripcion: ''
+            });
+            this.limpiarFormulario();
+            this.mostrarNotificacion('Tarea agregada');
+            */
+        },
+        
+        limpiarFormulario() {
+            this.nuevaTarea = '';
+            this.nuevoTelefono = '';
+            // Mantener la fecha por defecto (no limpiar este campo)
+        },
     }
 }).mount('#app');

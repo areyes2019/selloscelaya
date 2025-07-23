@@ -196,7 +196,6 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    $routes->get('edit/(:num)', 'OrdenTrabajoController::edit/$1'); // (Futuro) Formulario editar
 	    $routes->post('update/(:num)', 'OrdenTrabajoController::update/$1'); // (Futuro) Procesar update
 	    $routes->post('cambiar_status/(:num)', 'OrdenTrabajoController::cambiarStatus/$1'); // Ruta para cambiar status
-	    $routes->get('delete/(:num)', 'OrdenTrabajoController::delete/$1'); // (Futuro) Eliminar
 	    $routes->get('imagen/(:segment)', 'OrdenTrabajoController::serveImage/$1', ['as' => 'orden_imagen']); // Ruta para servir imágenes
 	    // Ajusta 'PedidosController' si es necesario
 		$routes->get('pedidos-pendientes', 'OrdenTrabajoController::etiquetas_txt');
