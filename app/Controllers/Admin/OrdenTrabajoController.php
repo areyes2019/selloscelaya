@@ -686,18 +686,26 @@ class OrdenTrabajoController extends BaseController
     }
     public function eliminar($id_ot)
     {
-
         $model = new OrdenTrabajoModel();
 
         try {
             // Intenta eliminar la orden
             if ($model->delete($id_ot)) {
-                return redirect()->back()->with('success', 'Orden eliminada correctamente');
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Orden eliminada correctamente'
+                ]);
             } else {
-                return redirect()->back()->with('error', 'No se pudo eliminar la orden');
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'No se pudo eliminar la orden'
+                ])->setStatusCode(400);
             }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al eliminar la orden: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error al eliminar la orden: ' . $e->getMessage()
+            ])->setStatusCode(500);
         }
     }
     public function mostrar($id)

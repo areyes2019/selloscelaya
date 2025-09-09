@@ -175,14 +175,15 @@ createApp({
             if (!confirm('¿Está seguro de eliminar esta orden? Esta acción no se puede deshacer.')) {
                 return;
             }
-            fetch(`ordenes/eliminar/${id_ot}`, {
-                method: 'GET',
+            
+            axios.get(`ordenes/eliminar/${id_ot}`, {
                 headers: {
-                    'X-CSRF-TOKEN': window.csrfToken
+                    'X-CSRF-TOKEN': window.csrfToken,
+                    'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
+            .then(response => {
+                const data = response.data;
                 if (data.success) {
                     this.mostrarToast('Orden eliminada correctamente');
                     this.cargarOrdenes();
@@ -190,9 +191,28 @@ createApp({
                     this.mostrarToast('Error: ' + (data.message || 'No se pudo eliminar la orden'), true);
                 }
             })
-            .catch(err => {
-                console.error(err);
-                this.mostrarToast('Error al eliminar la orden', true);
+            .catch(error => {
+                console.error('Error completo:', error);
+                
+                if (error.response) {
+                    // El servidor respondió con un código de error
+                    console.error('Status:', error.response.status);
+                    console.error('Data:', error.response.data);
+                    
+                    if (error.response.status === 404) {
+                        this.mostrarToast('Error: Ruta no encontrada', true);
+                    } else if (error.response.status === 500) {
+                        this.mostrarToast('Error interno del servidor', true);
+                    } else {
+                        this.mostrarToast('Error: ' + error.response.status, true);
+                    }
+                } else if (error.request) {
+                    // La petición fue hecha pero no se recibió respuesta
+                    this.mostrarToast('Error de conexión con el servidor', true);
+                } else {
+                    // Error al configurar la petición
+                    this.mostrarToast('Error: ' + error.message, true);
+                }
             });
         },
         mostrarToast(mensaje, esError = false) {
