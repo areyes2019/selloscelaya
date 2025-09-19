@@ -4,7 +4,7 @@
     <div class="row">
         <!-- Columna principal (contenido existente) -->
         <div class="col-lg-9">
-            <h2 class="mb-3">Flujo de Trabajo Excelente</h2>
+            <h2 class="mb-3">Flujo de Trabajo</h2>
             <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
             <!-- Toast de notificaciones -->

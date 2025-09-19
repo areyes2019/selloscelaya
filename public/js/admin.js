@@ -84,17 +84,27 @@ createApp({
         },
         cargarDetalleOrden(id_ot) {
             this.cargandoDetalle = true;
-            fetch(`/ordenes/${id_ot}`)
-                .then(response => response.json())
-                .then(data => {
-                    this.ordenSeleccionada = data;
+            this.error = '';
+            
+            // Usando axios (más limpio que fetch)
+            axios.get(`/administracion/ordenes/${id_ot}`) // o `/detalle_orden/${id_ot}` según tu ruta
+                .then(response => {
+                    this.ordenSeleccionada = response.data;
                     this.cargandoDetalle = false;
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error('Error:', error);
                     this.cargandoDetalle = false;
                     this.error = 'Error al cargar detalles de la orden.';
+                    
+                    // Mostrar mensaje de error más específico
+                    if (error.response && error.response.data && error.response.data.error) {
+                        this.error = error.response.data.error;
+                    }
                 });
+        },
+        imprimirOrden(id_ot) {
+            window.print(); // O tu lógica de impresión específica
         },
         actualizarEstado(id_ot, nuevoEstado) {
             fetch(`/administracion/actualizar-estado/${id_ot}`, {

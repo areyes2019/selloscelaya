@@ -177,6 +177,27 @@ class AdministracionController extends BaseController
 
         return $this->failServerError("Error al eliminar la orden");
     }
+    public function detalle_orden($id = null)
+    {
+        // Validar que el ID sea numérico
+        if (!is_numeric($id)) {
+            return $this->response->setJSON(['error' => 'ID inválido'])->setStatusCode(400);
+        }
+        
+        $ordenModel = new OrdenTrabajoModel();
+        $orden = $ordenModel->find($id);
+        
+        if (!$orden) {
+            return $this->response->setJSON(['error' => 'Orden no encontrada'])->setStatusCode(404);
+        }
+        
+        // Convertir a array si es objeto (depende de tu configuración)
+        if (is_object($orden)) {
+            $orden = (array)$orden;
+        }
+        
+        return $this->response->setJSON($orden);
+    }
 
 
 }
