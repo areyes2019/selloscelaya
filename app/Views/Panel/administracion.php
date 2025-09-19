@@ -368,6 +368,13 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            
+                            <!-- Botón de Editar -->
+                            <!-- Botón de Editar como enlace -->
+                            <a :href="'/ordenes/edit/' + ordenSeleccionada.id_ot" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            
                             <button type="button" class="btn btn-primary" @click="imprimirOrden(ordenSeleccionada.id_ot)">
                                 <i class="bi bi-printer"></i> Imprimir
                             </button>

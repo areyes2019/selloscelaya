@@ -198,6 +198,10 @@ class AdministracionController extends BaseController
         
         return $this->response->setJSON($orden);
     }
+    public function editar($value='')
+    {
+        
+    }
 
 
 }

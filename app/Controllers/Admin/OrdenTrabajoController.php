@@ -419,7 +419,7 @@ class OrdenTrabajoController extends BaseController
         $data['pedido'] = $pedido; // Pasamos los datos del pedido a la vista
 
         // Opciones para el select de color (puedes obtenerlas de otro lugar si es dinámico)
-        $data['colores_tinta'] = ['Negro', 'Cyan', 'Magenta', 'Amarillo', 'Blanco', 'Otro'];
+        $data['colores_tinta'] = ['Negro', 'Verde', 'Rojo', 'Violeta', 'Azul'];
 
         return view('Panel/orden_trabajo_new', $data); // Creamos esta vista ahora
     }
@@ -575,19 +575,96 @@ class OrdenTrabajoController extends BaseController
      */
     public function edit($id = null)
     {
-       // TODO: Implementar vista y lógica para editar una orden existente
-       // Incluiría cargar datos, mostrar el form (similar a 'new'), y un método 'update'
-        return redirect()->to('/ordenes')->with('info', 'Funcionalidad Editar no implementada aún.');
+        
+        // Validar que el ID sea numérico
+        if (!is_numeric($id)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        
+        $ordenModel = new OrdenTrabajoModel();
+        $orden = $ordenModel->find($id);
+        
+        if (!$orden) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        
+        // También necesitas cargar el pedido relacionado si es necesario
+        $pedidoModel = new PedidoModel(); // Asegúrate de tener este modelo
+        $pedido = $pedidoModel->find($orden->pedido_id);
+
+        $data = [
+            'title' => 'Editar Orden de Trabajo #' . $orden->id_ot,
+            'orden' => $orden,
+            'pedido' => $pedido,
+            'colores_tinta' => [ // Lista de colores disponibles
+                'Negro', 'Verde', 'Rojo', 'Violeta', 'Azul'
+            ]
+        ];
+        
+        return view('Panel/editar_orden', $data); // Asegúrate de crear esta vista
     }
 
     /**
      * (FUTURO) Procesa la actualización de una orden (incluyendo cambio de status)
      */
-    public function update($id = null)
+    public function update($id_ot)
     {
-         // TODO: Implementar lógica de actualización
-         // Validar datos, manejar posible cambio de imagen, actualizar status
-         return redirect()->to('/ordenes')->with('info', 'Funcionalidad Actualizar no implementada aún.');
+        $ordenModel = new OrdenTrabajoModel();
+        
+        // Validar datos
+        $rules = [
+            'observaciones' => 'permit_empty|string',
+            'modelo' => 'permit_empty|string',
+            'color_tinta' => 'permit_empty|string',
+            'status' => 'required|in_list[Dibujo,Elaboracion,Facturacion,Entregado]',
+            'eliminar_imagen' => 'permit_empty|in_list[1]'
+        ];
+        
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Por favor verifica los datos');
+        }
+        
+        // Obtener la orden actual
+        $ordenActual = $ordenModel->find($id_ot);
+        $imagenPath = $ordenActual->imagen_path;
+        
+        // Manejar eliminación de imagen
+        if ($this->request->getPost('eliminar_imagen') == '1' && $imagenPath) {
+            if (file_exists(WRITEPATH . 'uploads/ordenes/' . $imagenPath)) {
+                unlink(WRITEPATH . 'uploads/ordenes/' . $imagenPath);
+            }
+            $imagenPath = null;
+        }
+        
+        // Procesar nueva imagen si se subió
+        if ($imagen = $this->request->getFile('imagen_orden')) {
+            if ($imagen->isValid() && !$imagen->hasMoved()) {
+                // Eliminar imagen anterior si existe
+                if ($imagenPath && file_exists(WRITEPATH . 'uploads/ordenes/' . $imagenPath)) {
+                    unlink(WRITEPATH . 'uploads/ordenes/' . $imagenPath);
+                }
+                
+                $nuevoNombre = $imagen->getRandomName();
+                $imagen->move(WRITEPATH . 'uploads/ordenes', $nuevoNombre);
+                $imagenPath = $nuevoNombre;
+            }
+        }
+        
+        // Preparar datos para actualizar
+        $data = [
+            'observaciones' => $this->request->getPost('observaciones'),
+            'modelo' => $this->request->getPost('modelo'),
+            'color_tinta' => $this->request->getPost('color_tinta'),
+            'status' => $this->request->getPost('status'),
+            'imagen_path' => $imagenPath,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+        
+        if ($ordenModel->update($id_ot, $data)) {
+            return redirect()->to('/administracion')->with('success', 'Orden actualizada correctamente');
+        } else {
+            return redirect()->back()->withInput()->with('error', 'Error al actualizar la orden');
+        }
     }
 
 
@@ -737,6 +814,6 @@ class OrdenTrabajoController extends BaseController
         return json_encode($resultado);
 
     }
-
+    
 
 }

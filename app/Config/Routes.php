@@ -224,7 +224,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    $routes->delete('(:num)/eliminar', 'AdministracionController::eliminar/$1');
 	    $routes->post('pagar/(:num)', 'AdministracionController::pagar/$1');
 	    $routes->get('ordenes/(:num)', 'AdministracionController::detalle_orden/$1');
-
+	    $routes->get('editar/(:num)', 'AdministracionController::editar/$1');
 	});
 	$routes->group('existencias',static function($routes) {
 		$routes->get('existencias_admin', 'Admin\Existencias::index');
