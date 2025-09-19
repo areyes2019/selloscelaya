@@ -38,7 +38,7 @@
                             <a href="#" class="dropdown-item" @click.prevent = "generar_factura">
                                 <span class="bi bi-filetype-pdf">Facturar</span>
                             </a>
-                            <a class="dropdown-item" href="<?= base_url('ordenes/crear_orden_trabajo/'.$cotizacion['id_cotizacion']) ?>" onclick="return confirm('¿Crear orden de trabajo para esta cotización?')">
+                            <a class="dropdown-item" href="<?= base_url('ordenes/new/'.$cotizacion['id_cotizacion']) ?>" onclick="return confirm('¿Crear orden de trabajo para esta cotización?')">
                                 <span class="bi bi-clipboard-check"></span> Agregar orden de trabajo
                             </a>
                         </div>
