@@ -156,7 +156,7 @@
                             </th>
                             <td>
                                 ${{totales.anticipo}}
-                                <button v-if="totales.anticipo == 0" class="btn-my bg-success" data-bs-toggle="modal" data-bs-target="#pagoModal">
+                                <button v-if="totales.anticipo == 0 && pagado == 0" class="btn-my bg-success" data-bs-toggle="modal" data-bs-target="#pagoModal">
                                     <span class="bi bi-cash"></span>
                                 </button>
                             </td>
