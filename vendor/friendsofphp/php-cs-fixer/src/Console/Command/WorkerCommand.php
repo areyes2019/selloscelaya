@@ -20,7 +20,7 @@ use PhpCsFixer\Cache\NullCacheManager;
 use PhpCsFixer\Config;
 use PhpCsFixer\Console\ConfigurationResolver;
 use PhpCsFixer\Error\ErrorsManager;
-use PhpCsFixer\FixerFileProcessedEvent;
+use PhpCsFixer\Runner\Event\FileProcessed;
 use PhpCsFixer\Runner\Parallel\ParallelAction;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 use PhpCsFixer\Runner\Parallel\ParallelisationException;
@@ -42,6 +42,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @author Greg Korba <greg@codito.dev>
  *
  * @internal
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 #[AsCommand(name: 'worker', description: 'Internal command for running fixers in parallel', hidden: true)]
 final class WorkerCommand extends Command
@@ -49,10 +51,10 @@ final class WorkerCommand extends Command
     /** @var string Prefix used before JSON-encoded error printed in the worker's process */
     public const ERROR_PREFIX = 'WORKER_ERROR::';
 
-    /** @var string */
+    /** @TODO PHP 8.0 - remove the property */
     protected static $defaultName = 'worker';
 
-    /** @var string */
+    /** @TODO PHP 8.0 - remove the property */
     protected static $defaultDescription = 'Internal command for running fixers in parallel';
 
     private ToolInfoInterface $toolInfo;
@@ -60,7 +62,7 @@ final class WorkerCommand extends Command
     private ErrorsManager $errorsManager;
     private EventDispatcherInterface $eventDispatcher;
 
-    /** @var list<FixerFileProcessedEvent> */
+    /** @var list<FileProcessed> */
     private array $events;
 
     public function __construct(ToolInfoInterface $toolInfo)
@@ -79,11 +81,11 @@ final class WorkerCommand extends Command
             [
                 new InputOption('port', null, InputOption::VALUE_REQUIRED, 'Specifies parallelisation server\'s port.'),
                 new InputOption('identifier', null, InputOption::VALUE_REQUIRED, 'Specifies parallelisation process\' identifier.'),
-                new InputOption('allow-risky', '', InputOption::VALUE_REQUIRED, 'Are risky fixers allowed (can be `yes` or `no`).'),
+                new InputOption('allow-risky', '', InputOption::VALUE_REQUIRED, HelpCommand::getDescriptionWithAllowedValues('Are risky fixers allowed (%s).', ConfigurationResolver::BOOL_VALUES), null, ConfigurationResolver::BOOL_VALUES),
                 new InputOption('config', '', InputOption::VALUE_REQUIRED, 'The path to a config file.'),
                 new InputOption('dry-run', '', InputOption::VALUE_NONE, 'Only shows which files would have been modified.'),
                 new InputOption('rules', '', InputOption::VALUE_REQUIRED, 'List of rules that should be run against configured paths.'),
-                new InputOption('using-cache', '', InputOption::VALUE_REQUIRED, 'Should cache be used (can be `yes` or `no`).'),
+                new InputOption('using-cache', '', InputOption::VALUE_REQUIRED, HelpCommand::getDescriptionWithAllowedValues('Should cache be used (%s).', ConfigurationResolver::BOOL_VALUES), null, ConfigurationResolver::BOOL_VALUES),
                 new InputOption('cache-file', '', InputOption::VALUE_REQUIRED, 'The path to the cache file.'),
                 new InputOption('diff', '', InputOption::VALUE_NONE, 'Prints diff for each file.'),
                 new InputOption('stop-on-violation', '', InputOption::VALUE_NONE, 'Stop execution on first violation.'),
@@ -110,13 +112,12 @@ final class WorkerCommand extends Command
         $loop = new StreamSelectLoop();
         $tcpConnector = new TcpConnector($loop);
         $tcpConnector
-            ->connect(sprintf('127.0.0.1:%d', $port))
+            ->connect(\sprintf('127.0.0.1:%d', $port))
             ->then(
                 /** @codeCoverageIgnore */
                 function (ConnectionInterface $connection) use ($loop, $runner, $identifier): void {
-                    $jsonInvalidUtf8Ignore = \defined('JSON_INVALID_UTF8_IGNORE') ? JSON_INVALID_UTF8_IGNORE : 0;
-                    $out = new Encoder($connection, $jsonInvalidUtf8Ignore);
-                    $in = new Decoder($connection, true, 512, $jsonInvalidUtf8Ignore);
+                    $out = new Encoder($connection, \JSON_INVALID_UTF8_IGNORE);
+                    $in = new Decoder($connection, true, 512, \JSON_INVALID_UTF8_IGNORE);
 
                     // [REACT] Initialise connection with the parallelisation operator
                     $out->write(['action' => ParallelAction::WORKER_HELLO, 'identifier' => $identifier]);
@@ -148,16 +149,16 @@ final class WorkerCommand extends Command
 
                         if (ParallelAction::RUNNER_REQUEST_ANALYSIS !== $action) {
                             // At this point we only expect analysis requests, if any other action happen, we need to fix the code.
-                            throw new \LogicException(sprintf('Unexpected action ParallelAction::%s.', $action));
+                            throw new \LogicException(\sprintf('Unexpected action ParallelAction::%s.', $action));
                         }
 
                         /** @var iterable<int, string> $files */
                         $files = $json['files'];
 
-                        foreach ($files as $absolutePath) {
+                        foreach ($files as $path) {
                             // Reset events because we want to collect only those coming from analysed files chunk
                             $this->events = [];
-                            $runner->setFileIterator(new \ArrayIterator([new \SplFileInfo($absolutePath)]));
+                            $runner->setFileIterator(new \ArrayIterator([new \SplFileInfo($path)]));
                             $analysisResult = $runner->fix();
 
                             if (1 !== \count($this->events)) {
@@ -170,11 +171,11 @@ final class WorkerCommand extends Command
 
                             $out->write([
                                 'action' => ParallelAction::WORKER_RESULT,
-                                'file' => $absolutePath,
+                                'file' => $path,
                                 'fileHash' => $this->events[0]->getFileHash(),
                                 'status' => $this->events[0]->getStatus(),
                                 'fixInfo' => array_pop($analysisResult),
-                                'errors' => $this->errorsManager->forPath($absolutePath),
+                                'errors' => $this->errorsManager->forPath($path),
                             ]);
                         }
 
@@ -204,7 +205,7 @@ final class WorkerCommand extends Command
         }
 
         // There's no one single source of truth when it comes to fixing single file, we need to collect statuses from events.
-        $this->eventDispatcher->addListener(FixerFileProcessedEvent::NAME, function (FixerFileProcessedEvent $event): void {
+        $this->eventDispatcher->addListener(FileProcessed::NAME, function (FileProcessed $event): void {
             $this->events[] = $event;
         });
 

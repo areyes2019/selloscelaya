@@ -613,6 +613,7 @@ class Cotizaciones extends BaseController
 	}
 	
 	//Esta funcion es para descargar PDF
+	//Esta funcion es para descargar PDF
 	public function cotizacion_pdf($id) 
 	{
 	    $db = \Config\Database::connect();
@@ -679,13 +680,27 @@ class Cotizaciones extends BaseController
 	    // Generar PDF
 	    $dompdf = new \Dompdf\Dompdf();
 	    
-	    // Opciones de Dompdf
+	    // CONFIGURACIÓN UTF-8 - AGREGAR ESTAS LÍNEAS
 	    $options = $dompdf->getOptions();
 	    $options->set('isRemoteEnabled', true);
+	    $options->set('isHtml5ParserEnabled', true);
+	    $options->set('defaultFont', 'DejaVu Sans');
+	    $options->set('charset', 'UTF-8');
 	    $dompdf->setOptions($options);
 	    
 	    $html = view('Panel/PDF', $data);
-	    $dompdf->loadHtml($html);
+	    
+	    // Forzar encoding UTF-8 en el HTML
+	    $html = '<!DOCTYPE html>
+	    <html lang="es">
+	    <head>
+	        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	        <title>Cotización</title>
+	    </head>
+	    <body>' . $html . '</body>
+	    </html>';
+	    
+	    $dompdf->loadHtml($html, 'UTF-8');
 	    $dompdf->setPaper('A4', 'portrait');
 	    $dompdf->render();
 	    

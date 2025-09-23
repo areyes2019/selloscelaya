@@ -85,10 +85,11 @@ final class Nexus81 extends AbstractRuleset
             'class_definition' => [
                 'multi_line_extends_each_single_line' => true,
                 'single_item_single_line' => true,
-                'single_line' => true,
+                'single_line' => false,
                 'space_before_parenthesis' => true,
                 'inline_constructor_arguments' => true,
             ],
+            'class_keyword' => true,
             'class_reference_name_casing' => true,
             'clean_namespace' => true,
             'combine_consecutive_issets' => true,
@@ -100,6 +101,7 @@ final class Nexus81 extends AbstractRuleset
                     'codeCoverageIgnore',
                     'codeCoverageIgnoreStart',
                     'codeCoverageIgnoreEnd',
+                    'phpstan-ignore',
                     'phpstan-ignore-line',
                     'phpstan-ignore-next-line',
                 ],
@@ -134,11 +136,6 @@ final class Nexus81 extends AbstractRuleset
                 'noise_remaining_usages' => false,
                 'noise_remaining_usages_exclude' => [],
             ],
-            'escape_implicit_backslashes' => [
-                'double_quoted' => true,
-                'heredoc_syntax' => true,
-                'single_quoted' => false,
-            ],
             'explicit_indirect_variable' => true,
             'explicit_string_variable' => true,
             'final_class' => false,
@@ -151,7 +148,25 @@ final class Nexus81 extends AbstractRuleset
             'fopen_flag_order' => true,
             'fopen_flags' => ['b_mode' => true],
             'full_opening_tag' => true,
-            'fully_qualified_strict_types' => ['leading_backslash_in_global_namespace' => false],
+            'fully_qualified_strict_types' => [
+                'import_symbols' => true,
+                'leading_backslash_in_global_namespace' => false,
+                'phpdoc_tags' => [
+                    'param',
+                    'phpstan-param',
+                    'phpstan-property',
+                    'phpstan-property-read',
+                    'phpstan-property-write',
+                    'phpstan-return',
+                    'phpstan-var',
+                    'property',
+                    'property-read',
+                    'property-write',
+                    'return',
+                    'throws',
+                    'var',
+                ],
+            ],
             'function_declaration' => [
                 'closure_function_spacing' => 'one',
                 'closure_fn_spacing' => 'none',
@@ -167,6 +182,7 @@ final class Nexus81 extends AbstractRuleset
                     'pi',
                 ],
             ],
+            'general_attribute_remove' => ['attributes' => []],
             'general_phpdoc_annotation_remove' => [
                 'annotations' => [
                     'package',
@@ -188,6 +204,7 @@ final class Nexus81 extends AbstractRuleset
             ],
             'group_import' => false,
             'header_comment' => false,
+            'heredoc_closing_marker' => false,
             'heredoc_indentation' => ['indentation' => 'start_plus_one'],
             'heredoc_to_nowdoc' => true,
             'implode_call' => true,
@@ -215,9 +232,14 @@ final class Nexus81 extends AbstractRuleset
                 'attribute_placement' => 'standalone',
             ],
             'method_chaining_indentation' => true,
-            'modernize_strpos' => true,
+            'modernize_strpos' => ['modernize_stripos' => true],
             'modernize_types_casting' => true,
             'multiline_comment_opening_closing' => true,
+            'multiline_promoted_properties' => [
+                'keep_blank_lines' => false,
+                'minimum_number_of_parameters' => 1,
+            ],
+            'multiline_string_to_heredoc' => true,
             'multiline_whitespace_before_semicolons' => ['strategy' => 'new_line_for_chained_calls'],
             'native_constant_invocation' => [
                 'fix_built_in' => false,
@@ -239,6 +261,7 @@ final class Nexus81 extends AbstractRuleset
                 'strict' => true,
             ],
             'native_type_declaration_casing' => true,
+            'new_expression_parentheses' => ['use_parentheses' => true],
             'new_with_parentheses' => [
                 'named_class' => true,
                 'anonymous_class' => false,
@@ -286,9 +309,10 @@ final class Nexus81 extends AbstractRuleset
             'no_spaces_around_offset' => ['positions' => ['inside', 'outside']],
             'no_superfluous_elseif' => true,
             'no_superfluous_phpdoc_tags' => [
-                'allow_mixed' => true,
-                'allow_unused_params' => true,
-                'remove_inheritdoc' => false,
+                'allow_hidden_params' => true,
+                'allow_mixed' => false,
+                'allow_unused_params' => false,
+                'remove_inheritdoc' => true,
             ],
             'no_trailing_comma_in_singleline' => [
                 'elements' => ['arguments', 'array', 'array_destructuring', 'group_import'],
@@ -317,6 +341,7 @@ final class Nexus81 extends AbstractRuleset
             'no_useless_concat_operator' => ['juggle_simple_strings' => true],
             'no_useless_else' => true,
             'no_useless_nullsafe_operator' => true,
+            'no_useless_printf' => true,
             'no_useless_return' => true,
             'no_useless_sprintf' => true,
             'no_whitespace_before_comma_in_array' => ['after_heredoc' => false],
@@ -326,10 +351,12 @@ final class Nexus81 extends AbstractRuleset
             'not_operator_with_space' => false,
             'not_operator_with_successor_space' => true,
             'nullable_type_declaration' => ['syntax' => 'question_mark'],
-            'nullable_type_declaration_for_default_null_value' => ['use_nullable_type_declaration' => true],
+            'nullable_type_declaration_for_default_null_value' => true,
+            'numeric_literal_separator' => false,
             'object_operator_without_whitespace' => true,
             'octal_notation' => true,
             'operator_linebreak' => ['only_booleans' => true, 'position' => 'beginning'],
+            'ordered_attributes' => ['order' => [], 'sort_algorithm' => 'alpha'],
             'ordered_class_elements' => [
                 'order' => [
                     'use_trait',
@@ -367,6 +394,10 @@ final class Nexus81 extends AbstractRuleset
                 'null_adjustment' => 'always_first',
                 'case_sensitive' => false,
             ],
+            'php_unit_assert_new_names' => true,
+            'php_unit_attributes' => [
+                'keep_annotations' => false,
+            ],
             'php_unit_construct' => [
                 'assertions' => [
                     'assertEquals',
@@ -374,6 +405,9 @@ final class Nexus81 extends AbstractRuleset
                     'assertNotEquals',
                     'assertNotSame',
                 ],
+            ],
+            'php_unit_data_provider_method_order' => [
+                'placement' => 'after',
             ],
             'php_unit_data_provider_name' => [
                 'prefix' => 'provide',
@@ -413,9 +447,16 @@ final class Nexus81 extends AbstractRuleset
             'phpdoc_add_missing_param_annotation' => ['only_untyped' => true],
             'phpdoc_align' => [
                 'align' => 'vertical',
+                'spacing' => 1,
                 'tags' => [
                     'method',
                     'param',
+                    'phpstan-assert',
+                    'phpstan-assert-if-true',
+                    'phpstan-assert-if-false',
+                    'phpstan-param',
+                    'phpstan-property',
+                    'phpstan-return',
                     'property',
                     'return',
                     'throws',
@@ -423,7 +464,8 @@ final class Nexus81 extends AbstractRuleset
                     'var',
                 ],
             ],
-            'phpdoc_annotation_without_dot' => true,
+            'phpdoc_annotation_without_dot' => false,
+            'phpdoc_array_type' => true,
             'phpdoc_indent' => true,
             'phpdoc_inline_tag_normalizer' => [
                 'tags' => [
@@ -443,6 +485,7 @@ final class Nexus81 extends AbstractRuleset
                 'method' => 'multi',
                 'property' => 'multi',
             ],
+            'phpdoc_list_type' => true,
             'phpdoc_no_access' => true,
             'phpdoc_no_alias_tag' => [
                 'replacements' => [
@@ -501,16 +544,10 @@ final class Nexus81 extends AbstractRuleset
                     ['author', 'copyright', 'license'],
                     ['category', 'package', 'subpackage'],
                     ['deprecated', 'link', 'see', 'since'],
-                    ['immutable', 'phpstan-immutable'],
-                    ['param', 'phpstan-param'],
+                    ['phpstan-assert', 'phpstan-assert-if-true', 'phpstan-assert-if-false'],
                     ['property', 'property-read', 'property-write'],
-                    ['pure', 'phpstan-pure'],
-                    ['readonly', 'phpstan-readonly'],
-                    ['return', 'phpstan-return'],
                     ['runTestsInSeparateProcess', 'runInSeparateProcess', 'preserveGlobalState'],
-                    ['template', 'phpstan-template'],
-                    ['template-covariant', 'phpstan-template-covariant'],
-                    ['var', 'phpstan-var', 'psalm-var'],
+                    ['template', 'template-covariant'],
                 ],
                 'skip_unlisted_annotations' => false,
             ],
@@ -518,13 +555,25 @@ final class Nexus81 extends AbstractRuleset
             'phpdoc_summary' => true,
             'phpdoc_tag_casing' => ['tags' => ['inheritDoc']],
             'phpdoc_tag_type' => ['tags' => ['inheritDoc' => 'inline']],
-            'phpdoc_to_comment' => ['ignored_tags' => [
-                'phpstan-var',
-                'phpstan-return',
-            ]],
-            'phpdoc_to_param_type' => ['scalar_types' => true],
-            'phpdoc_to_property_type' => ['scalar_types' => true],
-            'phpdoc_to_return_type' => ['scalar_types' => true],
+            'phpdoc_to_comment' => [
+                'allow_before_return_statement' => true,
+                'ignored_tags' => [],
+            ],
+            'phpdoc_to_param_type' => [
+                'scalar_types' => true,
+                'types_map' => [],
+                'union_types' => true,
+            ],
+            'phpdoc_to_property_type' => [
+                'scalar_types' => true,
+                'types_map' => [],
+                'union_types' => true,
+            ],
+            'phpdoc_to_return_type' => [
+                'scalar_types' => true,
+                'types_map' => [],
+                'union_types' => true,
+            ],
             'phpdoc_trim' => true,
             'phpdoc_trim_consecutive_blank_line_separation' => true,
             'phpdoc_types' => ['groups' => ['simple', 'alias', 'meta']],
@@ -638,10 +687,16 @@ final class Nexus81 extends AbstractRuleset
             'spaces_inside_parentheses' => ['space' => 'none'],
             'standardize_increment' => true,
             'standardize_not_equals' => true,
-            'statement_indentation' => true,
+            'statement_indentation' => ['stick_comment_to_next_continuous_control_statement' => true],
             'static_lambda' => true,
+            'static_private_method' => true,
             'strict_comparison' => true,
             'strict_param' => true,
+            'string_implicit_backslashes' => [
+                'double_quoted' => 'escape',
+                'heredoc' => 'escape',
+                'single_quoted' => 'ignore',
+            ],
             'string_length_to_empty' => true,
             'string_line_ending' => true,
             'switch_case_semicolon_to_colon' => true,
@@ -657,7 +712,7 @@ final class Nexus81 extends AbstractRuleset
             'trim_array_spaces' => true,
             'type_declaration_spaces' => ['elements' => ['function', 'property']],
             'types_spaces' => ['space' => 'none', 'space_multiple_catch' => null],
-            'unary_operator_spaces' => true,
+            'unary_operator_spaces' => ['only_dec_inc' => false],
             'use_arrow_functions' => true,
             'visibility_required' => ['elements' => ['const', 'method', 'property']],
             'void_return' => true,
@@ -670,7 +725,7 @@ final class Nexus81 extends AbstractRuleset
                 'less_and_greater' => null,
             ],
         ];
-        $this->requiredPHPVersion = 80100;
+        $this->requiredPHPVersion = 8_01_00;
         $this->autoActivateIsRiskyAllowed = true;
     }
 }

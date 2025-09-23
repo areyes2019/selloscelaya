@@ -21,7 +21,11 @@ use PhpCsFixer\RuleSet\RuleSetDescriptionInterface;
 use PhpCsFixer\Utils;
 
 /**
+ * @readonly
+ *
  * @internal
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class RuleSetDocumentationGenerator
 {
@@ -58,7 +62,7 @@ final class RuleSetDocumentationGenerator
 
             if (0 !== \count($alternatives)) {
                 $deprecationDescription .= RstUtils::toRst(
-                    sprintf(
+                    \sprintf(
                         "\n\nYou should use %s instead.",
                         Utils::naturalLanguageJoinWithBackticks($alternatives)
                     ),

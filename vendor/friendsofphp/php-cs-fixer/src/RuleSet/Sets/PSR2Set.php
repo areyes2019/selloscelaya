@@ -18,6 +18,8 @@ use PhpCsFixer\RuleSet\AbstractRuleSetDescription;
 
 /**
  * @internal
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class PSR2Set extends AbstractRuleSetDescription
 {
@@ -55,6 +57,40 @@ final class PSR2Set extends AbstractRuleSetDescription
             ],
             'single_import_per_statement' => true,
             'single_line_after_imports' => true,
+            'single_space_around_construct' => [
+                'constructs_followed_by_a_single_space' => [
+                    'abstract',
+                    'as',
+                    'case',
+                    'catch',
+                    'class',
+                    'do',
+                    'else',
+                    'elseif',
+                    'final',
+                    'for',
+                    'foreach',
+                    'function',
+                    'if',
+                    'interface',
+                    'namespace',
+                    'private',
+                    'protected',
+                    'public',
+                    'static',
+                    'switch',
+                    'trait',
+                    'try',
+                    'use_lambda',
+                    'while',
+                ],
+                'constructs_preceded_by_a_single_space' => [
+                    'as',
+                    'else',
+                    'elseif',
+                    'use_lambda',
+                ],
+            ],
             'spaces_inside_parentheses' => true,
             'statement_indentation' => true,
             'switch_case_semicolon_to_colon' => true,

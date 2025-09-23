@@ -34,6 +34,8 @@ use Symfony\Component\Finder\SplFileInfo;
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
  * @internal
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class FixerFactory
 {
@@ -86,8 +88,15 @@ final class FixerFactory
             /** @var list<class-string<FixerInterface>> */
             $builtInFixers = [];
 
+            $finder = SymfonyFinder::create()->files()
+                ->in(__DIR__.'/Fixer')
+                ->exclude(['Internal'])
+                ->name('*Fixer.php')
+                ->depth(1)
+            ;
+
             /** @var SplFileInfo $file */
-            foreach (SymfonyFinder::create()->files()->in(__DIR__.'/Fixer')->name('*Fixer.php')->depth(1) as $file) {
+            foreach ($finder as $file) {
                 $relativeNamespace = $file->getRelativePath();
                 $fixerClass = 'PhpCsFixer\Fixer\\'.('' !== $relativeNamespace ? $relativeNamespace.'\\' : '').$file->getBasename('.php');
                 $builtInFixers[] = $fixerClass;
@@ -125,11 +134,11 @@ final class FixerFactory
         $name = $fixer->getName();
 
         if (isset($this->fixersByName[$name])) {
-            throw new \UnexpectedValueException(sprintf('Fixer named "%s" is already registered.', $name));
+            throw new \UnexpectedValueException(\sprintf('Fixer named "%s" is already registered.', $name));
         }
 
         if (!$this->nameValidator->isValid($name, $isCustom)) {
-            throw new \UnexpectedValueException(sprintf('Fixer named "%s" has invalid name.', $name));
+            throw new \UnexpectedValueException(\sprintf('Fixer named "%s" has invalid name.', $name));
         }
 
         $this->fixers[] = $fixer;
@@ -152,7 +161,7 @@ final class FixerFactory
         $fixerNames = array_keys($ruleSet->getRules());
         foreach ($fixerNames as $name) {
             if (!\array_key_exists($name, $this->fixersByName)) {
-                throw new \UnexpectedValueException(sprintf('Rule "%s" does not exist.', $name));
+                throw new \UnexpectedValueException(\sprintf('Rule "%s" does not exist.', $name));
             }
 
             $fixer = $this->fixersByName[$name];
@@ -202,18 +211,14 @@ final class FixerFactory
      */
     private function getFixersConflicts(FixerInterface $fixer): array
     {
-        static $conflictMap = [
+        return [
             'blank_lines_before_namespace' => [
                 'no_blank_lines_before_namespace',
                 'single_blank_line_before_namespace',
             ],
             'no_blank_lines_before_namespace' => ['single_blank_line_before_namespace'],
             'single_import_per_statement' => ['group_import'],
-        ];
-
-        $fixerName = $fixer->getName();
-
-        return \array_key_exists($fixerName, $conflictMap) ? $conflictMap[$fixerName] : [];
+        ][$fixer->getName()] ?? [];
     }
 
     /**
@@ -232,7 +237,7 @@ final class FixerFactory
             );
 
             if (\count($report[$fixer]) > 0) {
-                $message .= sprintf("\n- \"%s\" with %s", $fixer, Utils::naturalLanguageJoin($report[$fixer]));
+                $message .= \sprintf("\n- \"%s\" with %s", $fixer, Utils::naturalLanguageJoin($report[$fixer]));
             }
         }
 

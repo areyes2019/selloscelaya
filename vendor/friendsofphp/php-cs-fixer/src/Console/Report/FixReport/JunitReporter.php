@@ -21,7 +21,11 @@ use Symfony\Component\Console\Formatter\OutputFormatter;
 /**
  * @author Boris Gorbylev <ekho@ekho.name>
  *
+ * @readonly
+ *
  * @internal
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class JunitReporter implements ReporterInterface
 {
@@ -59,7 +63,7 @@ final class JunitReporter implements ReporterInterface
         if ($reportSummary->getTime() > 0) {
             $testsuite->setAttribute(
                 'time',
-                sprintf(
+                \sprintf(
                     '%.3f',
                     $reportSummary->getTime() / 1_000
                 )
@@ -68,7 +72,12 @@ final class JunitReporter implements ReporterInterface
 
         $dom->formatOutput = true;
 
-        return $reportSummary->isDecoratedOutput() ? OutputFormatter::escape($dom->saveXML()) : $dom->saveXML();
+        $result = $dom->saveXML();
+        if (false === $result) {
+            throw new \RuntimeException('Failed to generate XML output');
+        }
+
+        return $reportSummary->isDecoratedOutput() ? OutputFormatter::escape($result) : $result;
     }
 
     private function createSuccessTestCase(\DOMDocument $dom, \DOMElement $testsuite): void
@@ -111,7 +120,7 @@ final class JunitReporter implements ReporterInterface
     {
         $appliedFixersCount = \count($fixResult['appliedFixers']);
 
-        $testName = str_replace('.', '_DOT_', Preg::replace('@\.'.pathinfo($file, PATHINFO_EXTENSION).'$@', '', $file));
+        $testName = str_replace('.', '_DOT_', Preg::replace('@\.'.pathinfo($file, \PATHINFO_EXTENSION).'$@', '', $file));
 
         $testcase = $dom->createElement('testcase');
         $testcase->setAttribute('name', $testName);

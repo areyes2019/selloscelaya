@@ -22,9 +22,14 @@ use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Katsuhiro Ogawa <ko.fivestar@gmail.com>
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
-class Config implements ConfigInterface, ParallelAwareConfigInterface
+class Config implements ConfigInterface, ParallelAwareConfigInterface, UnsupportedPhpVersionAllowedConfigInterface
 {
+    /**
+     * @var non-empty-string
+     */
     private string $cacheFile = '.php-cs-fixer.cache';
 
     /**
@@ -37,24 +42,27 @@ class Config implements ConfigInterface, ParallelAwareConfigInterface
      */
     private ?iterable $finder = null;
 
-    private string $format = 'txt';
+    private string $format;
 
     private bool $hideProgress = false;
 
+    /**
+     * @var non-empty-string
+     */
     private string $indent = '    ';
 
     private bool $isRiskyAllowed = false;
 
+    /**
+     * @var non-empty-string
+     */
     private string $lineEnding = "\n";
 
     private string $name;
 
     private ParallelConfig $parallelConfig;
 
-    /**
-     * @var null|string
-     */
-    private $phpExecutable;
+    private ?string $phpExecutable = null;
 
     /**
      * @TODO: 4.0 - update to @PER
@@ -65,25 +73,37 @@ class Config implements ConfigInterface, ParallelAwareConfigInterface
 
     private bool $usingCache = true;
 
+    private bool $isUnsupportedPhpVersionAllowed = false;
+
     public function __construct(string $name = 'default')
     {
         // @TODO 4.0 cleanup
-        if (Utils::isFutureModeEnabled()) {
+        if (Future::isFutureModeEnabled()) {
             $this->name = $name.' (future mode)';
             $this->rules = ['@PER-CS' => true];
+            $this->format = '@auto';
         } else {
             $this->name = $name;
             $this->rules = ['@PSR12' => true];
+            $this->format = 'txt';
         }
 
         // @TODO 4.0 cleanup
-        if (Utils::isFutureModeEnabled() || filter_var(getenv('PHP_CS_FIXER_PARALLEL'), FILTER_VALIDATE_BOOL)) {
+        if (Future::isFutureModeEnabled() || filter_var(getenv('PHP_CS_FIXER_PARALLEL'), \FILTER_VALIDATE_BOOL)) {
             $this->parallelConfig = ParallelConfigFactory::detect();
         } else {
             $this->parallelConfig = ParallelConfigFactory::sequential();
         }
+
+        // @TODO 4.0 cleanup
+        if (false !== getenv('PHP_CS_FIXER_IGNORE_ENV')) {
+            $this->isUnsupportedPhpVersionAllowed = filter_var(getenv('PHP_CS_FIXER_IGNORE_ENV'), \FILTER_VALIDATE_BOOL);
+        }
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getCacheFile(): string
     {
         return $this->cacheFile;
@@ -154,6 +174,11 @@ class Config implements ConfigInterface, ParallelAwareConfigInterface
         return $this->usingCache;
     }
 
+    public function getUnsupportedPhpVersionAllowed(): bool
+    {
+        return $this->isUnsupportedPhpVersionAllowed;
+    }
+
     public function registerCustomFixers(iterable $fixers): ConfigInterface
     {
         foreach ($fixers as $fixer) {
@@ -163,6 +188,9 @@ class Config implements ConfigInterface, ParallelAwareConfigInterface
         return $this;
     }
 
+    /**
+     * @param non-empty-string $cacheFile
+     */
     public function setCacheFile(string $cacheFile): ConfigInterface
     {
         $this->cacheFile = $cacheFile;
@@ -191,6 +219,9 @@ class Config implements ConfigInterface, ParallelAwareConfigInterface
         return $this;
     }
 
+    /**
+     * @param non-empty-string $indent
+     */
     public function setIndent(string $indent): ConfigInterface
     {
         $this->indent = $indent;
@@ -198,6 +229,9 @@ class Config implements ConfigInterface, ParallelAwareConfigInterface
         return $this;
     }
 
+    /**
+     * @param non-empty-string $lineEnding
+     */
     public function setLineEnding(string $lineEnding): ConfigInterface
     {
         $this->lineEnding = $lineEnding;
@@ -236,6 +270,13 @@ class Config implements ConfigInterface, ParallelAwareConfigInterface
     public function setUsingCache(bool $usingCache): ConfigInterface
     {
         $this->usingCache = $usingCache;
+
+        return $this;
+    }
+
+    public function setUnsupportedPhpVersionAllowed(bool $isUnsupportedPhpVersionAllowed): ConfigInterface
+    {
+        $this->isUnsupportedPhpVersionAllowed = $isUnsupportedPhpVersionAllowed;
 
         return $this;
     }

@@ -21,6 +21,8 @@ use PhpCsFixer\ToolInfoInterface;
  * @author Dariusz Rumiński <dariusz.ruminski@gmail.com>
  *
  * @internal
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class WarningsDetector
 {
@@ -50,12 +52,19 @@ final class WarningsDetector
         if ($this->toolInfo->isInstalledByComposer()) {
             $details = $this->toolInfo->getComposerInstallationDetails();
             if (ToolInfo::COMPOSER_LEGACY_PACKAGE_NAME === $details['name']) {
-                $this->warnings[] = sprintf(
+                $this->warnings[] = \sprintf(
                     'You are running PHP CS Fixer installed with old vendor `%s`. Please update to `%s`.',
                     ToolInfo::COMPOSER_LEGACY_PACKAGE_NAME,
                     ToolInfo::COMPOSER_PACKAGE_NAME
                 );
             }
+        }
+    }
+
+    public function detectNonMonolithic(): void
+    {
+        if (filter_var(getenv('PHP_CS_FIXER_NON_MONOLITHIC'), \FILTER_VALIDATE_BOOL)) {
+            $this->warnings[] = 'Processing non-monolithic files enabled, because `PHP_CS_FIXER_NON_MONOLITHIC` is set. Execution result may be unpredictable - non-monolithic files are not officially supported.';
         }
     }
 

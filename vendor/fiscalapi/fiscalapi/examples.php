@@ -9,14 +9,17 @@ require_once 'vendor/autoload.php';
 
 
 // Crea las configuraciones del cliente http fiscalapi.
-// Lea como obtener sus credenciales:  https://docs.fiscalapi.com/credentials-info
+// Lea como obtener sus credenciales: https://docs.fiscalapi.com/credentials-info
+
+//Ambiente de pruebas
 $settings = new FiscalApiSettings(
-    'https://localhost:7173',
-    'sk_development_833a58f9_8212_43ce_b544_f2fa93b1e895',
-    'e839651d-1765-4cd0-ba7f-547a4c20580f',
+    'https://test.fiscalapi.com',
+    '<apiKey>',
+    '<tenant>',
     false, // Imprimir raw request / response
-    false, // Desactivar verificación SSL. (por seguridad debería asignar false en producción)
+    false, // Desactivar verificación SSL. (por seguridad NO debería asignar false en producción)
 );
+
 
 // Sellos SAT de prueba (KARLA FUENTE NOLASCO FUNK671228PH6) 
 // Visita https://docs.fiscalapi.com/tax-files-info#codificacion-de-fiel-o-csd-en-base64 para leer como convertir tus sellos CSD en base 64
@@ -305,45 +308,64 @@ try {
 
 
     // ------------------------------------------------------------------
-    // Crear factura global por referencias
+    // Crear factura global por valores
     // ------------------------------------------------------------------
     // $invoice = [
     //     'versionCode' => "4.0",
     //     'series' => "F",
-    //     'date' => $currentDate, // Fecha de emisión de la factura global
+    //     'date' => $currentDate,
     //     'paymentFormCode' => "01",
-    //     'paymentMethodCode' => "PUE", // PUE=Pago en una sola exhibición, PPD=Pago en parcialidades o diferido
-    //     'currencyCode' => "MXN", // Moneda de la factura
-    //     'typeCode' => "I", // I=Ingreso, E=Egreso
-    //     'expeditionZipCode' => "01160", // Código postal del emisor
-    //     'exchangeRate' => 1, // Tipo de cambio
-    //     'exportCode' => "01", 
-    //     'globalInformation' => [     
-    //         'periodicityCode' => "02", // Periodicidad 02 = Semanal
-    //         'monthCode' => "02",       // Mes 02 = Febrero
-    //         'year' => 2025             // Año fiscal
+    //     'paymentMethodCode' => "PUE",
+    //     'currencyCode' => "MXN",
+    //     'typeCode' => "I",
+    //     'expeditionZipCode' => "01160",
+    //     'exchangeRate' => 1,
+    //     'exportCode' => "01",
+    //     'globalInformation' => [
+    //         'periodicityCode' => "01",
+    //         'monthCode' => "05",
+    //         'year' => 2025
     //     ],
     //     'issuer' => [
-    //         'id' => "3f3478b4-60fd-459e-8bfc-f8239fc96257" // ID del emisor
+    //         'tin' => "FUNK671228PH6",
+    //         'legalName' => "KARLA FUENTE NOLASCO",
+    //         'taxRegimeCode' => "621",
+    //         'taxCredentials' => [
+    //             [
+    //                 'base64File' => $base64Cert,
+    //                 'fileType' => 0,
+    //                 'password' => $password
+    //             ],
+    //             [
+    //                 'base64File' => $base64Key,
+    //                 'fileType' => 1,
+    //                 'password' => $password
+    //             ]
+    //         ]
     //     ],
     //     'recipient' => [
-    //         'id' => "96b46762-d246-4a67-a562-510a25dbafa9" // ID del receptor
+    //         'tin' => "XAXX010101000",
+    //         'legalName' => "PUBLICO EN GENERAL",
+    //         'zipCode' => "01160",
+    //         'taxRegimeCode' => "616",
+    //         'cfdiUseCode' => "S01",
+    //         'email' => "someone@somewhere.com"
     //     ],
     //     'items' => [
     //         [
-    //             'itemCode' => "01010101",    // Fijo
+    //             'itemCode' => "01010101",
     //             'quantity' => 1,
-    //             'unitOfMeasurementCode' =>  // Fijo
-    //             'description' => "Venta", // Fijo
-    //             'unitPrice' => 1230.00, // Total de la venta sin impuestos
-    //             'taxObjectCode' => "02", // 02 = Sí objeto de impuesto
-    //             'itemSku' => "1", // Identificador interno de la venta
+    //             'unitOfMeasurementCode' => "ACT",
+    //             'description' => "Venta",
+    //             'unitPrice' => 1230.00,
+    //             'taxObjectCode' => "02",
+    //             'itemSku' => "venta0001",
     //             'itemTaxes' => [
     //                 [
-    //                     'taxCode' => "002",           // 002 = IVA
-    //                     'taxTypeCode' => "Tasa",      // Tipo de factor
-    //                     'taxRate' => "0.160000",      // Tasa 16%
-    //                     'taxFlagCode' => "T"          // T = Traslado
+    //                     'taxCode' => "002",
+    //                     'taxTypeCode' => "Tasa",
+    //                     'taxRate' => "0.160000",
+    //                     'taxFlagCode' => "T"
     //                 ]
     //             ]
     //         ]
@@ -352,6 +374,57 @@ try {
 
     // $apiResponse = $client->getInvoiceService()->create($invoice);
     // consoleLog($apiResponse);
+
+
+    // ------------------------------------------------------------------
+    // Crear factura global por referencias
+    // ------------------------------------------------------------------
+    // $invoice = [
+    //     'versionCode' => "4.0",
+    //     'series' => "F",
+    //     'date' => $currentDate,
+    //     'paymentFormCode' => "01",
+    //     'paymentMethodCode' => "PUE",
+    //     'currencyCode' => "MXN",
+    //     'typeCode' => "I",
+    //     'exportCode' => "01",
+    //     'expeditionZipCode' => "01160",
+    //     'exchangeRate' => 1,
+    //     'globalInformation' => [
+    //         'periodicityCode' => "01",
+    //         'monthCode' => "05",
+    //         'year' => 2025
+    //     ],
+    //     'issuer' => [
+    //         'id' => "78d380fd-1b69-4e3c-8bc0-4f57737f7d5f"
+    //     ],
+    //     'recipient' => [
+    //         'id' => "4e7ba2d7-2302-42f1-9fe4-6b75069f0fc9"
+    //     ],
+    //     'items' => [
+    //         [
+    //             'itemCode' => "01010101",
+    //             'quantity' => 1,
+    //             'unitOfMeasurementCode' => "ACT",
+    //             'description' => "Venta",
+    //             'unitPrice' => 1230.00,
+    //             'taxObjectCode' => "02",
+    //             'itemSku' => "venta0001",
+    //             'itemTaxes' => [
+    //                 [
+    //                     'taxCode' => "002",
+    //                     'taxTypeCode' => "Tasa",
+    //                     'taxRate' => "0.160000",
+    //                     'taxFlagCode' => "T"
+    //                 ]
+    //             ]
+    //         ]
+    //     ]
+    // ];
+
+    // $apiResponse = $client->getInvoiceService()->create($invoice);
+    // consoleLog($apiResponse);
+
 
 
     // ------------------------------------------------------------------
@@ -579,6 +652,41 @@ try {
 
 
 
+     // ------------------------------------------------------------------
+    // Crear factura de ingreso con precios dinamicos por referencias (solo IDs)
+    // ------------------------------------------------------------------
+    // $invoiceByReferences = [
+    //     'versionCode' => "4.0",
+    //     'series' => "F",
+    //     'date' => $currentDate,
+    //     'paymentFormCode' => "01",
+    //     'currencyCode' => "MXN",
+    //     'typeCode' => "I",
+    //     'expeditionZipCode' => "42501",
+    //     'paymentMethodCode' => "PUE",
+    //     'exchangeRate' => 1,
+    //     'exportCode' => "01",
+    //     'issuer' => [
+    //         'id' => "3f3478b4-60fd-459e-8bfc-f8239fc96257"
+    //         // No es necesario incluir otros datos del emisor al usar el ID
+    //     ],
+    //     'recipient' => [
+    //         'id' => "96b46762-d246-4a67-a562-510a25dbafa9"
+    //         // No es necesario incluir otros datos del receptor al usar el ID
+    //     ],
+    //     'items' => [
+    //         [
+    //             'id' => "114a4be5-fb65-40b2-a762-ff0c55c6ebfa", // ID del producto/servicio
+    //             'quantity' => 2, // Solo es necesario especificar la cantidad
+    //             'unitPrice' => 200.00 // precio dinámico
+    //         ]
+    //     ]
+    // ];
+    // $apiResponse = $client->getInvoiceService()->create($invoiceByReferences);
+    // consoleLog($apiResponse);
+
+
+
     // ------------------------------------------------------------------
     // Crear nota de crédito por valores
     // ------------------------------------------------------------------
@@ -687,6 +795,44 @@ try {
     // $apiResponse = $client->getInvoiceService()->create($creditNoteByReferences);
     // consoleLog($apiResponse);
 
+
+    // ------------------------------------------------------------------
+    // Crear nota de crédito por referencias con precio dinamico
+    // ------------------------------------------------------------------
+    // $creditNoteByReferences = [
+    //     'versionCode' => "4.0",
+    //     'series' => "CN",
+    //     'date' => $currentDate,
+    //     'paymentFormCode' => "03",
+    //     'currencyCode' => "MXN",
+    //     'typeCode' => "E", // Tipo E para notas de crédito (Egreso)
+    //     'expeditionZipCode' => "01160",
+    //     'paymentMethodCode' => "PUE",
+    //     'exchangeRate' => 1,
+    //     'exportCode' => "01",
+    //     'issuer' => [
+    //         'id' => "3f3478b4-60fd-459e-8bfc-f8239fc96257" // Solo se necesita el ID del emisor
+    //     ],
+    //     'recipient' => [
+    //         'id' => "96b46762-d246-4a67-a562-510a25dbafa9" // Solo se necesita el ID del receptor
+    //     ],
+    //     // Importante: Las facturas relacionadas siempre son necesarias para notas de crédito
+    //     'relatedInvoices' => [
+    //         [
+    //             'uuid' => "5FB2822E-396D-4725-8521-CDC4BDD20CCF",
+    //             'relationshipTypeCode' => "01" // 01 - Nota de crédito de los documentos relacionados
+    //         ]
+    //     ],
+    //     'items' => [
+    //         [
+    //             'id' => "114a4be5-fb65-40b2-a762-ff0c55c6ebfa", // ID del producto/servicio
+    //             'quantity' => 1, // La cantidad que se está acreditando/devolviendo
+    //             'unitPrice' => 150.00 // precio dinámico
+    //         ]
+    //     ]
+    // ];
+    // $apiResponse = $client->getInvoiceService()->create($creditNoteByReferences);
+    // consoleLog($apiResponse);
 
 
     // ------------------------------------------------------------------
@@ -1307,6 +1453,106 @@ try {
     // Vea las equivalencias de los catálogos en: https://docs.fiscalapi.com/catalogs
     // ------------------------------------------------------------------
     // $apiResponse = $client->getCatalogService()->search("SatPaymentForms", "Tarjeta", 1, 100);
+    // consoleLog($apiResponse);
+
+
+    // *******DESCARGA MASIVA **************//
+
+    // Obtener todos los catálogos de descarga masiva disponibles
+    // $apiResponse = $client->getDownloadCatalogService()->getList();
+    // consoleLog($apiResponse);
+
+    // Listar los registros del catálogo 'SatInvoiceStatuses' de descarga masiva
+    // $apiResponse = $client->getDownloadCatalogService()->listCatalog('SatInvoiceStatuses');
+    // consoleLog($apiResponse);
+
+    // *******REGLAS DE DESCARGA MASIVA **************//
+
+    // Obtener lista paginada de reglas de descarga masiva (pageNumber=1, pageSize=2)
+    // $apiResponse = $client->getDownloadRuleService()->list(1, 2);
+    // consoleLog($apiResponse);
+
+    // Obtener regla de descarga por ID
+    // $apiResponse = $client->getDownloadRuleService()->get('a339a292-37fe-422e-a28a-f93e6025c72f');
+    // consoleLog($apiResponse);
+
+    // Crear regla de descarga - Regla para descargar CFDI recibidos y vigentes
+    //    $downloadRuleData = [
+    //        'personId' => 'b0c1cf6c-153a-464e-99df-5741f45d6695', // Persona que recibió los CFDI
+    //        'description' => 'Regla descarga demo ...',
+    //        'satQueryTypeId' => 'CFDI',
+    //        'downloadTypeId' => 'Recibidos',
+    //        'satInvoiceStatusId' => 'Vigente'
+    //    ];
+    //    $apiResponse = $client->getDownloadRuleService()->create($downloadRuleData);
+    //    consoleLog($apiResponse);
+
+
+    // Crear regla de solicitud de prueba
+    // $apiResponse = $client->getDownloadRuleService()->createTestRule();
+    // consoleLog($apiResponse);
+
+    // Actualizar regla de descarga masiva - Actualizar descripción
+    //    $updateData = [
+    //        'id' => 'e9d633a8-1c27-4a85-8924-4bfa7bec8dc5',
+    //        'description' => 'Regla descarga actualizada'
+    //    ];
+    //    $apiResponse = $client->getDownloadRuleService()->update($updateData);
+    //    consoleLog($apiResponse);
+
+    // Eliminar regla de descarga
+    //    $apiResponse = $client->getDownloadRuleService()->delete('e9d633a8-1c27-4a85-8924-4bfa7bec8dc5');
+    //    consoleLog($apiResponse);
+
+
+    /**********SOLICITUDES DE DESCARGA MASIVA ***********/
+
+    // Obtener lista paginada de solicitudes de descarga masiva (pageNumber=1, pageSize=2)
+    // $apiResponse = $client->getDownloadRequestService()->list(1, 2);
+    // consoleLog($apiResponse);
+
+    // Obtener solicitud de descarga por ID
+    // $apiResponse = $client->getDownloadRequestService()->get('bf8f0fc8-1733-447a-955c-7de59bacc437');
+    // consoleLog($apiResponse);
+
+
+    // Listar xmls descargados asociados a una solicitud de descarga
+    // $apiResponse = $client->getDownloadRequestService()->getXmls('d1dfc248-75bb-43ab-85f7-03232d00b931');
+    // consoleLog($apiResponse);
+
+    // Listar metadatos descargados asociados a una solicitud de descarga
+    // $apiResponse = $client->getDownloadRequestService()->getMetadataItems('d1dfc248-75bb-43ab-85f7-03232d00b931');
+    // consoleLog($apiResponse);
+
+    // Descargar paquete (.zip file) de una solicitud de descarga masiva
+    // $apiResponse = $client->getDownloadRequestService()->downloadPackage('d1dfc248-75bb-43ab-85f7-03232d00b931');
+    // consoleLog($apiResponse);
+
+
+    // Descargar SAT request (.xml file) de una solicitud de descarga masiva (debug/testing)
+    // $apiResponse = $client->getDownloadRequestService()->downloadSatRequest('d1dfc248-75bb-43ab-85f7-03232d00b931');
+    // consoleLog($apiResponse);
+
+    // Descargar SAT response (.xml file) de una solicitud de descarga masiva (debug/testing)
+    // $apiResponse = $client->getDownloadRequestService()->downloadSatResponse('d1dfc248-75bb-43ab-85f7-03232d00b931');
+    // consoleLog($apiResponse);
+
+    // Crear solicitud de descarga masiva - Solicitud para descargar facturas de los últimos 5 días
+    //        $downloadRequestData = [
+    //            'downloadRuleId' => '15766a23-4a33-4a9a-b627-6bfc431a4dd1',
+    //            'downloadRequestTypeId' => 'Manual',
+    //            'startDate' => date('Y-m-d', strtotime('-5 days')),
+    //            'endDate' => date('Y-m-d')
+    //        ];
+    //        $apiResponse = $client->getDownloadRequestService()->create($downloadRequestData);
+    //        consoleLog($apiResponse);
+
+    // Eliminar solicitud de descarga masiva
+    // $apiResponse = $client->getDownloadRequestService()->delete('5259a336-ffd2-4097-8f0f-db23884f009f');
+    // consoleLog($apiResponse);
+
+    // Buscar solicitud de descarga masiva por fecha de creación (hoy)
+    // $apiResponse = $client->getDownloadRequestService()->search(date('Y-m-d'));
     // consoleLog($apiResponse);
 
 

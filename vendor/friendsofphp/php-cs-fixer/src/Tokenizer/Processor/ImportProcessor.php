@@ -21,6 +21,10 @@ use PhpCsFixer\WhitespacesFixerConfig;
 
 /**
  * @author Greg Korba <greg@codito.dev>
+ *
+ * @readonly
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class ImportProcessor
 {
@@ -43,7 +47,7 @@ final class ImportProcessor
         $lineEnding = $this->whitespacesConfig->getLineEnding();
 
         if (!$tokens[$atIndex]->isWhitespace() || !str_contains($tokens[$atIndex]->getContent(), "\n")) {
-            $tokens->insertAt($atIndex, new Token([T_WHITESPACE, $lineEnding]));
+            $tokens->insertAt($atIndex, new Token([\T_WHITESPACE, $lineEnding]));
         }
 
         foreach ($imports as $type => $typeImports) {
@@ -53,17 +57,17 @@ final class ImportProcessor
 
             foreach ($typeImports as $name) {
                 $items = array_merge($items, [
-                    new Token([T_WHITESPACE, $lineEnding]),
-                    new Token([T_USE, 'use']),
-                    new Token([T_WHITESPACE, ' ']),
+                    new Token([\T_WHITESPACE, $lineEnding]),
+                    new Token([\T_USE, 'use']),
+                    new Token([\T_WHITESPACE, ' ']),
                 ]);
 
                 if ('const' === $type) {
                     $items[] = new Token([CT::T_CONST_IMPORT, 'const']);
-                    $items[] = new Token([T_WHITESPACE, ' ']);
+                    $items[] = new Token([\T_WHITESPACE, ' ']);
                 } elseif ('function' === $type) {
                     $items[] = new Token([CT::T_FUNCTION_IMPORT, 'function']);
-                    $items[] = new Token([T_WHITESPACE, ' ']);
+                    $items[] = new Token([\T_WHITESPACE, ' ']);
                 }
 
                 $items = array_merge($items, self::tokenizeName($name));
@@ -85,13 +89,13 @@ final class ImportProcessor
         $newTokens = [];
 
         if ('' === $parts[0]) {
-            $newTokens[] = new Token([T_NS_SEPARATOR, '\\']);
+            $newTokens[] = new Token([\T_NS_SEPARATOR, '\\']);
             array_shift($parts);
         }
 
         foreach ($parts as $part) {
-            $newTokens[] = new Token([T_STRING, $part]);
-            $newTokens[] = new Token([T_NS_SEPARATOR, '\\']);
+            $newTokens[] = new Token([\T_STRING, $part]);
+            $newTokens[] = new Token([\T_NS_SEPARATOR, '\\']);
         }
 
         array_pop($newTokens);

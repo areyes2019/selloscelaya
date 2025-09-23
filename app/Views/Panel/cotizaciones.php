@@ -5,7 +5,6 @@
         <h2>Lista de Cotizaciones</h2>
         <!-- Button trigger modal -->
         <button type="button" class="btn-my" data-bs-toggle="modal" data-bs-target="#exampleModal"><span class="bi bi-file-earmark-plus"></span> Crear Cotización</button>
-       
     </div>
     <div class="responsive-table-container">
         <table class="advanced-responsive-table" id="example">
@@ -14,7 +13,7 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Email</th>
-                    <th>Whhatsapp</th>
+                    <th>Whatsapp</th>
                     <th>Monto</th>
                     <th>Estado</th>
                     <th>Acciones</th>
@@ -26,9 +25,28 @@
                     <td data-label="ID"><?php echo $data['id_cotizacion'] ?></td>
                     <td data-label="Nombre"><?php echo $data['nombre'] ?></td>
                     <td data-label="Email"><?php echo $data['correo'] ?></td>
-                    <td data-label="Whhatsapp"><?php echo $data['telefono'] ?></td>
+                    <td data-label="Whatsapp"><?php echo $data['telefono'] ?></td>
                     <td data-label="Monto"><?php echo $data['total'] ?></td>
-                    <td data-label="Estado">Enviada</td>
+                    <td data-label="Estado">
+                        <?php
+                        // Asumiendo que el campo del estado se llama 'estatus'
+                        $estatus = $data['estatus'] ?? 1; // Valor por defecto 1 si no existe
+                        
+                        switch($estatus) {
+                            case 1: // Enviado
+                                echo '<span class="badge bg-primary">Enviada</span>';
+                                break;
+                            case 2: // Pagado
+                                echo '<span class="badge bg-success">Pagada</span>';
+                                break;
+                            case 3: // Entregado
+                                echo '<span class="badge bg-warning text-dark">Entregada</span>';
+                                break;
+                            default:
+                                echo '<span class="badge bg-secondary">Desconocido</span>';
+                        }
+                        ?>
+                    </td>
                     <td data-label="Acciones">
                         <!-- ver la cotización -->
                         <a href="<?php echo base_url('pagina_cotizador/'.$data['slug']); ?>" class="btn btn-view"><i class="bi bi-eye"></i></a>
@@ -42,7 +60,7 @@
     </div>
 </div>
 
-
+<!-- El resto de tu código modal permanece igual -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog rounded-0">
     <div class="modal-content rounded-0">

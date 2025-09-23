@@ -29,6 +29,8 @@ use React\Stream\WritableStreamInterface;
  * @author Greg Korba <greg@codito.dev>
  *
  * @internal
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise.
  */
 final class Process
 {
@@ -131,7 +133,7 @@ final class Process
         $this->timer = $this->loop->addTimer($this->timeoutSeconds, function (): void {
             ($this->onError)(
                 new \Exception(
-                    sprintf(
+                    \sprintf(
                         'Child process timed out after %d seconds. Try making it longer using `ParallelConfig`.',
                         $this->timeoutSeconds
                     )

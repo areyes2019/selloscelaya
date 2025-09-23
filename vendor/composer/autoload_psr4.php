@@ -54,6 +54,7 @@ return array(
     'Fiscalapi\\' => array($vendorDir . '/fiscalapi/fiscalapi/src'),
     'Fidry\\CpuCoreCounter\\' => array($vendorDir . '/fidry/cpu-core-counter/src'),
     'Faker\\' => array($vendorDir . '/fakerphp/faker/src/Faker'),
+    'Facturama\\' => array($vendorDir . '/facturama/facturama-php-sdk/src'),
     'Evenement\\' => array($vendorDir . '/evenement/evenement/src'),
     'Dompdf\\' => array($vendorDir . '/dompdf/dompdf/src'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),

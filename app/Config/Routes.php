@@ -201,7 +201,6 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 		$routes->get('pedidos-pendientes', 'OrdenTrabajoController::etiquetas_txt');
 		$routes->post('actualizar-status/(:num)', 'OrdenTrabajoController::actualizarStatus/$1');
 		$routes->get('eliminar/(:num)', 'OrdenTrabajoController::eliminar/$1');
-		$routes->get('crear_orden_trabajo/(:num)', 'OrdenTrabajoController::crear_orden_trabajo/$1');
 	    $routes->get('mostrar/(:num)', 'OrdenTrabajoController::mostrar/$1'); // (Futuro) Eliminar
 
 	});
