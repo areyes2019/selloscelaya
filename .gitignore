@@ -1,0 +1,20 @@
+# Entorno
+.env
+.env.*
+
+# Dependencias
+/vendor/
+/node_modules/
+
+# Writable dinámico
+/writable/cache/*
+/writable/logs/*
+/writable/session/*
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db
