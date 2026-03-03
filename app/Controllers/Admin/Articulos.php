@@ -85,68 +85,41 @@ class Articulos extends BaseController
 	}
 	public function nuevo()
 	{
-	    // Obtener porcentajes desde la base de datos (solo para distribuidor)
-	    $model = new DescuentosModel();
-	    $porcentajes_dist = $model->find('2');
-	    
-	    // Convertir porcentaje entero a multiplicador (ej: 30 → 1.30)
-	    $porcentaje_venta_distribuidor = 1 + ($porcentajes_dist['descuento'] / 100);
+		// Procesamiento de la imagen
+		$img = '';
+		$file = $this->request->getFile('img');
 
-	    // Procesamiento de la imagen
-	    $img = '';
-	    $file = $this->request->getFile('img');
-	    
-	    if ($file && $file->isValid() && !$file->hasMoved()) {
-	        // Procesar y comprimir la nueva imagen
-	        $newName = $file->getRandomName();
-	        $maxSize = 70 * 1024; // 70KB en bytes
-	        $quality = 70; // Calidad inicial
-	        
-	        // Primera compresión
-	        \Config\Services::image()
-	            ->withFile($file->getPathname())
-	            ->resize(800, 800, true, 'height')
-	            ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
-	        
-	        // Verificar tamaño y ajustar si es necesario
-	        $fileSize = filesize(FCPATH . 'public/img/catalogo/' . $newName);
-	        
-	        if ($fileSize > $maxSize) {
-	            // Calcular nueva calidad proporcionalmente
-	            $quality = 70 - (($fileSize - $maxSize) / $maxSize * 20);
-	            $quality = max($quality, 10); // No bajar de 10 de calidad
-	            
-	            // Segunda compresión con calidad ajustada
-	            \Config\Services::image()
-	                ->withFile($file->getPathname())
-	                ->resize(800, 800, true, 'height')
-	                ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
-	        }
-	        
-	        $img = $newName;
-	    }
+		if ($file && $file->isValid() && !$file->hasMoved()) {
+			$newName = $file->getRandomName();
+			\Config\Services::image()
+				->withFile($file->getPathname())
+				->resize(800, 800, true, 'height')
+				->save(FCPATH . 'public/img/catalogo/' . $newName, 70);
 
-	    // Cálculo de precio distribuidor
-	    $precio_prov = (float)$this->request->getPost('precio_prov');
-	    $precio_pub = (float)$this->request->getPost('precio_pub');
-	    $precio_dist = round($precio_prov * $porcentaje_venta_distribuidor);
+			$img = $newName;
+		}
 
-	    $model = new ArticulosModel();
-	    $data = [
-	        'nombre' => $this->request->getPost('nombre'),
-	        'modelo' => $this->request->getPost('modelo'),
-	        'precio_prov' => $precio_prov,
-	        'precio_pub' => $precio_pub,
-	        'precio_dist' => $precio_dist,
-	        'venta' => $this->request->getPost('venta') ? 1 : 0,
-	        'visible' => $this->request->getPost('visible') ? 1 : 0,
-	        'img' => $img,
-	        'proveedor' => $this->request->getPost('proveedor'),
-	        'categoria' => $this->request->getPost('categoria')
-	    ];
-	    
-	    $model->insert($data);
-	    return redirect()->to('/articulos');
+		$precio_prov = (float)$this->request->getPost('precio_prov');
+		$precio_pub  = (float)$this->request->getPost('precio_pub');
+
+		$model = new ArticulosModel();
+
+		$data = [
+			'nombre' => $this->request->getPost('nombre'),
+			'modelo' => $this->request->getPost('modelo'),
+			'precio_prov' => $precio_prov,
+			'precio_pub' => $precio_pub,
+			'precio_dist' => 0,
+			'venta' => $this->request->getPost('venta') ? 1 : 0,
+			'visible' => $this->request->getPost('visible') ? 1 : 0,
+			'img' => $img,
+			'proveedor' => $this->request->getPost('proveedor'),
+			'categoria' => $this->request->getPost('categoria')
+		];
+
+		$model->insert($data);
+
+		return redirect()->to('/articulos');
 	}
 	
 	public function editar_rapido($id)

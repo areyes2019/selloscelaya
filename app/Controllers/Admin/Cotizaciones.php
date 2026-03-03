@@ -613,7 +613,6 @@ class Cotizaciones extends BaseController
 	}
 	
 	//Esta funcion es para descargar PDF
-	//Esta funcion es para descargar PDF
 	public function cotizacion_pdf($id) 
 	{
 	    $db = \Config\Database::connect();
@@ -642,40 +641,29 @@ class Cotizaciones extends BaseController
 	        ->getResultArray();
 
 	    // Cálculos de totales - VERSIÓN CORREGIDA
-	    // 1. Calcular subtotal sumando todos los productos (sin IVA)
-	    $subtotal_productos = array_reduce($detalles, function($carry, $item) {
-	        return $carry + ($item['p_unitario'] * $item['cantidad']);
-	    }, 0);
+		$subtotal = (float)$cotizacion['subtotal'];
+		$iva = (float)$cotizacion['iva'];
+		$total = (float)$cotizacion['total'];
+		$anticipo = (float)$cotizacion['anticipo'];
+		$descuento = (float)$cotizacion['descuento'];
 
-	    // 2. Aplicar descuento (si existe)
-	    $descuento = (float)$cotizacion['descuento'];
-	    $subtotal_con_descuento = $subtotal_productos - $descuento;
-
-	    // 3. Calcular IVA (16% del subtotal con descuento)
-	    $iva = $subtotal_con_descuento * 0.16;
-
-	    // 4. Calcular total (subtotal con descuento + IVA)
-	    $total = $subtotal_con_descuento + $iva;
-
-	    // 5. Calcular saldo (total - anticipo)
-	    $anticipo = (float)$cotizacion['anticipo'];
-	    $saldo = $total - $anticipo;
-
+		$saldo = $total - $anticipo;
 	    // Preparar datos para la vista PDF
 	    $data = [
-	        'cliente' => $cliente,
-	        'cot' => $cotizacion,
-	        'id_cotizacion' => $cotizacion['id_cotizacion'],
-	        'detalles' => $detalles,
-	        'sub_total' => number_format($subtotal_productos, 2),        // Subtotal sin descuento
-	        'sub_total_con_descuento' => number_format($subtotal_con_descuento, 2), // Subtotal con descuento
-	        'descuento' => number_format($descuento, 2),
-	        'iva' => number_format($iva, 2),
-	        'total' => number_format($total, 2),
-	        'pagado' => $cotizacion['pago'] == 1,
-	        'anticipo' => number_format($anticipo, 2),
-	        'saldo' => number_format($saldo, 2),
-	    ];
+			'cliente' => $cliente,
+			'cot' => $cotizacion,
+			'id_cotizacion' => $cotizacion['id_cotizacion'],
+			'detalles' => $detalles,
+
+			'sub_total' => number_format($subtotal, 2),
+			'descuento' => number_format($descuento, 2),
+			'iva' => number_format($iva, 2),
+			'total' => number_format($total, 2),
+			'anticipo' => number_format($anticipo, 2),
+			'saldo' => number_format($saldo, 2),
+
+			'pagado' => $cotizacion['pago'] == 1,
+		];
 
 	    // Generar PDF
 	    $dompdf = new \Dompdf\Dompdf();
