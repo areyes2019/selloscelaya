@@ -31,7 +31,7 @@
                             <div class="dropdown-header"></div>
                             <a class="dropdown-item" href="<?php echo base_url('/descargar_cotizacion/'.$cotizacion['id_cotizacion']); ?>"><span class="bi bi-download"></span> Descargar</a>
                             <a class="dropdown-item" href="<?php echo base_url('/enviar_pdf/'.$cotizacion['id_cotizacion']); ?>"><span class="bi bi-send"></span> Enviar</a>
-                            <?php if ($cotizacion['entregada']==0): ?>
+                            <?php if ($cotizacion['estatus']==0): ?>
                             <a class = "dropdown-item"  href="#" @click.prevent="descontar_inventario"><span class="bi bi-truck"></span> Marcar Entregado</a>                                   
                             <?php endif ?>   
                             <a class="dropdown-item" href="<?php echo base_url('/eliminar_cotizacion/'.$cotizacion['id_cotizacion']); ?>" onclick="return confirm('¿Estas seguro de querer eliminar esta cotización?');"><span class="bi bi-trash3"></span> Eliminar Cotización</a>
