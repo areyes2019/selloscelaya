@@ -123,23 +123,29 @@ class Cotizaciones extends BaseController
 	    }
 
 	    // Seleccionar el precio según el tipo de venta
-	    $precioBase = ($tipoVenta == 2) ? $query_articulo['precio_dist'] : $query_articulo['precio_pub'];
-	    
-	    // Cálculos de precios
-	    $precioConDescuento = $precioBase / 1.16; // Precio sin IVA (16%)
-	    $subtotal = $precioConDescuento * $cantidad;
-	    $iva = $subtotal * 0.16; // Calculamos el IVA (16%)
-	    $total = $subtotal + $iva;
+		$precioBase = ($tipoVenta == 2) ? $query_articulo['precio_dist'] : $query_articulo['precio_pub'];
+
+		// Convertir a precio sin IVA y redondear inmediatamente
+		$precioSinIva = round($precioBase / 1.16, 2);
+
+		// Calcular subtotal de línea y redondear
+		$subtotalLinea = round($precioSinIva * $cantidad, 2);
+
+		// Calcular IVA de línea (opcional si lo quieres por línea)
+		$ivaLinea = round($subtotalLinea * 0.16, 2);
+
+		// Total línea (no lo estás guardando pero lo dejo claro)
+		$totalLinea = round($subtotalLinea + $ivaLinea, 2);
 
 	    // Datos para insertar en detalles
 	    $data = [
-	        'cantidad' => $cantidad,
-	        'id_articulo' => $query_articulo['id_articulo'],
-	        'p_unitario' => $precioConDescuento,
-	        'total' => $subtotal, // Guardamos el subtotal (sin IVA) en detalles
-	        'id_cotizacion' => $cotizacion,
-	        'descripcion' => $query_articulo['nombre'] . " " . $query_articulo['modelo']
-	    ];
+			'cantidad' => $cantidad,
+			'id_articulo' => $query_articulo['id_articulo'],
+			'p_unitario' => $precioSinIva,
+			'total' => $subtotalLinea, 
+			'id_cotizacion' => $cotizacion,
+			'descripcion' => $query_articulo['nombre'] . " " . $query_articulo['modelo']
+		];
 
 	    // Validar campos vacíos
 	    foreach ($data as $key => $value) {
@@ -161,12 +167,13 @@ class Cotizaciones extends BaseController
 	        $detalles = $model->where('id_cotizacion', $cotizacion)->findAll();
 	        
 	        $sumaSubtotal = 0;
-	        foreach ($detalles as $detalle) {
-	            $sumaSubtotal += $detalle['total'];
-	        }
-	        
-	        $sumaIva = $sumaSubtotal * 0.16;
-	        $sumaTotal = $sumaSubtotal + $sumaIva;
+			foreach ($detalles as $detalle) {
+				$sumaSubtotal += round($detalle['total'], 2);
+			}
+
+			$sumaSubtotal = round($sumaSubtotal, 2);
+			$sumaIva = round($sumaSubtotal * 0.16, 2);
+			$sumaTotal = round($sumaSubtotal + $sumaIva, 2);
 
 	        // Actualizar la cotización con los totales
 	        $datosActualizar = [
