@@ -1,154 +1,258 @@
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <style>
-    body {
-        font-family: 'DejaVu Sans', sans-serif;
-        font-size: 10pt;
-    }
+<meta charset="UTF-8">
 
-    p {
-        margin: 0pt;
-    }
+<style>
 
-    table.items {
-        border: 0.1mm solid #e7e7e7;
-    }
+body{
+font-family: DejaVu Sans, sans-serif;
+font-size:10pt;
+}
 
-    td {
-        vertical-align: top;
-    }
+p{
+margin:0;
+}
 
-    .items td {
-        border-left: 0.1mm solid #e7e7e7;
-        border-right: 0.1mm solid #e7e7e7;
-    }
+.header-table{
+width:100%;
+border-collapse:collapse;
+margin-bottom:15px;
+}
 
-    table thead td {
-        text-align: center;
-        border: 0.1mm solid #e7e7e7;
-    }
+.logo{
+width:340px;
+}
 
-    .items td.blanktotal {
-        background-color: #EEEEEE;
-        border: 0.1mm solid #e7e7e7;
-        background-color: #FFFFFF;
-        border: 0mm none #e7e7e7;
-        border-top: 0.1mm solid #e7e7e7;
-        border-right: 0.1mm solid #e7e7e7;
-    }
+.logo-marca{
+width:240px;
+}
 
-    .items td.totals {
-        text-align: right;
-        border: 0.1mm solid #e7e7e7;
-    }
+.logo-pagos{
+width:220px;
+margin-top:5px;
+}
 
-    .items td.cost {
-        text-align: "."center;
-    }
-    </style>
+.items{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+}
+
+.items td,
+.items th{
+border:1px solid #95a5a6;
+padding:8px;
+}
+
+.items thead{
+background:#f5f5f5;
+font-weight:bold;
+}
+
+.totales{
+width:30%;
+float:right;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+.totales td{
+border:1px solid #95a5a6;
+padding:8px;
+}
+
+.footer-info{
+position:fixed;
+bottom:20px;
+left:40px;
+right:40px;
+text-align:center;
+border-top:1px solid #eee;
+padding-top:10px;
+font-size:9pt;
+}
+
+</style>
 </head>
 
 <body>
-    <table width="100%" style="font-family: sans-serif;" cellpadding="10">
-        <tr>
-            <td width="10%" style="padding: 0px; text-align: left;">
-                <?php
-                    $path = base_url('public/img/logo2.png');
-                    $type = pathinfo($path, PATHINFO_EXTENSION);
-                    $data = file_get_contents($path);
-                    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-                ?>
-                <img src="<?php echo $base64; ?>" alt="logo" align="center" width="150" height="150">
-            </td>
-            <td width="10%" style="padding: 0px; text-align: left;">
-                <?php
-                    $logo = base_url('public/img/pontumarca.png');
-                    $ty = pathinfo($logo, PATHINFO_EXTENSION);
-                    $file = file_get_contents($logo);
-                    $ba = 'data:image/' . $ty . ';base64,' . base64_encode($file);
-                ?>
-                <img src="<?php echo $ba; ?>" alt="logo" align="center" width="260" style="margin-top: 50px;">
-            </td>
-            <td width="40%">&nbsp;</td>
-            <td width="40%" style="text-align: left;">
-            </td>
-        </tr>
-        <tr>
-          <td height="10" style="font-size: 0px; line-height: 10px; height: 10px; padding: 0px;">&nbsp;</td>
-        </tr>
-    </table>
-    <table width="100%" style="font-family: sans-serif;" cellpadding="10">
-        <tr>
-            <td width="49%" style="border: 0.5mm solid #95a5a6;">
-                <p><strong>Sello Pronto</strong></p>
-                <p>www.sellopronto.com.mx</p>
-                <p>Cel: 4613581090</p>
-                <p>Tel:461 250 7482</p>
-                <p>ventas@gmail.com</p>
-            </td>
-            <td width="2%">&nbsp;</td>
-            <td width="49%" style="border: 0.5mm solid #95a5a6; text-align: left;">
-                <?php foreach ($id_pedido as $key): ?>
-                <p><strong>Orden No: <?php echo $key['id_pedido'] ?> </strong></p>   
-                <p><strong>Fecha: <?php echo $key['created_at'] ?> </strong></p>   
-                <?php endforeach ?>
-                <?php foreach ($proveedor as $data_proveedor): ?>
-                <p style="margin-top: 10px;"><?php echo $data_proveedor['empresa'] ?></p>
-                <p style="margin-top: 10px;"><?php echo $data_proveedor['contacto'] ?></p>
-                <p><?php echo $data_proveedor['correo'] ?></p>
-                <p><?php echo $data_proveedor['telefono'] ?></p>
-                <?php endforeach ?>
-            </td>
-        </tr>
-    </table>
-    <br>
-    <br>
-    <table class="items" width="100%" style="font-size: 14px; border-collapse: collapse;"  cellpadding="8">
-        <thead>
-            <tr>
-                <td width="50%" style="text-align: left; border: 1px solid #95a5a6;"><strong>Artículo</strong></td>
-                <td width="20%" style="text-align: left;border: 1px solid #95a5a6"><strong>Modelo</strong></td>
-                <td width="6%" style="text-align: center;border: 1px solid #95a5a6"><strong>Cant.</strong></td>
-                <td width="12%" style="text-align: left;border: 1px solid #95a5a6"><strong>P/U</strong></td>
-                <td width="12%" style="text-align: left;border: 1px solid #95a5a6"><strong>TOTAL</strong></td>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- ITEMS HERE -->
-            <?php foreach ($detalles as $linea): ?>
-            <tr>
-                <td style="padding: 9px 7px; line-height: 20px; border: 1px solid #95a5a6; "><?php echo $linea['nombre'] ?></td>
-                <td style="padding: 9px 7px; line-height: 20px; border: 1px solid #95a5a6; "><?php echo $linea['modelo'] ?></td>
-                <td style="padding: 9px 7px; line-height: 20px; border: 1px solid #95a5a6; text-align: center;"><?php echo $linea['cantidad'] ?></td>
-                <td style="padding: 9px 7px; line-height: 20px; border: 1px solid #95a5a6; ">$<?php echo number_format($linea['p_unitario'],2)  ?></td>
-                <td style="padding: 9px 7px; line-height: 20px; border: 1px solid #95a5a6; ">$<?php echo number_format($linea['total'],2) ?></td>
-            </tr>
-            <?php endforeach ?>
-        </tbody>
-    </table>
-    <br>
-    <table width="100%" style="font-family: sans-serif; font-size: 14px;" >
-        <tr>
-            <td>
-                <table width="70%" align="left" style="font-family: sans-serif; font-size: 14px;" >
-                    <tr>
-                        <td style="padding: 0px; line-height: 20px;">&nbsp;</td>
-                    </tr>
-                </table>
-                <table width="30%" align="right" style="font-family: sans-serif; font-size: 14px; border-collapse: collapse;" >
-                    <tr>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; line-height: 20px;"><strong>SubTotal</strong></td>
-                        <td style="border: 1px solid #95a5a6; padding: 10px 8px; line-height: 20px;">$<?php echo number_format($sub_total,2)  ?></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-    <br>
-    <div style="position: absolute; bottom: 0px; left: 90px;">
-        <p style="text-align:center;">Real del Seminario 122, Valle del Real Celaya, Gto. 38024. RFC RERA7701272R1. ventas@sellopronto.com.mx</p>
-        <p style="text-align:center;">La siguente orden de compra esta expresada en pesos Mexicanos</p>
-    </div>
+
+<!-- HEADER -->
+
+<table class="header-table">
+<tr>
+
+<td width="20%">
+
+<?php
+$path = FCPATH.'public/img/logo2.png';
+
+if(file_exists($path)){
+$type = pathinfo($path, PATHINFO_EXTENSION);
+$data = file_get_contents($path);
+$base64 = 'data:image/'.$type.';base64,'.base64_encode($data);
+
+echo '<img src="'.$base64.'" class="logo">';
+}
+?>
+
+</td>
+
+<td width="35%">
+
+<?php
+$logo = FCPATH.'public/img/pontumarca.png';
+
+if(file_exists($logo)){
+$type = pathinfo($logo, PATHINFO_EXTENSION);
+$data = file_get_contents($logo);
+$base64 = 'data:image/'.$type.';base64,'.base64_encode($data);
+
+echo '<img src="'.$base64.'" class="logo-marca">';
+}
+?>
+
+</td>
+
+<td width="15%"></td>
+
+<td width="30%">
+
+<strong>ORDEN DE COMPRA</strong>
+
+</td>
+
+</tr>
+</table>
+
+
+<!-- DATOS -->
+
+<table width="100%" cellpadding="10">
+
+<tr>
+
+<td width="49%" style="border:1px solid #95a5a6">
+
+<p><strong>Sello Pronto</strong></p>
+<p>www.sellopronto.com.mx</p>
+<p>Cel: 4613581090</p>
+<p>Tel: 461 250 7482</p>
+<p>ventas@sellopronto.com.mx</p>
+
+</td>
+
+<td width="2%"></td>
+
+<td width="49%" style="border:1px solid #95a5a6">
+
+<?php foreach ($id_pedido as $key): ?>
+
+<p><strong>Orden No: <?php echo $key['id_pedido'] ?></strong></p>
+<p><strong>Fecha: <?php echo $key['created_at'] ?></strong></p>
+
+<?php endforeach ?>
+
+<br>
+
+<?php foreach ($proveedor as $data_proveedor): ?>
+
+<p><?php echo $data_proveedor['empresa'] ?></p>
+<p><?php echo $data_proveedor['contacto'] ?></p>
+<p><?php echo $data_proveedor['correo'] ?></p>
+<p><?php echo $data_proveedor['telefono'] ?></p>
+
+<?php endforeach ?>
+
+</td>
+
+</tr>
+
+</table>
+
+
+<br><br>
+
+
+<!-- ITEMS -->
+
+<table class="items">
+
+<thead>
+
+<tr>
+
+<th width="50%" align="left">Artículo</th>
+<th width="20%">Modelo</th>
+<th width="10%">Cant.</th>
+<th width="10%">P/U</th>
+<th width="10%">Total</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<?php foreach ($detalles as $linea): ?>
+
+<tr>
+
+<td><?php echo $linea['nombre'] ?></td>
+
+<td><?php echo $linea['modelo'] ?></td>
+
+<td align="center">
+<?php echo $linea['cantidad'] ?>
+</td>
+
+<td>
+$<?php echo number_format($linea['p_unitario'],2) ?>
+</td>
+
+<td>
+$<?php echo number_format($linea['total'],2) ?>
+</td>
+
+</tr>
+
+<?php endforeach ?>
+
+</tbody>
+
+</table>
+
+
+<!-- TOTAL -->
+
+<table class="totales">
+
+<tr>
+<td><strong>SubTotal</strong></td>
+<td align="right">
+$<?php echo number_format($sub_total,2) ?>
+</td>
+</tr>
+
+</table>
+
+
+<!-- FOOTER -->
+
+<div class="footer-info">
+
+<p><strong>Real del Seminario 122, Valle del Real Celaya, Gto. 38024</strong></p>
+
+<p><strong>RFC: RERA7701272R1 | ventas@sellopronto.com.mx</strong></p>
+
+<p>Cel: 4613581090 | Tel: 461 250 7482</p>
+
+<p style="font-style:italic;margin-top:6px">
+La siguiente orden de compra está expresada en pesos mexicanos.
+</p>
+
+</div>
+
 </body>
 </html>
