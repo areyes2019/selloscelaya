@@ -234,22 +234,23 @@ $<?php echo number_format($linea['total'],2) ?>
 
 <tr>
 <td><strong>Sub-Total</strong></td>
-<td align="right">$<?php echo $sub_total ?></td>
+<td align="right">$<?php echo number_format($sub_total, 2) ?></td>
 </tr>
 
 <tr>
 <td><strong>Dcto</strong></td>
-<td align="right">$<?php echo $descuento ?></td>
+<td align="right">$<?php echo number_format($descuento, 2) ?></td>
+
 </tr>
 
 <tr>
 <td><strong>IVA</strong></td>
-<td align="right">$<?php echo $iva ?></td>
+<td align="right">$<?php echo number_format($iva, 2) ?></td>
 </tr>
 
 <tr>
 <td><strong>Total</strong></td>
-<td align="right"><strong>$<?php echo $total ?></strong></td>
+<td align="right">$<?php echo number_format($total, 2) ?></td>
 </tr>
 
 <?php if($anticipo>0): ?>
