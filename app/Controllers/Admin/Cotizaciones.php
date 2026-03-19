@@ -662,12 +662,12 @@ class Cotizaciones extends BaseController
 			'id_cotizacion' => $cotizacion['id_cotizacion'],
 			'detalles' => $detalles,
 
-			'sub_total' => number_format($subtotal, 2),
-			'descuento' => number_format($descuento, 2),
-			'iva' => number_format($iva, 2),
-			'total' => number_format($total, 2),
-			'anticipo' => number_format($anticipo, 2),
-			'saldo' => number_format($saldo, 2),
+			'sub_total' => $subtotal,
+			'descuento' => $descuento,
+			'iva' => $iva,
+			'total' => $total,
+			'anticipo' => $anticipo,
+			'saldo' => $saldo,
 
 			'pagado' => $cotizacion['pago'] == 1,
 		];

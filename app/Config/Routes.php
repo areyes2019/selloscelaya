@@ -258,20 +258,13 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	});
 
 	/*facturas*/
-	$routes->group('facturas', ['namespace' => 'App\Controllers\Admin'],function($routes) {
-	    $routes->get('/', 'FacturasController::index');
-
-	    $routes->get('verificar-certificados', 'FacturasController::verificarCertificados');
-    
-	    // Probar lectura de certificados (sin enviar a FiscalAPI)
-	    $routes->get('probar-certificados', 'FacturasController::testCertificados');
-	    
-	    // Crear factura de prueba
-	    $routes->get('crear-prueba', 'FacturasController::crearFactura');
-	    
-	    // Descargar factura (necesitas el UUID)
-	    $routes->get('descargar/(:segment)', 'FacturasController::descargarFactura/$1');
-		});
+	$routes->group('facturas', ['filter' => 'auth'], function($routes) {
+		$routes->get('/',                  'Admin\FacturasController::index');
+		$routes->post('timbrar',           'Admin\FacturasController::timbrar');
+		$routes->get('descargar/(:num)/(:alpha)', 'Admin\FacturasController::descargar/$1/$2');
+		$routes->post('enviar_correo',     'Admin\FacturasController::enviarCorreo');
+		$routes->post('cancelar',          'Admin\FacturasController::cancelar');
+	});
 
 });
 
