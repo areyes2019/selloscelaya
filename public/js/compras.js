@@ -222,22 +222,43 @@ createApp({
               new DataTable('#articulos');
             });
         },
-        recibida(){
-            var pedido = this.$refs.pedido.innerHTML;
-            var url = "/recibido_compras";
-            if (window.confirm("Esto agregara el producto al inventario")){
-            axios.post(url,{
-              'pedido':pedido
-            }).then((response)=>{
-                if (response.data.flag == 1) {
-                    notify('Se ajusto el inventario y se marco como entregada la orden');
-                    this.mostrar_lineas();
-                    this.display();
-                }
-                notify(response.data.message);
+        recibida() {
+            const pedido = this.$refs.pedido.innerText;
+            const url = "/recibido_compras";
+
+            // 🔥 Confirmación clara
+            const confirmar = confirm(
+                "¿Confirmas que deseas marcar esta orden como RECIBIDA?\n\n" +
+                "⚠ Esto agregará los artículos al inventario."
+            );
+
+            if (!confirmar) return;
+
+            axios.post(url, {
+                pedido: pedido
             })
+            .then((response) => {
+
+                const res = response.data;
+
+                if (response.status === 200) {
+                    notify("✅ Inventario actualizado correctamente");
+
+                    // 🔥 RECARGAR LA PÁGINA
+                    setTimeout(() => {
+                        location.reload();
+                    }, 800); // pequeño delay para que se vea el mensaje
+
+                } else {
+                    notify("⚠ " + res.message);
+                }
+
+            })
+            .catch((error) => {
+                console.error(error);
+                notify("❌ Error al procesar la solicitud");
+            });
         }
-      }
     },
     mounted(){
       this.mostrar_lineas();

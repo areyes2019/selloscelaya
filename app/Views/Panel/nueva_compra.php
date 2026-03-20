@@ -4,7 +4,27 @@
     <div class="card shadow mb-4 rounded-0">
     <!-- Card Header - Dropdown -->
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between rounded-0">
-        <h6 class="m-0 font-weight-bold text-primary">Orden de Compra: <span ref="pedido"><?php echo $pedidos_id?></span></h6>
+        <h6 class="m-0 font-weight-bold text-primary d-flex align-items-center gap-2">
+            Orden de Compra: 
+            <span ref="pedido"><?php echo $pedidos_id?></span>
+
+            <?php foreach ($pedido as $orden): ?>
+                
+                <?php if ($orden['pagado'] == 0 && $orden['entregada'] == 0): ?>
+                    <span class="badge bg-secondary">Borrador</span>
+
+                <?php elseif ($orden['pagado'] == 1 && $orden['entregada'] == 0): ?>
+                    <span class="badge bg-warning text-dark">Pagada</span>
+
+                <?php elseif ($orden['entregada'] == 1): ?>
+                    <span class="badge bg-success">Recibida</span>
+
+                <?php else: ?>
+                    <span class="badge bg-danger">Error</span>
+                <?php endif; ?>
+
+            <?php endforeach; ?>
+        </h6>
         <div class="dropdown no-arrow">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -16,7 +36,7 @@
                 <a href="" v-if="display_pagado == 0" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#misCuentas"><span class="bi bi-credit-card"></span> Marcar como pagado</a>
                 <a 
                   :class="['dropdown-item']" 
-                  v-if="display_recibido==0" 
+                  v-if="display_pagado == 1 && display_recibido == 0"  
                   href="#" 
                   @click.prevent="recibida"
                 >

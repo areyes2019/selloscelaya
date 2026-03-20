@@ -566,105 +566,102 @@ class Compras extends BaseController
 	}
 	public function recibida()
 	{
-	    $request = \Config\Services::request();
-	    
-	    // Obtener el ID del pedido de acuerdo al tipo de solicitud
-	    $pedidoId = $request->isAJAX() ? $request->getVar('pedido') : $request->getPost('pedido');
-	    
-	    if(!$pedidoId) {
-	        return $this->handleResponse([
-	            'status' => 'error',
-	            'message' => 'ID de pedido no proporcionado',
-	            'flag' => 0
-	        ], 400);
-	    }
+		$request = \Config\Services::request();
+		
+		$pedidoId = $request->getJSON()->pedido?? null;
 
-	    // Inicialización de modelos
-	    $db = \Config\Database::connect();
-	    $pedidosModel = new PedidosModel();
-	    $inventarioModel = new InventarioModel();
-	    $detallesPedidoModel = new DetallePedidosModel();
+		if(!$pedidoId) {
+			return $this->handleResponse([
+				'status' => 'error',
+				'message' => 'ID de pedido no proporcionado',
+				'flag' => 0
+			], 400);
+		}
 
-	    // 1. Verificar que el pedido existe
-	    $pedido = $pedidosModel->find($pedidoId);
-	    if (!$pedido){
-	        return $this->handleResponse([
-	            'status' => 'error',
-	            'message' => 'Pedido no encontrado',
-	            'flag' => 0
-	        ], 404);
-	    }
-	    
-	    // Verificar si ya está recibido
-	    if($pedido['entregada'] == 1) {
-	        return $this->handleResponse([
-	            'status' => 'error',
-	            'message' => 'El pedido ya fue marcado como recibido',
-	            'flag' => 0
-	        ], 400);
-	    }
+		$db = \Config\Database::connect();
+		$pedidosModel = new \App\Models\PedidosModel();
+		$detallesPedidoModel = new \App\Models\DetallePedidosModel();
+		$inventarioService = new \App\Services\InventarioService();
 
-	    // 2. Obtener artículos del pedido
-	    $articulosPedido = $detallesPedidoModel
-	        ->select('sellopro_detalles_pedido.id_articulo, sellopro_detalles_pedido.cantidad, sellopro_articulos.precio_prov')
-	        ->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo')
-	        ->where('id_pedido', $pedidoId)
-	        ->findAll();
+		// 🔥 VALIDAR PEDIDO
+		$pedido = $pedidosModel->find($pedidoId);
 
-	    if(empty($articulosPedido)) {
-	        return $this->handleResponse([
-	            'status' => 'error',
-	            'message' => 'No se encontraron artículos para este pedido',
-	            'flag' => 0
-	        ], 400);
-	    }
+		if (!$pedido){
+			return $this->handleResponse([
+				'status' => 'error',
+				'message' => 'Pedido no encontrado',
+				'flag' => 0
+			], 404);
+		}
 
-	    // 3. Procesar en transacción
-	    $db->transStart();
-	    
-	    try {
-	        // Actualizar estado del pedido
-	        $pedidosModel->update($pedidoId, ['entregada' => 1]);
-	        
-	        foreach ($articulosPedido as $articulo) {
-	            $idArticulo = $articulo['id_articulo'];
-	            $cantidad = $articulo['cantidad'];
-	            
-	            // Buscar si ya existe el artículo en inventario
-	            $existencia = $inventarioModel->where('id_articulo', $idArticulo)->first();
-	            
-	            if($existencia) {
-	                // Si existe, actualizamos la cantidad sumando la nueva
-	                $nuevaCantidad = $existencia['cantidad'] + $cantidad;
-	                $inventarioModel->update($existencia['id_entrada'], [
-	                    'cantidad' => $nuevaCantidad
-	                ]);
-	            } else {
-	                // Si no existe, creamos un nuevo registro
-	                $inventarioModel->insert([
-	                    'id_articulo' => $idArticulo,
-	                    'cantidad' => $cantidad,
-	                ]);
-	            }
-	        }
-	        
-	        $db->transComplete();
-	        
-	        return $this->handleResponse([
-	            'status' => 'success',
-	            'message' => 'Pedido marcado como recibido e inventario actualizado',
-	            'flag' => 1
-	        ], 200);
-	        
-	    } catch (\Exception $e) {
-	        $db->transRollback();
-	        log_message('error', 'Error al procesar pedido: '.$e->getMessage());
-	        return $this->handleResponse([
-	            'status' => 'error',
-	            'message' => 'Error al procesar el pedido',
-	            'flag' => 0
-	        ], 500);
-	    }
+		// 🚨 VALIDACIÓN CLAVE
+		if($pedido['pagado'] != 1){
+			return $this->handleResponse([
+				'status' => 'error',
+				'message' => 'No puedes recibir una orden que no ha sido pagada',
+				'flag' => 0
+			], 400);
+		}
+
+		if($pedido['entregada'] == 1){
+			return $this->handleResponse([
+				'status' => 'error',
+				'message' => 'El pedido ya fue recibido anteriormente',
+				'flag' => 0
+			], 400);
+		}
+
+		// 🔍 OBTENER ARTÍCULOS
+		$articulosPedido = $detallesPedidoModel
+			->where('id_pedido', $pedidoId)
+			->findAll();
+
+		if(empty($articulosPedido)) {
+			return $this->handleResponse([
+				'status' => 'error',
+				'message' => 'No hay artículos en este pedido',
+				'flag' => 0
+			], 400);
+		}
+
+		$db->transStart();
+
+		try {
+
+			// 🔥 1. MARCAR COMO RECIBIDO
+			$pedidosModel->update($pedidoId, [
+				'entregada' => 1
+			]);
+
+			// 🔥 2. ENTRAR A INVENTARIO (USANDO TU SERVICE NUEVO)
+			foreach ($articulosPedido as $item) {
+
+				$inventarioService->entrada(
+					$item['id_articulo'],
+					$item['cantidad'],
+					$pedidoId,
+					'COMPRA OC #' . $pedidoId
+				);
+			}
+
+			$db->transComplete();
+
+			return $this->handleResponse([
+				'status' => 'success',
+				'message' => 'Pedido recibido e inventario actualizado correctamente',
+				'flag' => 1
+			], 200);
+
+		} catch (\Exception $e) {
+
+			$db->transRollback();
+
+			return $this->handleResponse([
+				'status' => 'error',
+				'message' => 'Error al procesar: '.$e->getMessage(),
+				'flag' => 0
+			], 500);
+		}
 	}
 
 	/**

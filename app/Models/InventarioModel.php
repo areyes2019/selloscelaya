@@ -10,12 +10,16 @@ class InventarioModel extends Model
 
     protected $allowedFields = [
         'id_articulo',
-        'cantidad'
-        // Puedes añadir otros campos si los tienes, como 'fecha_movimiento', 'tipo_movimiento', etc.
+        'cantidad',
+        'total',
+        'fecha',
+        'tipo_movimiento',
+        'referencia'
     ];
 
+    
     // Si quieres usar timestamps (created_at, updated_at) en esta tabla también
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
