@@ -277,6 +277,8 @@ class PuntoVentaController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
         }
     }
+    
+    //ESTA FUNCION MUESTRA LA VISTA EL TICKET
     public function ticket($id = null)
     {
         $data['pedido'] = $this->pedidoModel->find($id);
