@@ -69,7 +69,7 @@ createApp({
     },
     methods: {
         cargarOrdenes() {
-            fetch(window.baseUrl + '/administracion/cargar_ordenes')
+            fetch('/administracion/cargar_ordenes')
                 .then(response => response.json())
                 .then(data => {
                     this.ordenes.dibujo = data.filter(o => o.status === 'Dibujo');
