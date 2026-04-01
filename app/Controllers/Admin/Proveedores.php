@@ -20,7 +20,9 @@ class Proveedores extends BaseController
 		    'empresa' => $this->request->getPost('empresa'),
 		    'contacto' => $this->request->getPost('contacto'),
 		    'telefono' => $this->request->getPost('telefono'),
-		    'correo' => $this->request->getPost('correo')
+		    'correo' => $this->request->getPost('correo'),
+			'descuento' => $this->request->getPost('descuento'),
+        	'incluye_iva' => $this->request->getPost('incluye_iva') ? 1 : 0
 		];
 		$model->insert($data);
 		return redirect()->to('/proveedores');
@@ -46,6 +48,8 @@ class Proveedores extends BaseController
 			'contacto' => $this->request->getPost('contacto'),
 			'telefono' => $this->request->getPost('telefono'),
 			'correo' => $this->request->getPost('correo'),
+			'descuento' => $this->request->getPost('descuento'),
+        	'incluye_iva' => $this->request->getPost('incluye_iva') ? 1 : 0
 		];
 		$modelo->update($id,$data);
 		return redirect()->to('/proveedores');

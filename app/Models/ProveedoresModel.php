@@ -13,5 +13,7 @@ class ProveedoresModel extends Model
         'direccion',
         'telefono',
         'correo',
+        'descuento',
+        'incluye_iva'
     ];
 }

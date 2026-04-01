@@ -99,7 +99,30 @@ class Articulos extends BaseController
 			$img = $newName;
 		}
 
-		$precio_prov = (float)$this->request->getPost('precio_prov');
+		$precio_prov_input = (float)$this->request->getPost('precio_prov');
+		$id_proveedor = $this->request->getPost('proveedor');
+
+		// Obtener proveedor
+		$modelProveedores = new ProveedoresModel();
+		$proveedor = $modelProveedores->find($id_proveedor);
+
+		// Valores por defecto
+		$precio_sin_iva = $precio_prov_input;
+		$descuento = 0;
+
+		// 🔥 1. DESGLOSAR IVA si aplica
+		if ($proveedor && $proveedor['incluye_iva']) {
+			$precio_sin_iva = $precio_prov_input / 1.16;
+		}
+
+		// 🔥 2. APLICAR DESCUENTO
+		if ($proveedor && !empty($proveedor['descuento'])) {
+			$descuento = (float)$proveedor['descuento'];
+			$precio_sin_iva = $precio_sin_iva * (1 - ($descuento / 100));
+		}
+
+		// 🔥 3. Redondear (importante)
+		$precio_prov = round($precio_sin_iva, 2);
 		$precio_pub  = (float)$this->request->getPost('precio_pub');
 
 		$model = new ArticulosModel();
@@ -225,78 +248,120 @@ class Articulos extends BaseController
 	}
 	public function actualizar()
 	{
-	    // Obtener porcentajes para cálculo de precios (si es necesario)
-	    $modelDescuentos = new DescuentosModel();
-	    $porcentajes_dist = $modelDescuentos->find('2');
-	    $porcentaje_venta_distribuidor = 1 + ($porcentajes_dist['descuento'] / 100);
+		// -------------------------
+		// 📊 DESCUENTO DISTRIBUIDOR (opcional)
+		// -------------------------
+		$modelDescuentos = new DescuentosModel();
+		$porcentajes_dist = $modelDescuentos->find(2);
 
-	    // Procesamiento de la imagen
-	    $img = $this->request->getPost('imagen_actual');
-	    
-	    // Verificar si se solicita eliminar la imagen actual
-	    if ($this->request->getPost('eliminar_imagen')) {
-	        if ($img && file_exists(FCPATH . 'public/img/catalogo/' . $img)) {
-	            unlink(FCPATH . 'public/img/catalogo/' . $img);
-	        }
-	        $img = '';
-	    }
+		$descuento_dist = 0;
 
-	    $file = $this->request->getFile('img');
-	    
-	    if ($file && $file->isValid() && !$file->hasMoved()) {
-	        // Eliminar la imagen anterior si existe
-	        $imagenAnterior = $this->request->getPost('imagen_actual');
-	        if ($imagenAnterior && file_exists(FCPATH . 'public/img/catalogo/' . $imagenAnterior)) {
-	            unlink(FCPATH . 'public/img/catalogo/' . $imagenAnterior);
-	        }
-	        
-	        // Procesar y comprimir la nueva imagen
-	        $newName = $file->getRandomName();
-	        $maxSize = 70 * 1024;
-	        $quality = 70;
-	        
-	        \Config\Services::image()
-	            ->withFile($file->getPathname())
-	            ->resize(800, 800, true, 'height')
-	            ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
-	        
-	        $fileSize = filesize(FCPATH . 'public/img/catalogo/' . $newName);
-	        
-	        if ($fileSize > $maxSize) {
-	            $quality = 70 - (($fileSize - $maxSize) / $maxSize * 20);
-	            $quality = max($quality, 10);
-	            
-	            \Config\Services::image()
-	                ->withFile($file->getPathname())
-	                ->resize(800, 800, true, 'height')
-	                ->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
-	        }
-	        
-	        $img = $newName;
-	    }
+		if ($porcentajes_dist && isset($porcentajes_dist['descuento'])) {
+			$descuento_dist = (float)$porcentajes_dist['descuento'];
+		}
 
-	    // Actualizar datos del artículo
-	    $modelo = new ArticulosModel();
-	    $id = $this->request->getPost('idarticulo');
-	    
-	    $data = [
-	        'nombre' => $this->request->getPost('nombre'),
-	        'modelo' => $this->request->getPost('modelo'),
-	        'precio_prov' => (float)$this->request->getPost('precio_prov'),
-	        'precio_pub' => (float)$this->request->getPost('precio_pub'),
-	        'precio_dist' => (float)$this->request->getPost('precio_dist'),
-	        'minimo' => (int)$this->request->getPost('minimo'),
-	        'clave_producto' => $this->request->getPost('clave_producto'),
-	        'stock' => (int)$this->request->getPost('stock'),
-	        'venta' => $this->request->getPost('venta') == '1' ? 1 : 0, // Modificado para select
-	        'visible' => $this->request->getPost('visible') == '1' ? 1 : 0, // Modificado para select
-	        'img' => $img,
-	        'proveedor' => $this->request->getPost('proveedor'),
-	        'categoria' => $this->request->getPost('categoria')
-	    ];
-	    
-	    $modelo->update($id, $data);
-	    return redirect()->to('/articulos')->with('success', 'Artículo actualizado correctamente');
+		$porcentaje_venta_distribuidor = 1 + ($descuento_dist / 100);
+
+
+		// -------------------------
+		// 🖼️ PROCESAMIENTO DE IMAGEN
+		// -------------------------
+		$img = $this->request->getPost('imagen_actual');
+
+		if ($this->request->getPost('eliminar_imagen')) {
+			if ($img && file_exists(FCPATH . 'public/img/catalogo/' . $img)) {
+				unlink(FCPATH . 'public/img/catalogo/' . $img);
+			}
+			$img = '';
+		}
+
+		$file = $this->request->getFile('img');
+
+		if ($file && $file->isValid() && !$file->hasMoved()) {
+
+			$imagenAnterior = $this->request->getPost('imagen_actual');
+			if ($imagenAnterior && file_exists(FCPATH . 'public/img/catalogo/' . $imagenAnterior)) {
+				unlink(FCPATH . 'public/img/catalogo/' . $imagenAnterior);
+			}
+
+			$newName = $file->getRandomName();
+			$maxSize = 70 * 1024;
+			$quality = 70;
+
+			\Config\Services::image()
+				->withFile($file->getPathname())
+				->resize(800, 800, true, 'height')
+				->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
+
+			$fileSize = filesize(FCPATH . 'public/img/catalogo/' . $newName);
+
+			if ($fileSize > $maxSize) {
+				$quality = 70 - (($fileSize - $maxSize) / $maxSize * 20);
+				$quality = max($quality, 10);
+
+				\Config\Services::image()
+					->withFile($file->getPathname())
+					->resize(800, 800, true, 'height')
+					->save(FCPATH . 'public/img/catalogo/' . $newName, $quality);
+			}
+
+			$img = $newName;
+		}
+
+
+		// -------------------------
+		// 💰 CÁLCULO PRECIO PROVEEDOR
+		// -------------------------
+		$precio_input = (float)$this->request->getPost('precio_prov');
+		$id_proveedor = $this->request->getPost('proveedor');
+
+		$modelProveedores = new ProveedoresModel();
+		$proveedor = $modelProveedores->find($id_proveedor);
+
+		$precio = $precio_input;
+
+		$iva = 0.16;
+
+		// 🔥 1. DESGLOSAR IVA (si el proveedor ya lo incluye)
+		if ($proveedor && isset($proveedor['incluye_iva']) && $proveedor['incluye_iva'] == 1) {
+			$precio = $precio / (1 + $iva);
+		}
+
+		// 🔥 2. APLICAR DESCUENTO (aunque sea 0)
+		if ($proveedor && isset($proveedor['descuento'])) {
+			$descuento = (float)$proveedor['descuento'];
+			$precio = $precio * (1 - ($descuento / 100));
+		}
+
+		// 🔥 3. REDONDEAR
+		$precio_prov = round($precio, 2);
+
+
+		// -------------------------
+		// 📝 ACTUALIZAR ARTÍCULO
+		// -------------------------
+		$modelo = new ArticulosModel();
+		$id = $this->request->getPost('idarticulo');
+
+		$data = [
+			'nombre' => $this->request->getPost('nombre'),
+			'modelo' => $this->request->getPost('modelo'),
+			'precio_prov' => $precio_prov,
+			'precio_pub' => (float)$this->request->getPost('precio_pub'),
+			'precio_dist' => (float)$this->request->getPost('precio_dist'),
+			'minimo' => (int)$this->request->getPost('minimo'),
+			'clave_producto' => $this->request->getPost('clave_producto'),
+			'stock' => (int)$this->request->getPost('stock'),
+			'venta' => $this->request->getPost('venta') == '1' ? 1 : 0,
+			'visible' => $this->request->getPost('visible') == '1' ? 1 : 0,
+			'img' => $img,
+			'proveedor' => $id_proveedor,
+			'categoria' => $this->request->getPost('categoria')
+		];
+
+		$modelo->update($id, $data);
+
+		return redirect()->to('/articulos')->with('success', 'Artículo actualizado correctamente');
 	}
 	public function eliminar($id)
 	{

@@ -117,99 +117,143 @@ class Compras extends BaseController
 	    return view('Panel/nueva_compra', $data);
 	}
     public function agregar()
-    {
-        $db = \Config\Database::connect();
-        $query = new ArticulosModel();
-        $model = new DetallePedidosModel();
+	{
+		$db = \Config\Database::connect();
+		$query = new ArticulosModel();
+		$model = new DetallePedidosModel();
 
-        $request = \Config\Services::request();
-        
-        // Obtener parámetros con validación básica
-        $articulo = $request->getVar('id_articulo');
-        $pedido = (int)$request->getVar('pedidos_id');
-        $cantidad = (int)$request->getVar('cantidad') ?: 1; // Si no viene cantidad, default 1
-        
-        // Validar cantidad mínima
-        if ($cantidad <= 0) {
-            return "2"; // Podrías usar códigos diferentes para distintos errores
-        }
+		$request = \Config\Services::request();
+		
+		// Obtener parámetros
+		$articulo = $request->getVar('id_articulo');
+		$pedido = (int)$request->getVar('pedidos_id');
+		$cantidad = (int)$request->getVar('cantidad') ?: 1;
+		
+		// Validar cantidad
+		if ($cantidad <= 0) {
+			return "2";
+		}
 
-        // Verificar si el producto ya está agregado
-        $doble = $db->table('sellopro_detalles_pedido');
-        $doble->where('id_pedido', $pedido);
-        $doble->where('id_articulo', $articulo);
-        $es_duplicado = $doble->countAllResults();
-        
-        if ($es_duplicado > 0) {
-            return "1"; // Está duplicado
-        }
+		// Verificar duplicado
+		$doble = $db->table('sellopro_detalles_pedido');
+		$doble->where('id_pedido', $pedido);
+		$doble->where('id_articulo', $articulo);
+		if ($doble->countAllResults() > 0) {
+			return "1";
+		}
 
-        // Obtener información del artículo
-        $query->where('id_articulo', $articulo);
-        $resultado = $query->findAll();
+		// Obtener artículo
+		$articuloData = $query->find($articulo);
+		if (!$articuloData) {
+			return "3";
+		}
 
-        if (empty($resultado)) {
-            return "3"; // Artículo no encontrado
-        }
+		// 🔥 PRECIO BASE (ya viene sin IVA desde tu sistema)
+		$precio_base = (float)$articuloData['precio_prov'];
 
-        $precio = $resultado[0]['precio_prov'];
-        $total = $precio * $cantidad;
-        
-        // Preparar datos para inserción
-        $data = [
-            'id_articulo' => $articulo,
-            'p_unitario'  => $precio,
-            'cantidad'    => $cantidad,
-            'total'       => $total,
-            'id_pedido'   => $pedido,
-        ];
+		// 🔥 Obtener pedido
+		$pedidoModel = new PedidosModel();
+		$pedidoData = $pedidoModel
+			->where('id_pedido', $pedido)
+			->first();
 
-        // Insertar en la base de datos
-        if (!$model->insert($data)) {
-            return "4"; // Error al insertar
-        }
+		if (!$pedidoData) {
+			return "5"; // pedido no encontrado
+		}
 
-        // Actualizar el total del pedido
-        $builder = $db->table('sellopro_detalles_pedido');
-        $builder->where('id_pedido', $pedido);
-        $builder->selectSum('total');
-        $sum = $builder->get()->getResultArray();
-        $suma_total = $sum[0]['total'];
+		// 🔥 Obtener proveedor
+		$proveedorModel = new ProveedoresModel();
+		$proveedor = $proveedorModel->find($pedidoData['proveedor']);
 
-        $totalModel = new PedidosModel();
-        $datos = ['total' => $suma_total];
-        $totalModel->update($pedido, $datos);
+		$porcentaje = 16;
 
-        return "0"; // Éxito
-    }
+		// 🔥 LÓGICA FINAL
+		if ($proveedor && $proveedor['incluye_iva']) {
+			// 👉 proveedor ya maneja precios con IVA → quitarlo
+			$precio = $precio_base / (1 + ($porcentaje / 100));
+		} else {
+			// 👉 ya está sin IVA
+			$precio = $precio_base;
+		}
+
+		// Redondear
+		$precio = round($precio, 2);
+
+		// Calcular total
+		$total = $precio * $cantidad;
+
+		// Guardar
+		$data = [
+			'id_articulo' => $articulo,
+			'p_unitario'  => $precio,
+			'cantidad'    => $cantidad,
+			'total'       => $total,
+			'id_pedido'   => $pedido,
+		];
+
+		if (!$model->insert($data)) {
+			return "4";
+		}
+
+		// 🔥 Recalcular total del pedido
+		$builder = $db->table('sellopro_detalles_pedido');
+		$builder->where('id_pedido', $pedido);
+		$builder->selectSum('total');
+		$sum = $builder->get()->getRow();
+
+		$suma_total = $sum->total ?? 0;
+
+		$totalModel = new PedidosModel();
+		$totalModel->update($pedido, ['total' => $suma_total]);
+
+		return "0";
+	}
 	public function mostrar_detalles($id)
 	{
-		// encontrar el articulo completo
 		$db = \Config\Database::connect();
+
 		$builder = $db->table('sellopro_detalles_pedido');
 		$builder->where('id_pedido', $id);
 		$builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
 		$resultado = $builder->get()->getResultArray();
 
-		// obtener total que ya incluye IVA
-		$totalModel = new PedidosModel();
-		$totalModel->where('id_pedido', $id);
-		$suma_total = $totalModel->findAll();
+		// 🔥 Obtener pedido correctamente
+		$pedidoModel = new PedidosModel();
+		$pedido = $pedidoModel
+			->where('id_pedido', $id)
+			->first();
+
+		if (!$pedido) {
+			return json_encode(['error' => 'Pedido no encontrado']);
+		}
+
+		// 🔥 Obtener proveedor
+		$proveedorModel = new ProveedoresModel();
+		$proveedor = $proveedorModel->find($pedido['proveedor']);
+
+		// 🔥 Total base
+		$total_base = $pedido['total'];
 
 		$porcentaje = 16;
-		$total_con_iva = $suma_total[0]['total'];
 
-		$sub_total = $total_con_iva / (1 + ($porcentaje / 100));
-		$iva = $total_con_iva - $sub_total;
+		if ($proveedor && $proveedor['incluye_iva']) {
+			// YA incluye IVA → desglosar
+			$sub_total = $total_base / (1 + ($porcentaje / 100));
+			$iva = $total_base - $sub_total;
+			$total = $total_base;
+		} else {
+			// NO incluye IVA → agregar
+			$sub_total = $total_base;
+			$iva = $total_base * ($porcentaje / 100);
+			$total = $sub_total + $iva;
+		}
 
-		$data = [
+		return json_encode([
 			'articulo' => $resultado,
 			'sub_total' => number_format($sub_total, 2),
 			'iva' => number_format($iva, 2),
-			'total' => number_format($total_con_iva, 2),
-		];
-
-		return json_encode($data);
+			'total' => number_format($total, 2),
+		]);
 	}
 
 	public function borrar_linea($id)
@@ -314,8 +358,24 @@ class Compras extends BaseController
 		$result = $sum->get()->getResultArray();
 		$total_sum = $result[0]['total'];
 		$porcenteje = 16;
-		$iva = $total_sum*($porcenteje/100);
-		$total = $total_sum + $iva;	
+
+		$pedidoModel = new PedidosModel();
+		$pedido = $pedidoModel->find($id);
+
+		$proveedorModel = new ProveedoresModel();
+		$proveedor = $proveedorModel->find($pedido['proveedor']);
+
+		$porcentaje = 16;
+
+		if ($proveedor && $proveedor['incluye_iva']) {
+			$sub_total = $total_sum / (1 + ($porcentaje / 100));
+			$iva = $total_sum - $sub_total;
+			$total = $total_sum;
+		} else {
+			$sub_total = $total_sum;
+			$iva = $total_sum * ($porcentaje / 100);
+			$total = $sub_total + $iva;
+		}
 			
 
 		$data = [

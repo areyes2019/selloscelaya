@@ -53,13 +53,11 @@
                 </div>
                 <!-- Card Body -->
                 <div class="card-body rounded-0">
-                    <?php foreach ($cliente as $data): ?>
                     <p class="m-0"><strong>Para:</strong></p>
-                    <p class="m-0"><?php echo $data['nombre']?></p>
-                    <p class="m-0">Tel: <?php echo $data['telefono']?></p>
-                    <p class="m-0"><?php echo $data['correo']?></p>
-                    <p class="m-0">Descuento asignado a este cliente: <span ref="descuento"><?php echo $data['descuento']?></span>%</p>
-                    <?php endforeach ?>
+                    <p class="m-0"><?php echo $cliente['nombre']?></p>
+                    <p class="m-0">Tel: <?php echo $cliente['telefono']?></p>
+                    <p class="m-0"><?php echo $cliente['correo']?></p>
+                    <p class="m-0">Descuento asignado a este cliente: <span ref="descuento"><?php echo $cliente['descuento']?></span>%</p>
                     <h5 class="mt-2">Anticipo sugerido: ${{totales.total / 2}}</h5>
                 </div>
             </div>
