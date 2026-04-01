@@ -69,16 +69,23 @@ createApp({
     },
     methods: {
         cargarOrdenes() {
-            fetch('/administracion/cargar_ordenes')
-                .then(response => response.json())
-                .then(data => {
+            axios.get('/administracion/cargar_ordenes')
+                .then(response => {
+                    const data = response.data;
+
                     this.ordenes.dibujo = data.filter(o => o.status === 'Dibujo');
                     this.ordenes.elaboracion = data.filter(o => o.status === 'Elaboracion');
                     this.ordenes.entrega = data.filter(o => o.status === 'Entrega' || o.status === 'Entregado');
                     this.ordenes.facturacion = data.filter(o => o.status === 'Facturacion');
                 })
                 .catch(error => {
-                    console.error(error);
+                    console.error('ERROR AXIOS:', error);
+
+                    if (error.response) {
+                        // error del servidor (500, 404, etc)
+                        console.log(error.response.data);
+                    }
+
                     this.error = 'Error al cargar las órdenes.';
                 });
         },
