@@ -402,26 +402,25 @@ class OrdenTrabajoController extends BaseController
         $dompdf->stream($nombreArchivo, ['Attachment' => 0]);
         exit();
     }
-
     public function new($pedido_id = null)
     {
         if ($pedido_id === null) {
-             return redirect()->to('/pedidos/pos')->with('error', 'Se requiere un ID de pedido para crear la orden.');
+            return redirect()->to('/pedidos/pos')
+                ->with('error', 'Se requiere un ID de pedido');
         }
 
         $pedido = $this->pedidoModel->find($pedido_id);
 
         if (!$pedido) {
-            throw PageNotFoundException::forPageNotFound('Pedido original no encontrado.');
+            throw PageNotFoundException::forPageNotFound('Pedido no encontrado.');
         }
 
-        $data['title'] = 'Crear Nueva Orden de Trabajo (Pedido #' . esc($pedido['id']) . ')';
-        $data['pedido'] = $pedido; // Pasamos los datos del pedido a la vista
-
-        // Opciones para el select de color (puedes obtenerlas de otro lugar si es dinámico)
+        $data['title'] = 'Nueva Orden de Trabajo';
+        $data['pedido'] = $pedido;
+        $data['tipo_origen'] = 'pedido'; // ✅ SOLO ESTO AGREGAS
         $data['colores_tinta'] = ['Negro', 'Verde', 'Rojo', 'Violeta', 'Azul'];
 
-        return view('Panel/orden_trabajo_new', $data); // Creamos esta vista ahora
+        return view('Panel/orden_trabajo_new', $data);
     }
     /*
         Procesamos la orden de trabajo para una cotizacion

@@ -101,8 +101,12 @@
 
 
             <div class="d-flex justify-content-end">
-                 <!-- Botón Cancelar: Usa la clave correcta 'id_ot' -->
-                 <a href="<?= site_url('pedidos/ticket/' . $pedido['id']) ?>" class="btn btn-secondary me-2">Cancelar</a>
+                <!-- Botón Cancelar: Usa la clave correcta 'id_ot' -->
+                <?php if($tipo_origen === 'pedido'): ?>
+                    <a href="<?= site_url('pedidos/ticket/' . $pedido['id']) ?>" class="btn btn-secondary me-2">Cancelar</a>
+                <?php else: ?>
+                    <a href="<?= site_url('pagina_cotizador/' . $pedido['id']) ?>" class="btn btn-secondary me-2">Cancelar</a>
+                <?php endif; ?> 
                 <button type="submit" class="btn btn-success">Guardar Orden de Trabajo</button>
             </div>
 
