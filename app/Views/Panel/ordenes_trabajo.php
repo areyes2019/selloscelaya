@@ -55,10 +55,10 @@
                         <td><?= esc($orden->cliente_nombre) ?></td>
                         <td><?= esc($orden->cliente_telefono) ?></td>
                         <td>
-                            <?php $rutaImagen = 'writable/uploads/ordenes/' . $orden->imagen_path; ?>
+                            <?php $rutaImagen = WRITEPATH . 'uploads/ordenes/' . $orden->imagen_path; ?>
                             <?php if (!empty($orden->imagen_path) && file_exists($rutaImagen)): ?>
                                 <a href="<?= base_url($rutaImagen) ?>" target="_blank">
-                                    <img src="<?= base_url($rutaImagen) ?>" class="img-thumbnail" style="max-width: 80px; max-height: 80px; object-fit: cover;">
+                                    <img src="<?= base_url('writable/uploads/ordenes/' . $orden->imagen_path) ?>" class="img-thumbnail" style="max-width: 80px; max-height: 80px; object-fit: cover;">
                                 </a>
                             <?php else: ?>
                                 <span class="badge bg-secondary">Sin imagen</span>
