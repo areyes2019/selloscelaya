@@ -124,12 +124,10 @@ class Compras extends BaseController
 
 		$request = \Config\Services::request();
 		
-		// Obtener parámetros
 		$articulo = $request->getVar('id_articulo');
 		$pedido = (int)$request->getVar('pedidos_id');
 		$cantidad = (int)$request->getVar('cantidad') ?: 1;
 		
-		// Validar cantidad
 		if ($cantidad <= 0) {
 			return "2";
 		}
@@ -148,36 +146,8 @@ class Compras extends BaseController
 			return "3";
 		}
 
-		// 🔥 PRECIO BASE (ya viene sin IVA desde tu sistema)
-		$precio_base = (float)$articuloData['precio_prov'];
-
-		// 🔥 Obtener pedido
-		$pedidoModel = new PedidosModel();
-		$pedidoData = $pedidoModel
-			->where('id_pedido', $pedido)
-			->first();
-
-		if (!$pedidoData) {
-			return "5"; // pedido no encontrado
-		}
-
-		// 🔥 Obtener proveedor
-		$proveedorModel = new ProveedoresModel();
-		$proveedor = $proveedorModel->find($pedidoData['proveedor']);
-
-		$porcentaje = 16;
-
-		// 🔥 LÓGICA FINAL
-		if ($proveedor && $proveedor['incluye_iva']) {
-			// 👉 proveedor ya maneja precios con IVA → quitarlo
-			$precio = $precio_base / (1 + ($porcentaje / 100));
-		} else {
-			// 👉 ya está sin IVA
-			$precio = $precio_base;
-		}
-
-		// Redondear
-		$precio = round($precio, 2);
+		// 🔥 PRECIO YA LIMPIO (SIN IVA)
+		$precio = (float)$articuloData['precio_prov'];
 
 		// Calcular total
 		$total = $precio * $cantidad;
@@ -185,9 +155,9 @@ class Compras extends BaseController
 		// Guardar
 		$data = [
 			'id_articulo' => $articulo,
-			'p_unitario'  => $precio,
+			'p_unitario'  => round($precio, 2),
 			'cantidad'    => $cantidad,
-			'total'       => $total,
+			'total'       => round($total, 2),
 			'id_pedido'   => $pedido,
 		];
 
@@ -195,7 +165,7 @@ class Compras extends BaseController
 			return "4";
 		}
 
-		// 🔥 Recalcular total del pedido
+		// Recalcular total del pedido
 		$builder = $db->table('sellopro_detalles_pedido');
 		$builder->where('id_pedido', $pedido);
 		$builder->selectSum('total');
@@ -212,12 +182,16 @@ class Compras extends BaseController
 	{
 		$db = \Config\Database::connect();
 
+		// 🔥 Detalles
 		$builder = $db->table('sellopro_detalles_pedido');
 		$builder->where('id_pedido', $id);
-		$builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
+		$builder->join(
+			'sellopro_articulos',
+			'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo'
+		);
 		$resultado = $builder->get()->getResultArray();
 
-		// 🔥 Obtener pedido correctamente
+		// 🔥 Pedido
 		$pedidoModel = new PedidosModel();
 		$pedido = $pedidoModel
 			->where('id_pedido', $id)
@@ -227,26 +201,14 @@ class Compras extends BaseController
 			return json_encode(['error' => 'Pedido no encontrado']);
 		}
 
-		// 🔥 Obtener proveedor
-		$proveedorModel = new ProveedoresModel();
-		$proveedor = $proveedorModel->find($pedido['proveedor']);
-
-		// 🔥 Total base
-		$total_base = $pedido['total'];
+		// 🔥 TOTAL BASE (SIEMPRE SIN IVA)
+		$sub_total = (float)$pedido['total'];
 
 		$porcentaje = 16;
 
-		if ($proveedor && $proveedor['incluye_iva']) {
-			// YA incluye IVA → desglosar
-			$sub_total = $total_base / (1 + ($porcentaje / 100));
-			$iva = $total_base - $sub_total;
-			$total = $total_base;
-		} else {
-			// NO incluye IVA → agregar
-			$sub_total = $total_base;
-			$iva = $total_base * ($porcentaje / 100);
-			$total = $sub_total + $iva;
-		}
+		// 🔥 SIEMPRE AGREGAR IVA
+		$iva = $sub_total * ($porcentaje / 100);
+		$total = $sub_total + $iva;
 
 		return json_encode([
 			'articulo' => $resultado,
@@ -334,64 +296,53 @@ class Compras extends BaseController
 	{
 		$db = \Config\Database::connect();
 
-		//datos del proveedor
-		$proveedor_query = new PedidosModel();
-		$proveedor_query->where('id_pedido',$id);
-		$resultado_cotizacion = $proveedor_query->findAll();
-
-		$proveedor = new ProveedoresModel();
-		$proveedor->where('id_proveedor',$resultado_cotizacion[0]['proveedor']);
-		$resultado = $proveedor->findAll();
-
-		//mostrar los articulos
-		$builder = $db->table('sellopro_detalles_pedido');
-		$builder->where('id_pedido',$id);
-		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo');
-		$resultado_lineas = $builder->get()->getResultArray();
-
-		//sacamos los totales 
-
-		//actualizamos el total
-		$sum = $db->table('sellopro_detalles_pedido');
-		$sum->where('id_pedido',$id);
-		$sum->selectSum('total');
-		$result = $sum->get()->getResultArray();
-		$total_sum = $result[0]['total'];
-		$porcenteje = 16;
-
+		// 🔥 Pedido
 		$pedidoModel = new PedidosModel();
-		$pedido = $pedidoModel->find($id);
+		$pedido = $pedidoModel
+			->where('id_pedido', $id)
+			->first();
 
+		if (!$pedido) {
+			return;
+		}
+
+		// 🔥 Proveedor
 		$proveedorModel = new ProveedoresModel();
 		$proveedor = $proveedorModel->find($pedido['proveedor']);
 
-		$porcentaje = 16;
+		// 🔥 Detalles
+		$builder = $db->table('sellopro_detalles_pedido');
+		$builder->where('id_pedido', $id);
+		$builder->join(
+			'sellopro_articulos',
+			'sellopro_articulos.id_articulo = sellopro_detalles_pedido.id_articulo'
+		);
+		$detalles = $builder->get()->getResultArray();
 
-		if ($proveedor && $proveedor['incluye_iva']) {
-			$sub_total = $total_sum / (1 + ($porcentaje / 100));
-			$iva = $total_sum - $sub_total;
-			$total = $total_sum;
-		} else {
-			$sub_total = $total_sum;
-			$iva = $total_sum * ($porcentaje / 100);
-			$total = $sub_total + $iva;
-		}
-			
+		// 🔥 Subtotal (SIEMPRE sin IVA)
+		$sub_total = (float)$pedido['total'];
+
+		// 🔥 IVA
+		$porcentaje = 16;
+		$iva = $sub_total * ($porcentaje / 100);
+
+		// 🔥 Total
+		$total = $sub_total + $iva;
 
 		$data = [
-			'proveedor'=>$resultado,
-			'id_pedido'=>$resultado_cotizacion,
-			'detalles'=>$resultado_lineas,
-			'sub_total'=>$total_sum,
-			'iva'=>$iva,
-			'total'=>$total,
+			'proveedor' => [$proveedor],
+			'id_pedido' => [$pedido],
+			'detalles'  => $detalles,
+			'sub_total' => $sub_total,
+			'iva'       => $iva,
+			'total'     => $total,
 		];
-		//return view('Panel/PDF',$data);
+
 		$doc = new Dompdf();
-		$html = view('Panel/PDF_orden',$data);
-		//return $html;
+		$html = view('Panel/PDF_orden', $data);
+
 		$doc->loadHTML($html);
-		$doc->setPaper('A4','portrait');
+		$doc->setPaper('A4', 'portrait');
 		$doc->render();
 		$doc->stream("OC-".$id.".pdf");
 	}

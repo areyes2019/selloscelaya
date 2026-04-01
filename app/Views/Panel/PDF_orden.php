@@ -234,7 +234,19 @@ $<?php echo number_format($linea['total'],2) ?>
 $<?php echo number_format($sub_total,2) ?>
 </td>
 </tr>
+<tr>
+<td><strong>IVA (16%)</strong></td>
+<td align="right">
+$<?php echo number_format($iva,2) ?>
+</td>
+</tr>
 
+<tr>
+<td><strong>Total</strong></td>
+<td align="right">
+$<?php echo number_format($total,2) ?>
+</td>
+</tr>
 </table>
 
 
