@@ -459,6 +459,7 @@ class OrdenTrabajoController extends BaseController
         // Preparar datos para la vista
         $data = [
             'title' => 'Nueva Orden de Trabajo',
+            'tipo_origen' => 'cotizacion',
             'pedido' => [
                 'id' => $idCotizacion,
                 'created_at' => date('Y-m-d H:i:s'), // O usar fecha de la cotización si existe
@@ -466,7 +467,7 @@ class OrdenTrabajoController extends BaseController
                 'cliente_telefono' => $cliente['telefono']
             ],
             'colores_tinta' => [
-                'Negro', 'Blanco', 'Rojo', 'Azul', 'Verde', 'Amarillo', 'Plateado', 'Dorado', 'Personalizado'
+                'Negro', 'Verde', 'Rojo', 'Violeta', 'Azul'
             ],
             // Puedes agregar más datos necesarios para la vista aquí
         ];
@@ -483,6 +484,7 @@ class OrdenTrabajoController extends BaseController
 
         $rules = [
             'pedido_id' => 'required|is_natural_no_zero',
+            'tipo_origen' => 'required|in_list[pedido,cotizacion]',
             'observaciones' => 'permit_empty|max_length[6000]', // TEXT puede ser grande
             'color_tinta' => 'permit_empty|max_length[100]',
             // Regla para la imagen (ajusta según tus necesidades)
@@ -541,7 +543,24 @@ class OrdenTrabajoController extends BaseController
 
         // --- Preparar datos para guardar ---
          // Obtener datos del cliente desde el pedido original (o podrías tener campos en el form)
-        $pedido = $this->pedidoModel->find($this->request->getPost('pedido_id'));
+        $tipo = $this->request->getPost('tipo_origen');
+        $id   = $this->request->getPost('pedido_id');
+
+        if ($tipo === 'pedido') {
+            $pedido = $this->pedidoModel->find($id);
+        } else {
+            $cotModel = new \App\Models\CotizacionesModel();
+            $clienteModel = new \App\Models\ClientesModel();
+
+            $cot = $cotModel->find($id);
+            $cliente = $clienteModel->find($cot['cliente']);
+
+            $pedido = [
+                'id' => $id,
+                'cliente_nombre' => $cliente['nombre'],
+                'cliente_telefono' => $cliente['telefono']
+            ];
+        }
         if(!$pedido) {
              return redirect()->back()->withInput()->with('error', 'No se encontró el pedido original asociado.');
         }
@@ -554,6 +573,7 @@ class OrdenTrabajoController extends BaseController
             'color_tinta'    => $this->request->getPost('color_tinta'),
             'imagen_path'    => $imgPath,
             'status'         => $this->request->getPost('status_inicial'), // Usar status del form
+            'tipo_origen' => $this->request->getPost('tipo_origen'),
         ];
 
         // --- Guardar en la BD ---

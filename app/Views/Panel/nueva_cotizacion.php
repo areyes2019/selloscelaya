@@ -38,9 +38,16 @@
                             <a href="#" class="dropdown-item" @click.prevent = "generar_factura">
                                 <span class="bi bi-filetype-pdf">Facturar</span>
                             </a>
-                            <a class="dropdown-item" href="<?= base_url('ordenes/new/'.$cotizacion['id_cotizacion']) ?>" onclick="return confirm('¿Crear orden de trabajo para esta cotización?')">
-                                <span class="bi bi-clipboard-check"></span> Agregar orden de trabajo
-                            </a>
+                            <!-- Solo si hay orden de trabajo -->
+                            <?php 
+                                $puedeCrearOrden = (!$existeOrden) && ($cotizacion['anticipo'] > 0 || $cotizacion['pago'] == 1);
+                            ?>
+                            <?php if ($puedeCrearOrden): ?>
+                                <a class="dropdown-item" href="<?= base_url('ordenes/crear_desde_cotizacion/'.$cotizacion['id_cotizacion']) ?>" onclick="return confirm('¿Crear orden de trabajo para esta cotización?')">
+                                    <span class="bi bi-clipboard-check"></span> Agregar orden de trabajo
+                                </a>
+                            <?php endif; ?>
+                            <!-- Solo si hay orden de trabajo -->
                         </div>
                     </div>
                 </div>

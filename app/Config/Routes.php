@@ -202,6 +202,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 		$routes->post('actualizar-status/(:num)', 'OrdenTrabajoController::actualizarStatus/$1');
 		$routes->get('eliminar/(:num)', 'OrdenTrabajoController::eliminar/$1');
 	    $routes->get('mostrar/(:num)', 'OrdenTrabajoController::mostrar/$1'); // (Futuro) Eliminar
+		$routes->get('crear_desde_cotizacion/(:num)', 'OrdenTrabajoController::crear_orden_trabajo/$1'); //orden desde cotizacion
 
 	});
 	//gastos

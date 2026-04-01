@@ -148,14 +148,14 @@
                 <?= csrf_field() ?>
                 <div class="drop-zone mb-3" id="dropZone">
                     <p id="dropZoneText">Arrastra y suelta tu archivo aquí o haz clic para seleccionarlo</p>
-                    <input type="file" name="archivo_excel" class="d-none" id="fileInput" accept=".xlsx,.xls" required>
+                    <input type="file" name="archivo_excel" class="d-none" id="fileInput" accept=".csv" required>
                 </div>
 
                 <div id="filePreview" class="text-success fw-bold"></div>
 
                 <small class="form-text text-muted d-block mb-3">
-                    Debe contener exactamente 8 columnas en este orden:<br>
-                    Nombre, Modelo, Precio Proveedor, Mínimo, Stock, Clave, Nombre Imagen, Disponible
+                    Debe contener 13 columnas en este orden:
+                    Nombre, Modelo, Precio Proveedor, Precio Público, Precio Distribuidor, Mínimo, Stock, Imagen, Venta, Proveedor, Categoría, Clave, Visible
                 </small>
 
                 <button type="submit" class="btn btn-danger rounded-0 mt-3"><i class="bi bi-download"></i> Importar</button>
@@ -213,9 +213,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Validar que sea Excel
     function isValidExcelFile(filename) {
-        const allowedExtensions = /(\.xlsx|\.xls)$/i;
+        const allowedExtensions = /(\.csv|\.xlsx|\.xls)$/i;
         if (!allowedExtensions.exec(filename)) {
-            alert('Por favor sube solo archivos Excel (.xlsx o .xls)');
+            alert('Por favor sube un archivo válido (.csv, .xlsx o .xls)');
             return false;
         }
         return true;

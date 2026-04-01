@@ -15,7 +15,7 @@
             <?= csrf_field() ?>
             <!-- Campo oculto: Usa la clave correcta 'id_ot' -->
             <input type="hidden" name="pedido_id" value="<?= esc($pedido['id']) ?>">
-
+            <input type="hidden" name="tipo_origen" value="<?= esc($tipo_origen) ?>">
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">

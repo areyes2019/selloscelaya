@@ -333,134 +333,128 @@ class Articulos extends BaseController
 	}
 	public function importArticulos()
 	{
-	    // Validar CSRF token
-	    if (!$this->request->is('post') || !$this->request->getPost(csrf_token())) {
-	        return redirect()->back()->with('error', 'Token CSRF inválido o expirado');
-	    }
+		$validation = \Config\Services::validation();
 
-	    // Validar archivo
-	    $validation = \Config\Services::validation();
-	    $validation->setRules([
-	        'archivo_excel' => [
-	            'label' => 'Archivo Excel',
-	            'rules' => 'uploaded[archivo_excel]|max_size[archivo_excel,5120]|ext_in[archivo_excel,xls,xlsx]',
-	            'errors' => [
-	                'uploaded' => 'Debes seleccionar un archivo Excel',
-	                'max_size' => 'El archivo no debe exceder 5MB',
-	                'ext_in' => 'Solo se permiten archivos .xls o .xlsx'
-	            ]
-	        ]
-	    ]);
+		$validation->setRules([
+			'archivo_excel' => [
+				'label' => 'Archivo CSV',
+				'rules' => 'uploaded[archivo_excel]|max_size[archivo_excel,5120]|ext_in[archivo_excel,csv]',
+			]
+		]);
 
-	    if (!$validation->withRequest($this->request)->run()) {
-	        return redirect()->back()->withInput()->with('errors', $validation->getErrors());
-	    }
+		if (!$validation->withRequest($this->request)->run()) {
+			return redirect()->back()->with('error', 'Archivo inválido');
+		}
 
-	    $file = $this->request->getFile('archivo_excel');
+		$file = $this->request->getFile('archivo_excel');
 
-	    try {
-	        $spreadsheet = IOFactory::load($file->getTempName());
-	        $worksheet = $spreadsheet->getActiveSheet();
-	        $rows = $worksheet->toArray();
+		if (!$file->isValid()) {
+			return redirect()->back()->with('error', $file->getErrorString());
+		}
 
-	        // Debug: Ver contenido del archivo
-	        //dd($rows); // Descomenta esta línea para ver la estructura de datos
+		$path = $file->getTempName();
 
-	        // Eliminar encabezados si existen
-	        $header = array_shift($rows);
-	        
-	        // Debug: Ver encabezados
-	        //dd($header); // Descomenta para ver los encabezados
+		$handle = fopen($path, "r");
 
-	        $model = new ArticulosModel();
-	        $db = \Config\Database::connect();
-	        $db->transStart();
+		if (!$handle) {
+			return redirect()->back()->with('error', 'No se pudo abrir el archivo');
+		}
 
-	        $imported = 0;
-	        $errors = [];
+		$model = new \App\Models\ArticulosModel();
 
-	        foreach ($rows as $index => $row) {
-	            // Limpiar valores nulos
-	            $row = array_map(function($value) {
-	                return $value === null ? '' : $value;
-	            }, $row);
+		// Leer encabezado
+		$header = fgetcsv($handle, 1000, ",");
 
-	            // Debug: Ver fila actual
-	            // dd($row); // Descomenta para ver los datos de cada fila
+		$expected = [
+			'nombre',
+			'modelo',
+			'precio_proveedor',
+			'precio_publico',
+			'precio_distribuidor',
+			'minimo',
+			'stock',
+			'imagen',
+			'venta',
+			'proveedor',
+			'categoria',
+			'clave',
+			'visible'
+		];
 
-	            // Validar que la fila tenga datos
-	            if (empty(array_filter($row))) {
-	                continue; // Saltar filas vacías
-	            }
+		$header = array_map(function($h) {
+			$h = trim($h);
 
-	            // Validar que la fila tenga al menos 13 columnas
-	            if (count($row) < 13) {
-	                $errors[] = "Fila " . ($index + 2) . ": Debe tener 13 columnas, tiene solo " . count($row);
-	                continue;
-	            }
+			// 🔥 quitar BOM
+			$h = preg_replace('/^\xEF\xBB\xBF/', '', $h);
 
-	            // Mapeo de columnas (ajustado a tu estructura)
-	            $data = [
-	                'nombre'         => trim($row[0]),
-	                'modelo'         => trim($row[1]),
-	                'precio_prov'    => (float)str_replace(',', '', $row[2]),
-	                'precio_pub'     => (float)str_replace(',', '', $row[3]),
-	                'precio_dist'    => (float)str_replace(',', '', $row[4]),
-	                'minimo'         => (int)$row[5],
-	                'stock'          => (int)$row[6],
-	                'img'            => trim($row[7]),
-	                'venta'          => is_numeric($row[8]) ? (int)$row[8] : (strtolower($row[8]) == 'si' ? 1 : 0),
-	                'proveedor'      => (int)$row[9],
-	                'categoria'      => (int)$row[10],
-	                'clave_producto' => trim($row[11]),
-	                'visible'        => is_numeric($row[12]) ? (int)$row[12] : (strtolower($row[12]) == 'si' ? 1 : 0),
-	            ];
+			$h = strtolower($h);
+			$h = str_replace([' ', '-'], '_', $h);
+			$h = str_replace(['á','é','í','ó','ú'], ['a','e','i','o','u'], $h);
+			return $h;
+		}, $header);
 
-	            // Validaciones básicas
-	            if (empty($data['nombre'])) {
-	                $errors[] = "Fila " . ($index + 2) . ": El nombre es obligatorio";
-	                continue;
-	            }
+		if ($header !== $expected) {
+			dd([
+				'header_recibido' => $header,
+				'header_esperado' => $expected
+			]);
+		}
 
-	            if (empty($data['clave_producto'])) {
-	                $errors[] = "Fila " . ($index + 2) . ": La clave de producto es obligatoria";
-	                continue;
-	            }
+		$imported = 0;
+		$errors = [];
 
-	            if ($data['precio_prov'] <= 0) {
-	                $errors[] = "Fila " . ($index + 2) . ": El precio de proveedor debe ser mayor a 0";
-	                continue;
-	            }
+		while (($row = fgetcsv($handle, 1000, ",")) !== false) {
 
-	            // Intentar insertar
-	            try {
-	                if ($model->insert($data) === false) {
-	                    $modelErrors = $model->errors();
-	                    $errors[] = "Fila " . ($index + 2) . ": " . implode(', ', $modelErrors);
-	                } else {
-	                    $imported++;
-	                }
-	            } catch (\Exception $e) {
-	                $errors[] = "Fila " . ($index + 2) . ": Error al guardar - " . $e->getMessage();
-	            }
-	        }
+			if (empty(array_filter($row))) continue;
 
-	        $db->transComplete();
+			$toBool = fn($v) => in_array(strtolower(trim($v)), ['1','si','sí','true']) ? 1 : 0;
+			$toFloat = fn($v) => (float) str_replace([',', '$'], '', $v);
 
-	        // Debug: Ver resultados
-	        // dd(['imported' => $imported, 'errors' => $errors]);
+			$data = [
+				'nombre'         => trim($row[0]),
+				'modelo'         => trim($row[1]),
+				'precio_prov'    => $toFloat($row[2]),
+				'precio_pub'     => $toFloat($row[3]),
+				'precio_dist'    => $toFloat($row[4]),
+				'minimo'         => (int)$row[5],
+				'stock'          => (int)$row[6],
+				'img'            => trim($row[7]),
+				'venta'          => $toBool($row[8]),
+				'proveedor'      => (int)$row[9],
+				'categoria'      => (int)$row[10],
+				'clave_producto' => trim($row[11]),
+				'visible'        => $toBool($row[12]),
+			];
 
-	        $message = "Importación completada: $imported registros importados";
-	        if (!empty($errors)) {
-	            $message .= "<br>Errores encontrados: " . count($errors);
-	            session()->setFlashdata('import_errors', $errors);
-	        }
+			// Validaciones básicas
+			if (empty($data['nombre']) || empty($data['clave_producto'])) {
+				$errors[] = "Fila inválida (nombre o clave vacía)";
+				continue;
+			}
 
-	        return redirect()->back()->with('success', $message);
+			if ($data['precio_prov'] <= 0) {
+				$errors[] = "Precio inválido en: " . $data['nombre'];
+				continue;
+			}
 
-	    } catch (\Exception $e) {
-	        return redirect()->back()->with('error', 'Error al procesar el archivo: ' . $e->getMessage());
-	    }
+			try {
+				$model->insert($data);
+				$imported++;
+			} catch (\Exception $e) {
+				$errors[] = $e->getMessage();
+			}
+		}
+
+		fclose($handle);
+
+		$msg = "Importados: $imported";
+
+		if (!empty($errors)) {
+			session()->setFlashdata('import_errors', $errors);
+			$msg .= " | Errores: " . count($errors);
+		}
+		//dd($errors);
+		return redirect()->back()->with('success', $msg);
 	}
 	public function cambiarVisibilidad($id_articulo = null)
     {

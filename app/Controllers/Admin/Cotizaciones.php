@@ -10,6 +10,7 @@ use App\Models\CuentasModel;
 use App\Models\GastosModel;
 use App\Models\DetalleModel;
 use App\Models\VentasModel;
+use App\Models\OrdenTrabajoModel;
 use Dompdf\Dompdf;
 class Cotizaciones extends BaseController
 {
@@ -48,25 +49,46 @@ class Cotizaciones extends BaseController
 	    $nuevo_registro->insert($data);
 	    return redirect()->to(base_url('pagina_cotizador/'.$slug));
 	}
-	public function pagina($slug)
+	public function pagina($valor)
 	{
 		$cotizacionesModel = new CotizacionesModel();
-	    $cotizacion = $cotizacionesModel->where('slug', $slug)->findAll();
 
-	    $ClientesModel = new ClientesModel();
-	    $cliente = $ClientesModel->where('id_cliente', $cotizacion[0]['cliente'])->findAll();
-	    
-	    // Obtenemos la lista de bancos
-	    $cuentasModel = new CuentasModel();
-	    $bancos = $cuentasModel->findAll();
-	    // Ahora pasamos un array asociativo a la vista
-	    return view('Panel/nueva_cotizacion', [
-	        'data'    => $cotizacion,
-	        'cliente' => $cliente,
-	        'bancos'  => $bancos
-	    ]);
-		
-	}
+		// Detectar si es número o slug
+		if (is_numeric($valor)) {
+			$cotizacion = $cotizacionesModel
+				->where('id_cotizacion', $valor)
+				->first();
+		} else {
+			$cotizacion = $cotizacionesModel
+				->where('slug', $valor)
+				->first();
+		}
+
+		if (!$cotizacion) {
+			throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+		}
+
+		$ordenModel = new OrdenTrabajoModel();
+
+		$existeOrden = $ordenModel
+			->where('pedido_id', $cotizacion['id_cotizacion'])
+			->first();
+
+		$ClientesModel = new ClientesModel();
+		$cliente = $ClientesModel
+			->where('id_cliente', $cotizacion['cliente'])
+			->first();
+
+		$cuentasModel = new CuentasModel();
+		$bancos = $cuentasModel->findAll();
+
+		return view('Panel/nueva_cotizacion', [
+			'data' => [$cotizacion], // mantienes compatibilidad con tu vista
+			'cliente' => $cliente,
+			'bancos' => $bancos,
+			'existeOrden' => $existeOrden ? true : false
+		]);
+	}	
 	public function editar()
 	{
 		return view('Panel/editar_cotizacion');

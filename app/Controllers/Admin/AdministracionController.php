@@ -107,14 +107,38 @@ class AdministracionController extends BaseController
             ])->setStatusCode(500);
         }
     }
-    public function cargar_ordenes($value='')
+    public function cargar_ordenes($value = '')
     {
         $db = \Config\Database::connect();
         $builder = $db->table('sellopro_ordenes_trabajo ot');
-        $builder->select('ot.*, p.total, p.estado as estado_pedido, p.anticipo');
+
+        $builder->select("
+            ot.*,
+
+            CASE 
+                WHEN ot.tipo_origen = 'pedido' OR ot.tipo_origen IS NULL THEN p.total 
+                ELSE c.total 
+            END as total,
+
+            CASE 
+                WHEN ot.tipo_origen = 'pedido' OR ot.tipo_origen IS NULL THEN p.estado 
+                ELSE 'cotizacion' 
+            END as estado_pedido,
+
+            CASE 
+                WHEN ot.tipo_origen = 'pedido' OR ot.tipo_origen IS NULL THEN p.anticipo 
+                ELSE c.anticipo 
+            END as anticipo
+        ");
+
+        // JOIN para pedidos
         $builder->join('pedidos p', 'p.id = ot.pedido_id', 'left');
+
+        // JOIN para cotizaciones
+        $builder->join('sellopro_cotizaciones c', 'c.id_cotizacion = ot.pedido_id', 'left');
+
         $ordenes = $builder->get()->getResult();
-        
+
         return json_encode($ordenes);
     }
     public function actualizarEstado($id)
