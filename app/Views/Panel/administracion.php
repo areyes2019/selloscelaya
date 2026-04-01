@@ -428,6 +428,7 @@
 <script>
     window.csrfToken = "<?= csrf_token() ?>";
     window.csrfHash = "<?= csrf_hash() ?>";
+    window.baseUrl = "<?= base_url() ?>";
 </script>
 <script src="<?php echo base_url('public/js/admin.js'); ?>"></script>
 <?php echo $this->endSection()?>
