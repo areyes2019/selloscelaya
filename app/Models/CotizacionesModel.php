@@ -10,7 +10,7 @@ class CotizacionesModel extends Model
     protected $allowedFields = [
         'slug',
         'cliente',
-        'tipo_venta', //nuevo campo
+        'tipo_venta',
         'fecha',
         'caduca',
         'subtotal',
@@ -20,6 +20,8 @@ class CotizacionesModel extends Model
         'descuento',
         'pago',
         'estatus',
+        'estado_financiero',
+        'estado_fiscal',
     ];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

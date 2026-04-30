@@ -1149,6 +1149,32 @@ class Cotizaciones extends BaseController
 	    }
 	}
 
+	public function listar(): \CodeIgniter\HTTP\ResponseInterface
+	{
+		$db      = \Config\Database::connect();
+		$builder = $db->table('sellopro_cotizaciones c');
+		$builder->join('sellopro_clientes cl', 'cl.id_cliente = c.cliente');
+		$builder->join('sellopro_facturas f',  'f.cotizacion_id = c.id_cotizacion', 'left');
+		$builder->select('c.*, cl.nombre, cl.correo, cl.telefono, f.id AS factura_id');
+		$builder->orderBy('c.id_cotizacion', 'DESC');
+
+		$estatus          = $this->request->getGet('estatus');
+		$estadoFinanciero = $this->request->getGet('estado_financiero');
+		$estadoFiscal     = $this->request->getGet('estado_fiscal');
+
+		if ($estatus !== null && $estatus !== '') {
+			$builder->where('c.estatus', (int)$estatus);
+		}
+		if (!empty($estadoFinanciero)) {
+			$builder->where('c.estado_financiero', $estadoFinanciero);
+		}
+		if (!empty($estadoFiscal)) {
+			$builder->where('c.estado_fiscal', $estadoFiscal);
+		}
+
+		return $this->response->setJSON(['data' => $builder->get()->getResultArray()]);
+	}
+
 	public function entregado()
 	{
 		$request = \Config\Services::Request();
