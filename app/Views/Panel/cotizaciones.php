@@ -1,6 +1,21 @@
 <?php echo $this->extend('Panel/panel_template')?>
 <?php echo $this->section('contenido')?>
 <div class="container mt-3" id="app">
+
+    <?php if (session()->getFlashdata('success')): ?>
+    <div class="alert alert-success alert-dismissible fade show mt-2" id="alert-envio" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><?= session()->getFlashdata('success') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+    <div class="alert alert-danger alert-dismissible fade show mt-2" id="alert-envio" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><?= session()->getFlashdata('error') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <?php endif; ?>
+
     <div class="my-card d-flex justify-content-between">
         <h2>Lista de Cotizaciones</h2>
         <!-- Button trigger modal -->
@@ -122,4 +137,8 @@ $( document ).ready(function() {
 });
 </script>
 <script type="" src="<?php echo base_url('public/js/cotizaciones.js'); ?>"></script>
+<script>
+    const alertEnvio = document.getElementById('alert-envio');
+    if (alertEnvio) setTimeout(() => bootstrap.Alert.getOrCreateInstance(alertEnvio).close(), 4000);
+</script>
 <?php echo $this->endSection(); ?>
