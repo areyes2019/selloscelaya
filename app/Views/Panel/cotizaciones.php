@@ -28,24 +28,18 @@
                     <td data-label="Whatsapp"><?php echo $data['telefono'] ?></td>
                     <td data-label="Monto"><?php echo $data['total'] ?></td>
                     <td data-label="Estado">
-                        <?php
-                        // Asumiendo que el campo del estado se llama 'estatus'
-                        $estatus = $data['estatus'] ?? 1; // Valor por defecto 1 si no existe
-                        
-                        switch($estatus) {
-                            case 1: // Enviado
-                                echo '<span class="badge bg-primary">Enviada</span>';
-                                break;
-                            case 2: // Pagado
-                                echo '<span class="badge bg-success">Pagada</span>';
-                                break;
-                            case 3: // Entregado
-                                echo '<span class="badge bg-warning text-dark">Entregada</span>';
-                                break;
-                            default:
-                                echo '<span class="badge bg-secondary">Desconocido</span>';
-                        }
-                        ?>
+                        <?php if (!empty($data['factura_id'])): ?>
+                            <span class="badge bg-success">Facturada</span>
+                        <?php else: switch($data['estatus'] ?? 0):
+                            case 1: ?>
+                                <span class="badge bg-primary">Enviada</span>
+                            <?php break; case 2: ?>
+                                <span class="badge bg-success">Pagada</span>
+                            <?php break; case 3: ?>
+                                <span class="badge bg-warning text-dark">Entregada</span>
+                            <?php break; default: ?>
+                                <span class="badge bg-secondary">Pendiente</span>
+                        <?php endswitch; endif; ?>
                     </td>
                     <td data-label="Acciones">
                         <!-- ver la cotización -->

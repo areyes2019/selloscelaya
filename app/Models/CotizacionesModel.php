@@ -19,7 +19,7 @@ class CotizacionesModel extends Model
         'anticipo',
         'descuento',
         'pago',
-        'entregada',
+        'estatus',
     ];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

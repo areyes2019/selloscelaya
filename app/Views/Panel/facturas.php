@@ -1,588 +1,285 @@
 <?php echo $this->extend('Panel/panel_template')?>
 <?php echo $this->section('contenido')?>
-<div class="midde_cont" id="app">
-    <div class="container-fluid">
-        <div class="row column_title card rounded-0 shadow-sm">
-            <div class="col-md-12">
-                <div class="page_title">
-                    <h2>Facturas Emitidas</h2>
-                </div>
-                <!-- Mensajes Flash -->
-                <?php if (session()->getFlashdata('success')): ?>
-                    <div class="alert alert-success alert-dismissible fade show">
-                        <?= session()->getFlashdata('success') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
-            </div>
+
+<div class="container mt-3">
+    <div class="my-card d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Facturas Emitidas</h2>
+    </div>
+
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="alert alert-success alert-dismissible fade show mt-2">
+            <?= session()->getFlashdata('success') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        <!-- row -->
-        <div class="row">
-            <!-- table section -->
-            <div class="col-md-12">
-                <div class="white_shd full margin_bottom_30">
-                    <div class="full graph_head">
-                        <div class="heading1 margin_0">
-                            <button class="btn btn-danger rounded-0 btn-sm mb-5" @click="crearFactura">
-                                <i class="fas fa-plus"></i> Nueva Factura
-                            </button>
-                            <div class="float-end">
-                                <div class="input-group">
-                                    <input type="text" class="form-control form-control-sm rounded-0" 
-                                           placeholder="Buscar factura..." 
-                                           v-model="busqueda"
-                                           @input="filtrarFacturas">
-                                    <button class="btn btn-outline-secondary btn-sm rounded-0" type="button">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card rounded-0 shadow-sm table_section padding_infor_info">
-                        <div class="table-responsive-sm">
-                            <table id="facturasTable" class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th># Factura</th>
-                                        <th>Fecha</th>
-                                        <th>Cliente</th>
-                                        <th>RFC</th>
-                                        <th>Subtotal</th>
-                                        <th>IVA</th>
-                                        <th>Total</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="factura in paginatedFacturas" :key="factura.uuid">
-                                        <td>{{ factura.folio }}</td>
-                                        <td>{{ formatFecha(factura.fecha) }}</td>
-                                        <td>{{ factura.cliente }}</td>
-                                        <td>{{ factura.rfc }}</td>
-                                        <td class="text-end">${{ formatNumber(factura.subtotal) }}</td>
-                                        <td class="text-end">${{ formatNumber(factura.iva) }}</td>
-                                        <td class="text-end">${{ formatNumber(factura.total) }}</td>
-                                        <td>
-                                            <span class="badge" :class="{
-                                                'bg-success': factura.estado === 'Timbrada',
-                                                'bg-warning text-dark': factura.estado === 'Pendiente',
-                                                'bg-danger': factura.estado === 'Cancelada'
-                                            }">
-                                                {{ factura.estado }}
-                                            </span>
-                                        </td>
-                                        <td class="d-flex gap-1">
-                                            <!-- Descargar PDF -->
-                                            <button class="btn btn-sm btn-danger rounded-0" 
-                                                    @click="descargarPDF(factura.uuid)"
-                                                    title="Descargar PDF">
-                                                <i class="fas fa-file-pdf"></i>
-                                            </button>
-                                            
-                                            <!-- Descargar XML -->
-                                            <button class="btn btn-sm btn-secondary rounded-0" 
-                                                    @click="descargarXML(factura.uuid)"
-                                                    title="Descargar XML">
-                                                <i class="fas fa-file-code"></i>
-                                            </button>
-                                            
-                                            <!-- Enviar por correo -->
-                                            <button class="btn btn-sm btn-primary rounded-0" 
-                                                    @click="enviarCorreo(factura.uuid)"
-                                                    title="Enviar por correo">
-                                                <i class="fas fa-envelope"></i>
-                                            </button>
-                                            
-                                            <!-- Cancelar -->
-                                            <button v-if="factura.estado === 'Timbrada'" 
-                                                    class="btn btn-sm btn-warning rounded-0" 
-                                                    @click="confirmarCancelacion(factura.uuid)"
-                                                    title="Cancelar factura">
-                                                <i class="fas fa-ban"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <!-- Paginación -->
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <div>
-                                    Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - 
-                                    {{ Math.min(currentPage * itemsPerPage, filteredFacturas.length) }} de {{ filteredFacturas.length }} facturas
-                                </div>
-                                
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination pagination-sm">
-                                        <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                                            <button class="page-link" @click="changePage(currentPage - 1)">Anterior</button>
-                                        </li>
-                                        
-                                        <li class="page-item" v-for="page in totalPages" :key="page" 
-                                            :class="{ active: currentPage === page }">
-                                            <button class="page-link" @click="changePage(page)">{{ page }}</button>
-                                        </li>
-                                        
-                                        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                                            <button class="page-link" @click="changePage(currentPage + 1)">Siguiente</button>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <?php endif; ?>
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger alert-dismissible fade show mt-2">
+            <?= session()->getFlashdata('error') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <div class="my-card mt-2 responsive-table-container">
+        <table class="advanced-responsive-table" id="tbl-facturas">
+            <thead>
+                <tr>
+                    <th>Serie / Folio</th>
+                    <th>Cliente</th>
+                    <th>Monto</th>
+                    <th>Estado</th>
+                    <th>Fecha timbrado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($facturas as $f): ?>
+                <tr>
+                    <td data-label="Serie / Folio">
+                        <?= esc(($f['serie'] ?? '') . ($f['folio'] ? '-' . $f['folio'] : '')) ?>
+                    </td>
+                    <td data-label="Cliente"><?= esc($f['nombre_cliente']) ?></td>
+                    <td data-label="Monto">
+                        $<?= number_format((float)($f['monto'] ?? 0), 2) ?>
+                    </td>
+                    <td data-label="Estado">
+                        <?php
+                        $est = strtolower($f['estado'] ?? '');
+                        if (in_array($est, ['valid', 'timbrada', 'vigente'])):
+                        ?>
+                            <span class="badge bg-success">Timbrada</span>
+                        <?php elseif ($est === 'cancelada' || $est === 'canceled'): ?>
+                            <span class="badge bg-danger">Cancelada</span>
+                        <?php else: ?>
+                            <span class="badge bg-secondary"><?= esc($f['estado']) ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td data-label="Fecha timbrado">
+                        <?= $f['fecha_timbrado'] ? date('d/m/Y H:i', strtotime($f['fecha_timbrado'])) : '—' ?>
+                    </td>
+                    <td data-label="Acciones">
+                        <!-- Vista previa -->
+                        <button class="btn btn-sm btn-info btn-preview"
+                                title="Vista previa"
+                                data-factura="<?= htmlspecialchars(json_encode([
+                                    'serie'        => $f['serie']          ?? '',
+                                    'folio'        => $f['folio']          ?? '',
+                                    'estado'       => $f['estado']         ?? '',
+                                    'fecha'        => $f['fecha_timbrado'] ?? '',
+                                    'monto'        => $f['monto']          ?? 0,
+                                    'cliente'      => $f['nombre_cliente'] ?? '',
+                                    'factura_uuid' => $f['factura_uuid']   ?? '',
+                                    'respuesta'    => json_decode($f['respuesta_completa'] ?? '{}', true),
+                                ]), ENT_QUOTES, 'UTF-8') ?>">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <a href="<?= base_url('facturas/pdf/' . $f['id']) ?>"
+                           class="btn btn-sm btn-danger" title="Descargar PDF" target="_blank">
+                            <i class="bi bi-file-earmark-pdf"></i>
+                        </a>
+                        <a href="<?= base_url('facturas/descargar/' . $f['id'] . '/xml') ?>"
+                           class="btn btn-sm btn-secondary" title="Descargar XML" target="_blank">
+                            <i class="bi bi-file-earmark-code"></i>
+                        </a>
+                        <a href="<?= base_url('facturas/enviar/' . $f['id']) ?>"
+                           class="btn btn-sm btn-primary" title="Enviar por correo"
+                           onclick="return confirm('¿Enviar la factura por correo al cliente?')">
+                            <i class="bi bi-envelope"></i>
+                        </a>
+                        <?php if (in_array(strtolower($f['estado'] ?? ''), ['valid', 'timbrada', 'vigente'])): ?>
+                        <button class="btn btn-sm btn-warning btn-cancelar"
+                                data-id="<?= $f['id'] ?>"
+                                data-folio="<?= esc(($f['serie'] ?? '') . '-' . ($f['folio'] ?? '')) ?>"
+                                title="Cancelar">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal vista previa -->
+<div class="modal fade" id="modalPreview" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    <span id="prev-titulo">Vista previa</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0" id="prev-body">
+                <!-- contenido inyectado por JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para nueva factura -->
-<div class="modal fade" id="nuevaFacturaModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<!-- Modal cancelar -->
+<div class="modal fade" id="modalCancelar" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Nueva Factura</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Cancelar Factura</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form @submit.prevent="emitirFactura">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Cliente</label>
-                            <select class="form-select" v-model="facturaData.clienteId" required>
-                                <option value="">Seleccione un cliente</option>
-                                <option v-for="cliente in clientes" :value="cliente.id">{{ cliente.nombre }}</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Fecha</label>
-                            <input type="date" class="form-control" v-model="facturaData.fecha" required>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Artículos</label>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Artículo</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio</th>
-                                        <th>Importe</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, index) in facturaData.items" :key="index">
-                                        <td>
-                                            <select class="form-select" v-model="item.articuloId" @change="actualizarPrecio(item)" required>
-                                                <option value="">Seleccione artículo</option>
-                                                <option v-for="articulo in articulos" :value="articulo.id">{{ articulo.nombre }}</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="form-control" min="1" v-model="item.cantidad" @change="calcularImporte(item)" required>
-                                        </td>
-                                        <td>${{ formatNumber(item.precio) }}</td>
-                                        <td>${{ formatNumber(item.importe) }}</td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-danger" @click="eliminarItem(index)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5">
-                                            <button type="button" class="btn btn-sm btn-primary" @click="agregarItem">
-                                                <i class="fas fa-plus"></i> Agregar Artículo
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Forma de pago</label>
-                            <select class="form-select" v-model="facturaData.formaPago" required>
-                                <option value="01">Efectivo</option>
-                                <option value="02">Cheque</option>
-                                <option value="03">Transferencia</option>
-                                <option value="04">Tarjeta de crédito</option>
-                                <option value="05">Tarjeta de débito</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Método de pago</label>
-                            <select class="form-select" v-model="facturaData.metodoPago" required>
-                                <option value="PUE">Pago en una sola exhibición</option>
-                                <option value="PPD">Pago en parcialidades</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-title">Subtotal</h6>
-                                    <h4 class="card-text">${{ formatNumber(calcularSubtotal) }}</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-title">IVA (16%)</h6>
-                                    <h4 class="card-text">${{ formatNumber(calcularIVA) }}</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body">
-                                    <h6 class="card-title">Total</h6>
-                                    <h4 class="card-text">${{ formatNumber(calcularTotal) }}</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" :disabled="isSaving">
-                            <span v-if="isSaving">
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                Procesando...
-                            </span>
-                            <span v-else>
-                                <i class="fas fa-file-invoice"></i> Emitir Factura
-                            </span>
-                        </button>
-                    </div>
-                </form>
+                <p>¿Confirmas la cancelación de la factura <strong id="folio-cancelar"></strong>?</p>
+                <div class="mb-3">
+                    <label class="form-label">Motivo de cancelación</label>
+                    <select id="motivo-cancelar" class="form-select">
+                        <option value="01">01 – Comprobante emitido con errores con relación</option>
+                        <option value="02">02 – Comprobante emitido con errores sin relación</option>
+                        <option value="03">03 – No se llevó a cabo la operación</option>
+                        <option value="04">04 – Operación nominativa relacionada en una factura global</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">No, volver</button>
+                <button id="btn-confirmar-cancelar" class="btn btn-danger">Sí, cancelar</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// Script Vue 3 con Composition API
-const { createApp, ref, computed, onMounted } = Vue;
+const fmt  = n  => new Intl.NumberFormat('es-MX', {minimumFractionDigits:2}).format(n ?? 0);
+const fmtD = dt => dt ? new Date(dt).toLocaleDateString('es-MX', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
 
-createApp({
-    setup() {
-        // Estado reactivo
-        const busqueda = ref('');
-        const currentPage = ref(1);
-        const itemsPerPage = ref(10);
-        const isSaving = ref(false);
-        
-        const facturaData = ref({
-            clienteId: '',
-            fecha: new Date().toISOString().substr(0, 10),
-            formaPago: '01',
-            metodoPago: 'PUE',
-            items: [{
-                articuloId: '',
-                cantidad: 1,
-                precio: 0,
-                importe: 0
-            }]
+function buildPreview(d) {
+    const r     = d.respuesta ?? {};
+    const cust  = r.customer ?? {};
+    const stamp = r.stamp    ?? {};
+    const items = r.items    ?? [];
+
+    const estadoBadge = ['valid','timbrada','vigente'].includes((d.estado ?? '').toLowerCase())
+        ? '<span class="badge bg-success">Timbrada</span>'
+        : '<span class="badge bg-danger">Cancelada</span>';
+
+    const filas = items.map(it => {
+        const precio  = it.unit_price ?? 0;
+        const cant    = it.quantity   ?? 1;
+        const importe = precio * cant;
+        return `<tr>
+            <td>${it.quantity ?? 1}</td>
+            <td>${it.description ?? ''}</td>
+            <td>${it.product_key ?? ''}</td>
+            <td class="text-end">$${fmt(precio)}</td>
+            <td class="text-end">$${fmt(importe)}</td>
+        </tr>`;
+    }).join('');
+
+    const subtotal = r.subtotal ?? (items.reduce((s,i) => s + (i.unit_price ?? 0) * (i.quantity ?? 1), 0));
+    const total    = d.monto ?? r.total ?? 0;
+    const iva      = total - subtotal;
+
+    return `
+    <div class="p-4">
+        <!-- Encabezado -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-uppercase text-muted mb-1">Emisor</h6>
+                <p class="mb-0 fw-semibold"><?= esc(getenv('app.name') ?: 'Tu Empresa') ?></p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h4 class="fw-bold mb-0">${d.serie}-${d.folio}</h4>
+                <div class="mt-1">${estadoBadge}</div>
+                <small class="text-muted">${fmtD(d.fecha)}</small>
+            </div>
+        </div>
+        <hr>
+        <!-- Receptor -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h6 class="fw-bold text-uppercase text-muted mb-1">Receptor</h6>
+                <p class="mb-0 fw-semibold">${d.cliente}</p>
+                <small class="text-muted">${cust.tax_id ?? ''}</small><br>
+                <small class="text-muted">${cust.email ?? ''}</small>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold text-uppercase text-muted mb-1">UUID SAT</h6>
+                <small class="font-monospace text-break">${stamp.uuid ?? d.factura_uuid ?? '—'}</small>
+            </div>
+        </div>
+        <!-- Conceptos -->
+        <h6 class="fw-bold text-uppercase text-muted mb-2">Conceptos</h6>
+        <div class="table-responsive mb-3">
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Cant.</th><th>Descripción</th><th>Clave SAT</th>
+                        <th class="text-end">Precio unit.</th><th class="text-end">Importe</th>
+                    </tr>
+                </thead>
+                <tbody>${filas || '<tr><td colspan="5" class="text-center text-muted">Sin detalle disponible</td></tr>'}</tbody>
+            </table>
+        </div>
+        <!-- Totales -->
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <table class="table table-sm mb-0">
+                    <tr><td>Subtotal</td><td class="text-end">$${fmt(subtotal)}</td></tr>
+                    <tr><td>IVA (16%)</td><td class="text-end">$${fmt(iva)}</td></tr>
+                    <tr class="fw-bold table-light"><td>Total</td><td class="text-end">$${fmt(total)}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>`;
+}
+
+$(document).ready(function () {
+    new DataTable('#tbl-facturas');
+
+    // ── Vista previa ──────────────────────────────────────────────
+    const modalPreview = new bootstrap.Modal(document.getElementById('modalPreview'));
+
+    document.querySelectorAll('.btn-preview').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const data = JSON.parse(this.dataset.factura);
+            document.getElementById('prev-titulo').textContent =
+                'Factura ' + (data.serie ?? '') + '-' + (data.folio ?? '');
+            document.getElementById('prev-body').innerHTML = buildPreview(data);
+            modalPreview.show();
         });
-        
-        // Datos ficticios
-        const facturas = ref([
-            {
-                uuid: '123e4567-e89b-12d3-a456-426614174000',
-                folio: 'FAC-2023-0001',
-                fecha: '2023-05-15T12:00:00',
-                cliente: 'Juan Pérez López',
-                rfc: 'PEPJ800101ABC',
-                subtotal: 1500.00,
-                iva: 240.00,
-                total: 1740.00,
-                estado: 'Timbrada'
-            },
-            {
-                uuid: '223e4567-e89b-12d3-a456-426614174001',
-                folio: 'FAC-2023-0002',
-                fecha: '2023-05-16T14:30:00',
-                cliente: 'Empresa ABC, S.A. de C.V.',
-                rfc: 'ABC850101XYZ',
-                subtotal: 3250.50,
-                iva: 520.08,
-                total: 3770.58,
-                estado: 'Timbrada'
-            },
-            {
-                uuid: '323e4567-e89b-12d3-a456-426614174002',
-                folio: 'FAC-2023-0003',
-                fecha: '2023-05-17T10:15:00',
-                cliente: 'María González Sánchez',
-                rfc: 'GOMS750202DEF',
-                subtotal: 890.00,
-                iva: 142.40,
-                total: 1032.40,
-                estado: 'Cancelada'
-            },
-            {
-                uuid: '423e4567-e89b-12d3-a456-426614174003',
-                folio: 'FAC-2023-0004',
-                fecha: '2023-05-18T16:45:00',
-                cliente: 'Roberto Martínez',
-                rfc: 'MARB900303GHI',
-                subtotal: 2100.00,
-                iva: 336.00,
-                total: 2436.00,
-                estado: 'Pendiente'
+    });
+
+    // ── Cancelar ──────────────────────────────────────────────────
+    let facturaIdCancelar = null;
+
+    document.querySelectorAll('.btn-cancelar').forEach(btn => {
+        btn.addEventListener('click', function () {
+            facturaIdCancelar = this.dataset.id;
+            document.getElementById('folio-cancelar').textContent = this.dataset.folio;
+            new bootstrap.Modal(document.getElementById('modalCancelar')).show();
+        });
+    });
+
+    document.getElementById('btn-confirmar-cancelar').addEventListener('click', function () {
+        if (!facturaIdCancelar) return;
+        const motivo = document.getElementById('motivo-cancelar').value;
+
+        axios.post('<?= base_url('facturas/cancelar') ?>', {
+            id_factura : facturaIdCancelar,
+            motivo     : motivo,
+        }).then(res => {
+            if (res.data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error: ' + (res.data.message ?? 'No se pudo cancelar'));
             }
-        ]);
-        
-        const clientes = ref([
-            { id: 1, nombre: 'Juan Pérez López', rfc: 'PEPJ800101ABC' },
-            { id: 2, nombre: 'Empresa ABC, S.A. de C.V.', rfc: 'ABC850101XYZ' },
-            { id: 3, nombre: 'María González Sánchez', rfc: 'GOMS750202DEF' },
-            { id: 4, nombre: 'Roberto Martínez', rfc: 'MARB900303GHI' }
-        ]);
-        
-        const articulos = ref([
-            { id: 1, nombre: 'Producto A', precio: 150.00 },
-            { id: 2, nombre: 'Producto B', precio: 250.50 },
-            { id: 3, nombre: 'Producto C', precio: 89.99 },
-            { id: 4, nombre: 'Producto D', precio: 120.00 }
-        ]);
-        
-        // Computed properties
-        const filteredFacturas = computed(() => {
-            return facturas.value.filter(factura => {
-                const searchTerm = busqueda.value.toLowerCase();
-                return (
-                    factura.folio.toLowerCase().includes(searchTerm) ||
-                    factura.cliente.toLowerCase().includes(searchTerm) ||
-                    factura.rfc.toLowerCase().includes(searchTerm) ||
-                    factura.estado.toLowerCase().includes(searchTerm)
-                );
-            });
+        }).catch(err => {
+            alert('Error: ' + (err.response?.data?.message ?? err.message));
         });
-        
-        const paginatedFacturas = computed(() => {
-            const start = (currentPage.value - 1) * itemsPerPage.value;
-            const end = start + itemsPerPage.value;
-            return filteredFacturas.value.slice(start, end);
-        });
-        
-        const totalPages = computed(() => {
-            return Math.ceil(filteredFacturas.value.length / itemsPerPage.value);
-        });
-        
-        const calcularSubtotal = computed(() => {
-            return facturaData.value.items.reduce((sum, item) => sum + item.importe, 0);
-        });
-        
-        const calcularIVA = computed(() => {
-            return calcularSubtotal.value * 0.16;
-        });
-        
-        const calcularTotal = computed(() => {
-            return calcularSubtotal.value + calcularIVA.value;
-        });
-        
-        // Métodos
-        const formatNumber = (value) => {
-            return new Intl.NumberFormat('es-MX', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(value);
-        };
-        
-        const formatFecha = (fecha) => {
-            return new Date(fecha).toLocaleDateString('es-MX');
-        };
-        
-        const filtrarFacturas = () => {
-            currentPage.value = 1;
-        };
-        
-        const changePage = (page) => {
-            if (page >= 1 && page <= totalPages.value) {
-                currentPage.value = page;
-            }
-        };
-        
-        const crearFactura = () => {
-            const modal = new bootstrap.Modal(document.getElementById('nuevaFacturaModal'));
-            modal.show();
-        };
-        
-        const agregarItem = () => {
-            facturaData.value.items.push({
-                articuloId: '',
-                cantidad: 1,
-                precio: 0,
-                importe: 0
-            });
-        };
-        
-        const eliminarItem = (index) => {
-            if (facturaData.value.items.length > 1) {
-                facturaData.value.items.splice(index, 1);
-            }
-        };
-        
-        const actualizarPrecio = (item) => {
-            const articulo = articulos.value.find(a => a.id == item.articuloId);
-            if (articulo) {
-                item.precio = articulo.precio;
-                item.importe = item.precio * item.cantidad;
-            }
-        };
-        
-        const calcularImporte = (item) => {
-            item.importe = item.precio * item.cantidad;
-        };
-        
-        const emitirFactura = () => {
-            isSaving.value = true;
-            
-            // Simular llamada a API
-            setTimeout(() => {
-                // Crear nueva factura ficticia
-                const cliente = clientes.value.find(c => c.id == facturaData.value.clienteId);
-                const nuevaFactura = {
-                    uuid: 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                        return v.toString(16);
-                    }),
-                    folio: `FAC-2023-${String(facturas.value.length + 1).padStart(4, '0')}`,
-                    fecha: new Date().toISOString(),
-                    cliente: cliente.nombre,
-                    rfc: cliente.rfc,
-                    subtotal: calcularSubtotal.value,
-                    iva: calcularIVA.value,
-                    total: calcularTotal.value,
-                    estado: 'Timbrada'
-                };
-                
-                facturas.value.unshift(nuevaFactura);
-                isSaving.value = false;
-                
-                const modal = bootstrap.Modal.getInstance(document.getElementById('nuevaFacturaModal'));
-                modal.hide();
-                
-                // Mostrar notificación
-                $.notify({
-                    title: 'Factura emitida',
-                    message: `La factura ${nuevaFactura.folio} se ha generado correctamente`,
-                    icon: 'fas fa-check-circle'
-                }, {
-                    type: 'success'
-                });
-                
-                // Resetear formulario
-                facturaData.value = {
-                    clienteId: '',
-                    fecha: new Date().toISOString().substr(0, 10),
-                    formaPago: '01',
-                    metodoPago: 'PUE',
-                    items: [{
-                        articuloId: '',
-                        cantidad: 1,
-                        precio: 0,
-                        importe: 0
-                    }]
-                };
-            }, 1500);
-        };
-        
-        const descargarPDF = (uuid) => {
-            // Simular descarga de PDF
-            $.notify({
-                title: 'Descarga iniciada',
-                message: 'El PDF de la factura se está descargando',
-                icon: 'fas fa-file-pdf'
-            }, {
-                type: 'info'
-            });
-        };
-        
-        const descargarXML = (uuid) => {
-            // Simular descarga de XML
-            $.notify({
-                title: 'Descarga iniciada',
-                message: 'El XML de la factura se está descargando',
-                icon: 'fas fa-file-code'
-            }, {
-                type: 'info'
-            });
-        };
-        
-        const enviarCorreo = (uuid) => {
-            // Simular envío por correo
-            $.notify({
-                title: 'Correo enviado',
-                message: 'La factura ha sido enviada al cliente por correo electrónico',
-                icon: 'fas fa-envelope'
-            }, {
-                type: 'success'
-            });
-        };
-        
-        const confirmarCancelacion = (uuid) => {
-            if (confirm('¿Está seguro de cancelar esta factura?')) {
-                const factura = facturas.value.find(f => f.uuid === uuid);
-                if (factura) {
-                    factura.estado = 'Cancelada';
-                    $.notify({
-                        title: 'Factura cancelada',
-                        message: 'La factura ha sido cancelada correctamente',
-                        icon: 'fas fa-ban'
-                    }, {
-                        type: 'warning'
-                    });
-                }
-            }
-        };
-        
-        return {
-            busqueda,
-            currentPage,
-            itemsPerPage,
-            isSaving,
-            facturaData,
-            facturas,
-            clientes,
-            articulos,
-            filteredFacturas,
-            paginatedFacturas,
-            totalPages,
-            calcularSubtotal,
-            calcularIVA,
-            calcularTotal,
-            formatNumber,
-            formatFecha,
-            filtrarFacturas,
-            changePage,
-            crearFactura,
-            agregarItem,
-            eliminarItem,
-            actualizarPrecio,
-            calcularImporte,
-            emitirFactura,
-            descargarPDF,
-            descargarXML,
-            enviarCorreo,
-            confirmarCancelacion
-        };
-    }
-}).mount('#app');
+    });
+});
 </script>
 
 <?php echo $this->endSection()?>

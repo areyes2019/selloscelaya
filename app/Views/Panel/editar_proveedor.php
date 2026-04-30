@@ -17,7 +17,7 @@
         <?php foreach ($proveedores as $proveedor): ?>
         
         <form class="row g-3" action="<?php echo base_url('actualizar_proveedor'); ?>" method="post">
-
+            <?= csrf_field() ?>
             <input type="hidden" value="<?php echo $proveedor['id_proveedor']?>" name="id_proveedor">
 
             <!-- Empresa -->
