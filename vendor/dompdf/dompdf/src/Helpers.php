@@ -837,6 +837,9 @@ class Helpers
                     $type = "bmp";
                 } elseif (strpos($data, "<svg") !== false) {
                     $doc = new \Svg\Document();
+                    if (property_exists($doc, 'allowExternalReferences')) {
+                        $doc->allowExternalReferences = true;
+                    }
                     $doc->loadFile($filename);
 
                     [$width, $height] = $doc->getDimensions();
@@ -1057,6 +1060,9 @@ class Helpers
         try {
             if ($is_local_path || ini_get('allow_url_fopen') && !$can_use_curl) {
                 $http_response_header = null;
+                if (version_compare(PHP_VERSION, "8.4.0", ">=")) {
+                    \http_clear_last_response_headers();
+                }
                 if ($is_local_path === false) {
                     $uri = Helpers::encodeURI($uri);
                 }
@@ -1070,6 +1076,7 @@ class Helpers
                 }
                 if (version_compare(PHP_VERSION, "8.4.0", ">=")) {
                     $headers = \http_get_last_response_headers();
+                    \http_clear_last_response_headers();
                 } elseif (isset($http_response_header)) {
                     $headers = $http_response_header;
                 }
