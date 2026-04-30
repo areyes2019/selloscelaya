@@ -58,13 +58,17 @@
     </div>
     
     <div class="content">
+        <?php if (!empty($logo_data)): ?>
         <div class="logo">
-            <img src="cid:<?= esc($cid_logo) ?>" alt="Logo Sello Pronto" width="150">
+            <img src="data:<?= esc($logo_mime) ?>;base64,<?= esc($logo_data) ?>" alt="Logo Sello Pronto" width="150">
         </div>
-        
-        <p>Estimado cliente,</p>
-        
+        <?php endif; ?>
+
+        <p>Estimado(a) <strong><?= esc($cliente_nombre ?? 'cliente') ?></strong>,</p>
+
         <p>Adjunto encontrará su cotización <strong>QT-<?= esc($id) ?></strong> con los detalles de su pedido.</p>
+
+        <p style="font-size:1.1em"><strong>Total: $<?= esc($total ?? '0.00') ?> MXN</strong></p>
         
         <div class="bank-info">
             <h3 style="margin-top:0;">Datos Bancarios:</h3>

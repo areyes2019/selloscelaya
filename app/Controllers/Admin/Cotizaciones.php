@@ -731,91 +731,97 @@ class Cotizaciones extends BaseController
 	public function enviar_pdf($id)
 	{
 		$db = \Config\Database::connect();
-		$cliente_query = new CotizacionesModel();
-		$email = \Config\Services::email();
 
-		//datos del cliente
-		$cliente_query->where('id_cotizacion',$id);
-		$resultado_cotizacion = $cliente_query->findAll();
+		// ── Datos de la cotización ────────────────────────────────────
+		$cotizacionModel = new CotizacionesModel();
+		$cotizacionModel->where('id_cotizacion', $id);
+		$resultado_cotizacion = $cotizacionModel->findAll();
 
-		$cliente = new ClientesModel();
-		$cliente->where('id_cliente',$resultado_cotizacion[0]['cliente']);
-		$resultado = $cliente->findAll();
+		if (empty($resultado_cotizacion)) {
+			return redirect()->to('/cotizaciones')->with('error', 'Cotización no encontrada.');
+		}
+		$cot = $resultado_cotizacion[0];
 
-		//mostrar los articulos
+		// ── Datos del cliente ─────────────────────────────────────────
+		$clienteModel = new ClientesModel();
+		$clienteModel->where('id_cliente', $cot['cliente']);
+		$resultado = $clienteModel->findAll();
+
+		if (empty($resultado) || empty($resultado[0]['correo'])) {
+			return redirect()->to('/cotizaciones')->with('error', 'El cliente no tiene correo registrado.');
+		}
+		$cliente = $resultado[0];
+
+		// ── Artículos ─────────────────────────────────────────────────
 		$builder = $db->table('sellopro_detalles');
-		$builder->where('id_cotizacion',$id);
-		$builder->join('sellopro_articulos','sellopro_articulos.id_articulo = sellopro_detalles.id_articulo');
+		$builder->where('id_cotizacion', $id);
+		$builder->join('sellopro_articulos', 'sellopro_articulos.id_articulo = sellopro_detalles.id_articulo');
 		$resultado_lineas = $builder->get()->getResultArray();
 
-		//mostrar independientes
-		//Mostrar articulos independientes
-		$query = new DetalleModel();
-		$query->where('id_cotizacion',$id);
-		$query->where('id_articulo',0);
-		$independiente = $query->findAll();
-
-		//sacamos los totales 
-		$total = (float)$resultado_cotizacion[0]['total'];
-		$descuento = (float)$resultado_cotizacion[0]['descuento'];
-		$anticipo = (float)$resultado_cotizacion[0]['anticipo'];
-
+		// ── Totales ───────────────────────────────────────────────────
+		$total             = (float)$cot['total'];
+		$descuento         = (float)$cot['descuento'];
+		$anticipo          = (float)$cot['anticipo'];
 		$totalConDescuento = $total - $descuento;
-		$sub_total = $totalConDescuento / 1.16;
-		$iva = $totalConDescuento - $sub_total;
-		$saldo = $totalConDescuento - $anticipo;
+		$sub_total         = $totalConDescuento / 1.16;
+		$iva               = $totalConDescuento - $sub_total;
+		$saldo             = $totalConDescuento - $anticipo;
 
-		$data = [
-		    'cliente' => $resultado,
-		    'id_cotizacion' => $resultado_cotizacion,
-		    'detalles' => $resultado_lineas,
-		    'sub_total' => number_format($sub_total, 2),
-		    'descuento' => number_format($descuento, 2),
-		    'iva' => number_format($iva, 2),
-		    'total' => number_format($totalConDescuento, 2),
+		// ── Generar PDF en memoria ────────────────────────────────────
+		$dataPdf = [
+		    'cliente'       => $cliente,
+		    'cot'           => $cot,
+		    'id_cotizacion' => $id,
+		    'detalles'      => $resultado_lineas,
+		    'sub_total'     => number_format($sub_total, 2),
+		    'descuento'     => number_format($descuento, 2),
+		    'iva'           => number_format($iva, 2),
+		    'total'         => number_format($totalConDescuento, 2),
+		    'anticipo'      => $anticipo,
+		    'saldo'         => $saldo,
+		    'pagado'        => $cot['pago'] == 1,
 		];
 
-		//return view('Panel/PDF',$data);
-		$doc = new Dompdf();
-		$html = view('Panel/PDF',$data);
-		//return $html;
-		$doc->loadHTML($html);
-		$doc->setPaper('A4','portrait');
+		$doc     = new Dompdf();
+		$options = $doc->getOptions();
+		$options->set('isRemoteEnabled', true);
+		$options->set('isHtml5ParserEnabled', true);
+		$options->set('defaultFont', 'DejaVu Sans');
+		$options->set('charset', 'UTF-8');
+		$doc->setOptions($options);
+		$doc->loadHtml(view('Panel/PDF', $dataPdf), 'UTF-8');
+		$doc->setPaper('A4', 'portrait');
 		$doc->render();
-		$nombre = "QT-".$id.".pdf";
-		$rutaTemporal = WRITEPATH.'uploads/temp/'.$nombre;
-		// Crear directorio si no existe
-	    if (!is_dir(dirname($rutaTemporal))) {
-	        mkdir(dirname($rutaTemporal), 0777, true);
-	    }
-	    file_put_contents($rutaTemporal, $doc->output());
+		$pdfContent = $doc->output();
+
+		// ── Logo en base64 ────────────────────────────────────────────
+		$logoPath = ROOTPATH . 'public/img/logo2.png';
+		$logoData = file_exists($logoPath) ? base64_encode(file_get_contents($logoPath)) : '';
+		$logoMime = file_exists($logoPath) ? mime_content_type($logoPath) : 'image/png';
+
+		// ── Construir y enviar el correo ──────────────────────────────
+		$dataEmail = [
+		    'id'             => $id,
+		    'cliente_nombre' => $cliente['nombre'],
+		    'total'          => number_format($totalConDescuento, 2),
+		    'logo_data'      => $logoData,
+		    'logo_mime'      => $logoMime,
+		];
 
 		$email = \Config\Services::email();
-		$email->setFrom('ventas@sellopronto.com.mx','Sello Pronto');
-		$email->setTo($resultado[0]['correo']);
-		$email->setSubject('Su cotizacion '.$nombre);
-
-		$imagePath = FCPATH . '/public/img/logo2.png'; // Ruta absoluta a la imagen
-    	$email->attach($imagePath, 'inline'); // 'inline' para incrustar
-    	$cid = $email->setAttachmentCID($imagePath); // Genera el CID
-
-    	// 2. Pasar el CID a la vista del correo
-	    $dataEmail = [
-	        'id' => $id,
-	        'cid_logo' => $cid // Pasamos el CID a la vista
-	    ];
-
+		$email->setFrom('ventas@sellopronto.com.mx', 'Sello Pronto');
+		$email->setTo($cliente['correo']);
+		$email->setSubject('Cotización QT-' . $id . ' — Sello Pronto');
+		$email->setMailType('html');
 		$email->setMessage(view('Emails/cotizacion', $dataEmail));
-		$email->attach($rutaTemporal);
-		if ($email->send()) {
-			// code...
-			unlink($rutaTemporal);
-        	return redirect()->to('/cotizaciones');
+		$email->attach($pdfContent, 'attachment', "QT-{$id}.pdf", 'application/pdf');
 
-		}else{
-			// Opcional: guardar el error en logs
-	        echo 'Error: ' . $email->printDebugger();
+		if ($email->send()) {
+			return redirect()->to('/cotizaciones')->with('success', 'Cotización enviada correctamente a ' . $cliente['correo']);
 		}
+
+		log_message('error', '[Cotización Email] ' . $email->printDebugger(['headers']));
+		return redirect()->to('/cotizaciones')->with('error', 'No se pudo enviar el correo. Verifica la configuración de email.');
 	}
 	public function pago()
 	{
