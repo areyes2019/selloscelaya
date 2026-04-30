@@ -15,14 +15,6 @@ class ClientesModel extends Model
         'telefono',
         'ciudad',
         'estado',
-        'descuento',
-        'tax_id',
-        'regimen_fiscal',
-        'codigo_postal',
-        'calle',
-        'no_ext',
-        'no_int',
-        'colonia',
-        'municipio',
+        'descuento'
     ];
 }

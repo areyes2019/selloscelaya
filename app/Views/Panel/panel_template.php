@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="<?= csrf_hash() ?>">
     <title>Panel de Control</title>
 
 
@@ -155,33 +154,6 @@
     </main>
 
     <script>
-        // CSRF global para Axios y Fetch
-        window.csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        if (typeof axios !== 'undefined') {
-            axios.defaults.headers.common['X-CSRF-TOKEN'] = window.csrfToken;
-        }
-
-        // Helper global: convierte <a data-delete-url="..."> en POST con CSRF
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.addEventListener('click', function (e) {
-                const link = e.target.closest('[data-delete-url]');
-                if (!link) return;
-                e.preventDefault();
-                const msg = link.dataset.confirm || '¿Seguro que quieres eliminar este registro?';
-                if (!confirm(msg)) return;
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = link.dataset.deleteUrl;
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = '<?= csrf_token() ?>';
-                input.value = '<?= csrf_hash() ?>';
-                form.appendChild(input);
-                document.body.appendChild(form);
-                form.submit();
-            });
-        });
-
         function toggleMenu() {
             const sidebar = document.getElementById("sidebar");
             const menuIcon = document.getElementById("menu-icon");

@@ -255,26 +255,17 @@ const { createApp, ref } = Vue
         });
       },
       generar_factura(){
-        if (!confirm('¿Deseas generar esta factura?')) return;
 
-        const csrfToken = window.csrfToken
-          || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-          || '';
-
-        axios.post('/facturar_cotizacion',
-          { id_cotizacion: this.$refs.id_cotizacion.innerHTML },
-          { headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' } }
-        ).then((response) => {
-          if (response.data.status === 'success') {
-            alert('✅ CFDI timbrado: ' + (response.data.serie_folio || response.data.cfdi_id));
-          } else {
-            alert('⚠️ ' + (response.data.message || 'Respuesta inesperada del servidor'));
-          }
-          window.location.href = '/cotizaciones';
-        }).catch((error) => {
-          const msg = error.response?.data?.message || error.message || 'Error desconocido';
-          alert('❌ Error al timbrar: ' + msg);
-        });
+        if (confirm('¿Deseas generar esta factura')== true) { 
+          axios.post('/facturar_cotizacion',{
+            'id_cotizacion':this.$refs.id_cotizacion.innerHTML
+          }).then((response)=>{
+            if (response.data.factura == 1) {
+              alert("Esta cotizacion ya se facturo");
+            }
+            window.location.href = '/cotizaciones';
+          })
+        }
       },
       entregadas(data){
         var title = "Hecho";
