@@ -19,7 +19,9 @@ class Cotizaciones extends BaseController
 		$db = \Config\Database::connect();
 
 		$builder = $db->table('sellopro_cotizaciones');
-		$builder->join('sellopro_clientes','sellopro_clientes.id_cliente = sellopro_cotizaciones.cliente');
+		$builder->join('sellopro_clientes', 'sellopro_clientes.id_cliente = sellopro_cotizaciones.cliente');
+		$builder->join('sellopro_facturas', 'sellopro_facturas.cotizacion_id = sellopro_cotizaciones.id_cotizacion', 'left');
+		$builder->select('sellopro_cotizaciones.*, sellopro_clientes.nombre, sellopro_clientes.correo, sellopro_clientes.telefono, sellopro_facturas.id AS factura_id');
 		$resultado = $builder->get()->getResultArray();
 
 		//return view('Panel/cotizaciones');
@@ -1125,7 +1127,7 @@ class Cotizaciones extends BaseController
 			        ]);
 			    }
 			}
-			$data =['entregada'=> 1];
+			$data =['estatus'=> 1];
 			$update = $cotizacionesModel->update($idCotizacion,$data);
 			if (!$update){
 			    return $this->response->setJSON([

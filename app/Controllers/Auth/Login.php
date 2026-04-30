@@ -31,18 +31,27 @@ class Login extends BaseController
             'email' => 'required|valid_email',
             'password' => 'required',
         ];
-        
+
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
-        
+
+        $ip = $this->request->getIPAddress();
+        $cacheKey = 'login_attempts_' . md5($ip);
+        $attempts = cache($cacheKey) ?? 0;
+
+        if ($attempts >= 5) {
+            return redirect()->back()->withInput()->with('error', 'Demasiados intentos fallidos. Espera 15 minutos e intenta de nuevo.');
+        }
+
         $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
         $remember = $this->request->getPost('remember') === '1';
-        
+
         $user = $this->userModel->getUserByEmail($email);
-        
+
         if (!$user || !password_verify($password, $user['password'])) {
+            cache()->save($cacheKey, $attempts + 1, 900); // bloqueo 15 min
             return redirect()->back()->withInput()->with('error', 'Correo o contraseña incorrectos');
         }
         
@@ -50,12 +59,14 @@ class Login extends BaseController
             return redirect()->back()->withInput()->with('error', 'La cuenta no esta activa');
         }
         
+        cache()->delete($cacheKey); // resetear contador al login exitoso
+
         $this->setUserSession($user);
-        
+
         if ($remember) {
             $this->setRememberMe($user['id']);
         }
-        
+
         return redirect()->to('admin');
     }
     

@@ -15,6 +15,7 @@
     <div class="row">
         <div class="col-md-6">
             <form action="/gastos/actualizar/<?= $gasto['id_registro']; ?>" method="post">
+                <?= csrf_field() ?>
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción</label>
                     <input type="text" class="form-control" id="descripcion" name="descripcion" value="<?= esc($gasto['descripcion']); ?>" required>

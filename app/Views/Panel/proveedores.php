@@ -39,7 +39,7 @@
                             <!-- Body -->
                             <div class="modal-body px-4 py-3">
                                 <form action="<?php echo base_url('nuevo_proveedor');?>" method="post">
-
+                                <?= csrf_field() ?>
                                 <div class="row g-3">
 
                                     <!-- Empresa -->
@@ -124,7 +124,9 @@
                                     </td>
                                     <td>
                                         <a class="btn btn-primary btn-circle btn-sm" href="editar_proveedor/<?php echo $proveedor['id_proveedor'] ?>"><span class="bi bi-pencil"></span></a>
-                                        <a class="btn btn-danger btn-circle btn-sm" href="eliminar_proveedor/<?php echo $proveedor['id_proveedor']  ?>" onclick="return confirm('¿Seguro que quieres eliminar este registro?')"><span class="bi bi-trash3"></span></a>
+                                        <a class="btn btn-danger btn-circle btn-sm" href="#"
+                                           data-delete-url="<?= base_url('eliminar_proveedor/' . $proveedor['id_proveedor']) ?>"
+                                           data-confirm="¿Seguro que quieres eliminar este proveedor?"><span class="bi bi-trash3"></span></a>
                                         <a href="#" class="btn btn-success btn-circle btn-sm" @click.prevent="ver_familias('<?php echo $proveedor['id_proveedor'] ?>')" ><span class="bi bi-share"></span></a>
                                     </td>
                                 </tr>

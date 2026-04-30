@@ -193,7 +193,7 @@ createApp({
                 return;
             }
             
-            axios.get(`ordenes/eliminar/${id_ot}`, {
+            axios.post(`ordenes/eliminar/${id_ot}`, {}, {
                 headers: {
                     'X-CSRF-TOKEN': window.csrfToken,
                     'Accept': 'application/json'

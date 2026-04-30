@@ -39,14 +39,15 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->post('nuevo_cliente', 'Admin\Clientes::nuevo');
 	$routes->get('editar_cliente/(:num)', 'Admin\Clientes::editar/$1');
 	$routes->post('actualizar_cliente', 'Admin\Clientes::actualizar');
-	$routes->get('eliminar_cliente/(:num)', 'Admin\Clientes::eliminar/$1');
-	
+	$routes->post('eliminar_cliente/(:num)', 'Admin\Clientes::eliminar/$1');
+	$routes->post('clientes/parsear_csf',   'Admin\Clientes::parsearCsf');
+
 	/*Proveedores*/
 	$routes->get('proveedores', 'Admin\Proveedores::index');
 	$routes->post('nuevo_proveedor', 'Admin\Proveedores::nuevo');
 	$routes->get('editar_proveedor/(:num)', 'Admin\Proveedores::editar/$1');
 	$routes->post('actualizar_proveedor', 'Admin\Proveedores::actualizar');
-	$routes->get('eliminar_proveedor/(:num)', 'Admin\Proveedores::eliminar/$1');
+	$routes->post('eliminar_proveedor/(:num)', 'Admin\Proveedores::eliminar/$1');
 	$routes->get('mostrar_familias/(:num)', 'Admin\Proveedores::mostrar_familias/$1');
 	$routes->post('agregar_familia', 'Admin\Proveedores::agregar_familia');
 
@@ -59,7 +60,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->post('nuevo_articulo', 'Admin\Articulos::nuevo');
 	$routes->get('editar_articulo/(:num)', 'Admin\Articulos::editar/$1');
 	$routes->post('actualizar_articulo', 'Admin\Articulos::actualizar');
-	$routes->get('eliminar_articulo/(:num)', 'Admin\Articulos::eliminar/$1');
+	$routes->post('eliminar_articulo/(:num)', 'Admin\Articulos::eliminar/$1');
 	$routes->post('eliminar_masivo', 'Admin\Articulos::eliminarMasivo');
 	$routes->get('ver_imagen/(:any)', 'Admin\Articulos::verImagen/$1');
 	$routes->get('nuevo_art_vista', 'Admin\Articulos::nuevo_art');
@@ -72,7 +73,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->get('pagina_cotizador/(:any)', 'Admin\Cotizaciones::pagina/$1');
 	$routes->get('editar_cotizacion/(:num)', 'Admin\Cotizaciones::editar/$1');
 	$routes->get('actualizar_cotizacion/(:num)', 'Admin\Cotizaciones::actualizar/$1');
-	$routes->get('eliminar_cotizacion/(:num)', 'Admin\Cotizaciones::eliminar/$1');
+	$routes->post('eliminar_cotizacion/(:num)', 'Admin\Cotizaciones::eliminar/$1');
 	$routes->post('agregar_articulo', 'Admin\Cotizaciones::agregar');
 	$routes->post('agregar_articulo_ind', 'Admin\Cotizaciones::agregar_ind');
 	$routes->get('mostrar_detalles/(:num)', 'Admin\Cotizaciones::mostrar_detalles/$1');
@@ -91,7 +92,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	
 
 	/*Facturas*/
-	$routes->post('facturar_cotizacion', 'Admin\FacturaController::convertir');
+	$routes->post('facturar_cotizacion', 'Admin\FacturasController::timbrar');
 	//$routes->post('marcar_pagado', 'Admin\FacturaController::pago_total');
 
 	/*Ordenes de Compras*/
@@ -102,7 +103,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->get('pagina_orden/(:any)', 'Admin\Compras::pagina/$1');
 	$routes->get('editar_compra/(:num)', 'Admin\Compras::editar/$1');
 	$routes->get('actualizar_compra/(:num)', 'Admin\Compras::actualizar/$1');
-	$routes->get('eliminar_compra/(:num)', 'Admin\Compras::eliminar/$1');
+	$routes->post('eliminar_compra/(:num)', 'Admin\Compras::eliminar/$1');
 	$routes->post('agregar_articulo_compras', 'Admin\Compras::agregar');
 	$routes->get('mostrar_detalles_compras/(:num)', 'Admin\Compras::mostrar_detalles/$1');
 	$routes->get('borrar_linea_compras/(:num)', 'Admin\Compras::borrar_linea/$1');
@@ -128,7 +129,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->get('pagina_pedido/(:any)', 'Admin\Pedidos::pagina/$1');
 	$routes->get('editar_pedido/(:num)', 'Admin\Pedidos::editar/$1');
 	$routes->get('actualizar_pedido/(:num)', 'Admin\Pedidos::actualizar/$1');
-	$routes->get('eliminar_pedido/(:num)', 'Admin\Pedidos::eliminar/$1');
+	$routes->post('eliminar_pedido/(:num)', 'Admin\Pedidos::eliminar/$1');
 	$routes->post('agregar_articulo_pedido', 'Admin\Pedidos::agregar');
 	$routes->get('mostrar_detalles_pedido/(:num)', 'Admin\Pedidos::mostrar_detalles/$1');
 	$routes->get('borrar_linea_pedido/(:num)', 'Admin\Pedidos::borrar_linea/$1');
@@ -154,7 +155,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    $routes->get('download/(:num)', 'Admin\PuntoVentaController::downloadTicket/$1'); // Descargar ticket
 	    $routes->get('edit/(:num)', 'Admin\PuntoVentaController::edit/$1');   // (Opcional) Mostrar form edición
 	    $routes->post('update/(:num)', 'Admin\PuntoVentaController::update/$1'); // (Opcional) Procesar edición
-	    $routes->get('delete/(:num)', 'Admin\PuntoVentaController::delete/$1'); // Eliminar pedido (GET para simplicidad, POST/DELETE es mejor)
+	    $routes->post('delete/(:num)', 'Admin\PuntoVentaController::delete/$1');
 	    $routes->get('stock', 'Admin\PuntoVentaController::mostrar_stock');
 	    $routes->post('pagar/(:num)', 'Admin\PuntoVentaController::pagar/$1');
 	    // Si usas resource, ajusta o añade las personalizadas
@@ -180,7 +181,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    $routes->get('download/(:num)', 'Admin\PedidosController::downloadTicket/$1'); // Descargar ticket
 	    $routes->get('edit/(:num)', 'Admin\PedidosController::edit/$1');   // (Opcional) Mostrar form edición
 	    $routes->post('update/(:num)', 'Admin\PedidosController::update/$1'); // (Opcional) Procesar edición
-	    $routes->get('delete/(:num)', 'Admin\PedidosController::delete/$1'); // Eliminar pedido (GET para simplicidad, POST/DELETE es mejor)
+	    $routes->post('delete/(:num)', 'Admin\PedidosController::delete/$1');
 	    $routes->post('pagar/(:num)', 'Admin\PedidosController::pagar/$1');
 	    // Si usas resource, ajusta o añade las personalizadas
 	    // $routes->resource('pedidos', ['controller' => 'PedidosController']);
@@ -188,7 +189,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	});
 
 	// Dentro de tu grupo 'admin' o similar si lo tienes, o directamente:
-	$routes->group('ordenes', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
+	$routes->group('ordenes', ['namespace' => 'App\Controllers\Admin', 'filter' => 'AuthFilter'], function ($routes) {
 	    $routes->get('/', 'OrdenTrabajoController::index'); // Dashboard
 	    $routes->get('new/(:num)', 'OrdenTrabajoController::new/$1'); // Formulario nuevo con ID de pedido
 	    $routes->get('descargar_ordenes', 'OrdenTrabajoController::descargar_ordenes');
@@ -200,7 +201,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    // Ajusta 'PedidosController' si es necesario
 		$routes->get('pedidos-pendientes', 'OrdenTrabajoController::etiquetas_txt');
 		$routes->post('actualizar-status/(:num)', 'OrdenTrabajoController::actualizarStatus/$1');
-		$routes->get('eliminar/(:num)', 'OrdenTrabajoController::eliminar/$1');
+		$routes->post('eliminar/(:num)', 'OrdenTrabajoController::eliminar/$1');
 	    $routes->get('mostrar/(:num)', 'OrdenTrabajoController::mostrar/$1'); // (Futuro) Eliminar
 		$routes->get('crear_desde_cotizacion/(:num)', 'OrdenTrabajoController::crear_orden_trabajo/$1'); //orden desde cotizacion
 
@@ -217,7 +218,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    $routes->post('eliminar/(:num)', 'Admin\GastosController::eliminar/$1');
 	    $routes->post('procesar', 'Admin\GastosController::procesar');
 	});
-	$routes->group('administracion', ['namespace' => 'App\Controllers\Admin'], function($routes) {
+	$routes->group('administracion', ['namespace' => 'App\Controllers\Admin', 'filter' => 'AuthFilter'], function($routes) {
 	    $routes->get('/', 'AdministracionController::index');
 	    $routes->get('cargar_ordenes', 'AdministracionController::cargar_ordenes');
 	    $routes->post('actualizar-estado/(:num)', 'AdministracionController::actualizarEstado/$1');
@@ -238,33 +239,34 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    $routes->get('edicion_rapida/(:num)', 'Admin\Existencias::edicion_rapida/$1'); // Muestra form para editar
 	    $routes->post('guardar_rapido', 'Admin\Existencias::guardar_rapido'); // Muestra form para editar
 	});
-	$routes->group('cuentas', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
+	$routes->group('cuentas', ['namespace' => 'App\Controllers\Admin', 'filter' => 'AuthFilter'], function ($routes) {
 	    $routes->get('/', 'CuentasController::index');    
 	    $routes->get('nuevo', 'CuentasController::nuevo');     
 	    $routes->get('editar/(:num)', 'CuentasController::editar/$1');     
 	    $routes->post('guardar', 'CuentasController::guardar'); 
 	    $routes->post('actualizar/(:num)', 'CuentasController::actualizar/$1');
-	    $routes->get('borrar/(:num)', 'CuentasController::borrar/$1');   
+	    $routes->post('borrar/(:num)', 'CuentasController::borrar/$1');
 	    $routes->get('listar', 'CuentasController::listar');   
 	});
 
 	/*categorias*/
-	$routes->group('categorias', ['namespace' => 'App\Controllers\Admin'],function($routes) {
+	$routes->group('categorias', ['namespace' => 'App\Controllers\Admin', 'filter' => 'AuthFilter'], function($routes) {
 	    $routes->get('/', 'CategoriasController::index');
 	    $routes->get('show', 'CategoriasController::show');
 	    $routes->post('store', 'CategoriasController::store');
 	    $routes->get('edit/(:num)', 'CategoriasController::edit/$1');
 	    $routes->post('update/(:num)', 'CategoriasController::update/$1');
-	    $routes->get('delete/(:num)', 'CategoriasController::delete/$1');
+	    $routes->post('delete/(:num)', 'CategoriasController::delete/$1');
 	});
 
 	/*facturas*/
-	$routes->group('facturas', ['filter' => 'auth'], function($routes) {
-		$routes->get('/',                  'Admin\FacturasController::index');
-		$routes->post('timbrar',           'Admin\FacturasController::timbrar');
-		$routes->get('descargar/(:num)/(:alpha)', 'Admin\FacturasController::descargar/$1/$2');
-		$routes->post('enviar_correo',     'Admin\FacturasController::enviarCorreo');
-		$routes->post('cancelar',          'Admin\FacturasController::cancelar');
+	$routes->group('facturas', ['filter' => 'AuthFilter'], function($routes) {
+		$routes->get('/',                        'Admin\FacturasController::index');
+		$routes->post('timbrar',                 'Admin\FacturasController::timbrar');
+		$routes->get('pdf/(:num)',               'Admin\FacturasController::pdfLocal/$1');
+		$routes->get('descargar/(:num)/(:alpha)','Admin\FacturasController::descargar/$1/$2');
+		$routes->post('enviar_correo',           'Admin\FacturasController::enviarCorreo');
+		$routes->post('cancelar',                'Admin\FacturasController::cancelar');
 	});
 
 });

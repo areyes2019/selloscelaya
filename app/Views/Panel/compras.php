@@ -65,6 +65,7 @@
                         <?php endif; ?>
                         <?php if ($data['pagado'] == 1 && $data['entregada'] == 0): ?>
                             <form action="<?php echo base_url('recibido_compras'); ?>" method="post" class="d-inline">
+                                <?= csrf_field() ?>
                                 <input type="hidden" name="pedido" value="<?= $data['id_pedido'] ?>">
                                 <button type="submit" class="btn btn-success btn-circle btn-sm" onclick="return confirm('¿Confirmas que has recibido esta orden de compra?');">
                                     <span class="bi bi-box-arrow-down"></span>

@@ -23,6 +23,7 @@
 <?php endif; ?>
 
 <form action="<?= site_url('ventas/create') ?>" method="post">
+    <?= csrf_field() ?>
     <div class="row">
         <!-- Columna Izquierda: Formulario -->
         <div class="col-md-7">

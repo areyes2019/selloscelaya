@@ -8,45 +8,36 @@ use App\Models\ClientesModel;
 use App\Models\DetalleModel;
 use App\Models\ArticulosModel;
 use App\Models\FacturaModel;
+use App\Services\FacturapiService;
 use CodeIgniter\API\ResponseTrait;
+use Dompdf\Dompdf;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 
 /**
  * FacturasController
- * 
- * Convierte una cotización de Sellopro en un CFDI 4.0 timbrado
- * usando la API de Facturama (https://facturama.mx).
- * 
- * Requiere en .env:
- *   FACTURAMA_USER      = tu_usuario_de_facturama
- *   FACTURAMA_PASSWORD  = tu_password_de_facturama
- *   FACTURAMA_SANDBOX   = true   # false en producción
- *   FACTURAMA_CP        = 38000  # CP de expedición (tu sucursal)
- *   FACTURAMA_SERIE     = A      # Serie del CFDI (opcional)
- * 
- * En clientes se requieren: tax_id (RFC), regimen_fiscal, codigo_postal
- * En artículos se requiere:  clave_producto (clave SAT del producto/servicio)
+ *
+ * Convierte una cotización en un CFDI 4.0 timbrado usando FacturAPI v2.
+ * Documentación: https://docs.facturapi.io
+ *
+ * Variables de entorno requeridas (.env):
+ *   FACTURAPI_KEY   = sk_test_xxxx   (sk_live_xxxx en producción)
+ *   FACTURAPI_SERIE = QT             (configurable también en el dashboard)
+ *   FACTURAPI_CP    = 38000          (lugar de expedición, se configura en el dashboard)
+ *
+ * Datos requeridos en el cliente: tax_id (RFC), regimen_fiscal, codigo_postal
+ * Datos requeridos en artículos:  clave_producto (clave SAT)
  */
 class FacturasController extends BaseController
 {
     use ResponseTrait;
 
-    // ------------------------------------------------------------------
-    // URLs de la API
-    // ------------------------------------------------------------------
-    private const URL_PRODUCCION = 'https://api.facturama.mx';
-    private const URL_SANDBOX    = 'https://apisandbox.facturama.mx';
-
-    private string $baseUrl;
-    private string $authHeader;
-
-    // ------------------------------------------------------------------
-    // Modelos
-    // ------------------------------------------------------------------
     protected CotizacionesModel $cotizacionesModel;
     protected ClientesModel     $clientesModel;
     protected DetalleModel      $detalleModel;
     protected ArticulosModel    $articulosModel;
     protected FacturaModel      $facturaModel;
+    protected FacturapiService  $facturapi;
 
     public function __construct()
     {
@@ -57,24 +48,13 @@ class FacturasController extends BaseController
         $this->detalleModel      = new DetalleModel();
         $this->articulosModel    = new ArticulosModel();
         $this->facturaModel      = new FacturaModel();
-
-        // Elegir entorno según .env
-        $sandbox = filter_var(env('FACTURAMA_SANDBOX', true), FILTER_VALIDATE_BOOLEAN);
-        $this->baseUrl = $sandbox ? self::URL_SANDBOX : self::URL_PRODUCCION;
-
-        // Armar cabecera de autenticación Basic
-        $user     = env('FACTURAMA_USER', '');
-        $password = env('FACTURAMA_PASSWORD', '');
-        $this->authHeader = 'Basic ' . base64_encode("{$user}:{$password}");
+        $this->facturapi         = new FacturapiService();
     }
 
     // ==================================================================
     // LISTADO
     // ==================================================================
 
-    /**
-     * Muestra todas las facturas generadas.
-     */
     public function index()
     {
         $db      = \Config\Database::connect();
@@ -94,10 +74,19 @@ class FacturasController extends BaseController
     // ==================================================================
 
     /**
-     * Timbra una cotización pagada como CFDI 4.0 en Facturama.
+     * Timbra una cotización pagada como CFDI 4.0 en FacturAPI.
      *
      * POST /facturas/timbrar
-     * Body JSON: { "id_cotizacion": 42, "forma_pago": "03", "metodo_pago": "PUE", "uso_cfdi": "G03" }
+     * Body JSON: {
+     *   "id_cotizacion": 42,
+     *   "forma_pago": "03",
+     *   "metodo_pago": "PUE",
+     *   "uso_cfdi": "G03"
+     * }
+     *
+     * Formas de pago comunes: 01=Efectivo, 03=Transferencia, 04=Tarjeta crédito, 28=Tarjeta débito
+     * Métodos de pago: PUE=Pago único, PPD=Pago en parcialidades
+     * Uso CFDI: G01=Adquisición, G03=Gastos generales, D10=Pagos por servicios profesionales
      */
     public function timbrar()
     {
@@ -105,9 +94,9 @@ class FacturasController extends BaseController
         $input = $this->request->getJSON(true);
 
         $idCotizacion = (int) ($input['id_cotizacion'] ?? 0);
-        $formaPago    = $input['forma_pago']  ?? '03';  // 03 = Transferencia
-        $metodoPago   = $input['metodo_pago'] ?? 'PUE'; // PUE = Pago en una sola exhibición
-        $usoCfdi      = $input['uso_cfdi']    ?? 'G03'; // G03 = Gastos en general
+        $formaPago    = $input['forma_pago']  ?? '03';
+        $metodoPago   = $input['metodo_pago'] ?? 'PUE';
+        $usoCfdi      = $input['uso_cfdi']    ?? 'G03';
 
         if (!$idCotizacion) {
             return $this->respond(['status' => 'error', 'message' => 'ID de cotización requerido'], 400);
@@ -116,6 +105,7 @@ class FacturasController extends BaseController
         // ── 2. Verificar que no esté ya facturada ──────────────────────
         $facturaExistente = $this->facturaModel
             ->where('cotizacion_id', $idCotizacion)
+            ->where('estado !=', 'cancelada')
             ->first();
 
         if ($facturaExistente) {
@@ -138,13 +128,11 @@ class FacturasController extends BaseController
             return $this->respond(['status' => 'error', 'message' => 'Cliente no encontrado'], 404);
         }
 
-        // Validar datos fiscales mínimos del cliente
-        $camposFiscales = ['tax_id', 'regimen_fiscal', 'codigo_postal'];
-        foreach ($camposFiscales as $campo) {
+        foreach (['tax_id', 'regimen_fiscal', 'codigo_postal'] as $campo) {
             if (empty($cliente[$campo])) {
                 return $this->respond([
                     'status'  => 'error',
-                    'message' => "El cliente no tiene el campo fiscal '{$campo}' configurado. Actualízalo en el módulo de clientes.",
+                    'message' => "El cliente no tiene el campo fiscal '{$campo}'. Actualízalo en el módulo de clientes.",
                 ], 422);
             }
         }
@@ -161,83 +149,220 @@ class FacturasController extends BaseController
             ], 422);
         }
 
-        // ── 6. Construir los Items del CFDI ────────────────────────────
+        // ── 6. Construir los items en formato FacturAPI ────────────────
         $items = $this->buildItems($detalles);
         if (isset($items['error'])) {
             return $this->respond(['status' => 'error', 'message' => $items['error']], 422);
         }
 
-        // ── 7. Armar el payload para Facturama ─────────────────────────
+        // ── 7. Armar el payload para FacturAPI ─────────────────────────
         $payload = [
-            'NameId'          => 1,           // 1 = "Factura"
-            'CfdiType'        => 'I',          // I = Ingreso
-            'PaymentForm'     => $formaPago,
-            'PaymentMethod'   => $metodoPago,
-            'ExpeditionPlace' => env('FACTURAMA_CP', '38000'),
-            'Currency'        => 'MXN',
-            'Exportation'     => '01',         // 01 = No aplica
-            'Folio'           => (string) $idCotizacion,
-            'Serie'           => env('FACTURAMA_SERIE', 'QT'),
-            'OrderNumber'     => 'QT-' . $idCotizacion,
-            'Observations'    => 'Cotización QT-' . $idCotizacion,
-            'Receiver'        => [
-                'Rfc'          => strtoupper(trim($cliente['tax_id'])),
-                'Name'         => strtoupper(trim($cliente['nombre'])),
-                'CfdiUse'      => $usoCfdi,
-                'FiscalRegime' => (string) $cliente['regimen_fiscal'],
-                'TaxZipCode'   => (string) $cliente['codigo_postal'],
+            'type'           => 'I',
+            'customer'       => [
+                'legal_name' => strtoupper(trim($cliente['nombre'])),
+                'tax_id'     => strtoupper(trim($cliente['tax_id'])),
+                'tax_system' => (string) $cliente['regimen_fiscal'],
+                'address'    => [
+                    'zip' => (string) $cliente['codigo_postal'],
+                ],
             ],
-            'Items' => $items,
+            'use'            => $usoCfdi,
+            'payment_form'   => $formaPago,
+            'payment_method' => $metodoPago,
+            'currency'       => 'MXN',
+            'items'          => $items,
         ];
 
-        // ── 8. Llamar a la API de Facturama ────────────────────────────
-        $apiResponse = $this->callFacturama('POST', '/3/cfdis', $payload);
+        // Agregar correo del cliente si está disponible (FacturAPI lo usa para envío automático)
+        if (!empty($cliente['correo'])) {
+            $payload['customer']['email'] = $cliente['correo'];
+        }
+
+        // Agregar serie si está configurada
+        $serie = env('FACTURAPI_SERIE', '');
+        if ($serie) {
+            $payload['series'] = $serie;
+        }
+
+        // ── 8. Llamar a FacturAPI ──────────────────────────────────────
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $apiResponse = $this->facturapi->crearFactura($payload);
 
         if (!$apiResponse['success']) {
-            log_message('error', '[Facturama] Error al timbrar cotización ' . $idCotizacion . ': ' . json_encode($apiResponse));
+            $db->transRollback();
+            log_message('error', '[FacturAPI] Error al timbrar cotización ' . $idCotizacion . ': ' . json_encode($apiResponse));
             return $this->respond([
                 'status'  => 'error',
-                'message' => 'Error al timbrar en Facturama: ' . ($apiResponse['message'] ?? 'Error desconocido'),
+                'message' => 'Error al timbrar en FacturAPI: ' . ($apiResponse['message'] ?? 'Error desconocido'),
                 'detalle' => $apiResponse['body'] ?? null,
             ], 500);
         }
 
         $cfdi = $apiResponse['body'];
 
-        // ── 9. Guardar factura en la BD ────────────────────────────────
+        // ── 9. Guardar factura en BD (dentro de la transacción) ────────
         $this->facturaModel->insert([
-            'cotizacion_id'     => $idCotizacion,
-            'factura_uuid'      => $cfdi['Id'],
-            'folio'             => $cfdi['Folio']  ?? null,
-            'serie'             => $cfdi['Serie']  ?? null,
-            'estado'            => 'timbrada',
-            'fecha_timbrado'    => date('Y-m-d H:i:s'),
-            'respuesta_completa'=> json_encode($cfdi),
-            'created_at'        => date('Y-m-d H:i:s'),
+            'cotizacion_id'      => $idCotizacion,
+            'factura_uuid'       => $cfdi['id'],                  // ID de FacturAPI (para descargas/cancelación)
+            'folio'              => $cfdi['folio_number'] ?? null,
+            'serie'              => $cfdi['series']       ?? null,
+            'estado'             => $cfdi['status']       ?? 'valid',
+            'fecha_timbrado'     => date('Y-m-d H:i:s'),
+            'monto'              => $cfdi['total']         ?? null,
+            'respuesta_completa' => json_encode($cfdi),
         ]);
 
-        // Marcar cotización como entregada/facturada
-        $this->cotizacionesModel->update($idCotizacion, ['entregada' => 1]);
+        $this->cotizacionesModel->update($idCotizacion, ['estatus' => 1]);
+
+        $db->transComplete();
+
+        if (!$db->transStatus()) {
+            log_message('error', '[FacturAPI] Factura timbrada pero falló la escritura en BD. CFDI ID: ' . $cfdi['id']);
+            return $this->respond([
+                'status'  => 'error',
+                'message' => 'El CFDI fue timbrado pero ocurrió un error al guardarlo. Contacta al administrador con este ID: ' . $cfdi['id'],
+            ], 500);
+        }
 
         return $this->respond([
-            'status'       => 'success',
-            'message'      => 'CFDI timbrado correctamente',
-            'cfdi_id'      => $cfdi['Id'],
-            'serie_folio'  => ($cfdi['Serie'] ?? '') . '-' . ($cfdi['Folio'] ?? ''),
-            'total'        => $cfdi['Total'] ?? null,
-            'uuid'         => $cfdi['Complement']['TaxStamp']['Uuid'] ?? null,
+            'status'      => 'success',
+            'message'     => 'CFDI timbrado correctamente',
+            'cfdi_id'     => $cfdi['id'],
+            'serie_folio' => ($cfdi['series'] ?? '') . '-' . ($cfdi['folio_number'] ?? ''),
+            'total'       => $cfdi['total'] ?? null,
+            'uuid'        => $cfdi['uuid']  ?? null,
+            'livemode'    => $cfdi['livemode'] ?? false,
         ]);
     }
 
     // ==================================================================
-    // DESCARGAR PDF / XML
+    // PDF LOCAL  (mismo estilo que cotizaciones)
     // ==================================================================
 
     /**
-     * Descarga el PDF o XML de una factura timbrada.
-     *
+     * GET /facturas/pdf/{id}
+     * Genera el PDF con DomPDF usando la plantilla PDF_factura.php.
+     */
+    public function pdfLocal(int $id)
+    {
+        $db = \Config\Database::connect();
+        $row = $db->table('sellopro_facturas f')
+            ->select('f.*, cl.nombre as nombre_cliente, cl.tax_id as cliente_rfc, cl.correo as cliente_email, cl.codigo_postal as cliente_cp')
+            ->join('sellopro_cotizaciones cot', 'cot.id_cotizacion = f.cotizacion_id')
+            ->join('sellopro_clientes cl',      'cl.id_cliente     = cot.cliente')
+            ->where('f.id', $id)
+            ->get()->getRowArray();
+
+        if (!$row) {
+            return redirect()->back()->with('error', 'Factura no encontrada');
+        }
+
+        $resp  = json_decode($row['respuesta_completa'] ?? '{}', true) ?? [];
+        $stamp = $resp['stamp'] ?? [];
+        $items = $resp['items'] ?? [];
+
+        // ── Montos ────────────────────────────────────────────────────────
+        // Preferir resp['total'] porque monto en BD puede estar sin decimales
+        $total = (float)($resp['total'] ?? $row['monto'] ?? 0);
+
+        // FacturAPI v2 no devuelve 'subtotal' en el nivel raíz; se calcula desde los items
+        $subtotal = 0;
+        foreach ($items as $it) {
+            $price = (float)($it['product']['price'] ?? $it['unit_price'] ?? 0);
+            $qty   = (float)($it['quantity'] ?? 1);
+            $subtotal += $price * $qty;
+        }
+        if ($subtotal === 0.0) {
+            $subtotal = (float)($resp['subtotal'] ?? 0);
+        }
+
+        $iva = $total - $subtotal;
+
+        // ── Campos del Timbre Fiscal Digital ─────────────────────────────
+        // uuid está en el nivel raíz de la respuesta FacturAPI v2
+        $uuid        = $resp['uuid']             ?? $row['factura_uuid'] ?? '';
+        $rfcEmisor   = 'RERA7701272R1';
+        $rfcReceptor = $row['cliente_rfc']       ?? '';
+        $satCert     = $stamp['sat_cert_number'] ?? '';
+        $rfcProvCert = $stamp['rfc_provider_cert'] ?? '';
+        $fechaStamp  = $stamp['date']            ?? $row['fecha_timbrado'] ?? '';
+
+        // sat_signature = Sello del SAT; signature = Sello del CFDI (emisor)
+        $selloSat  = $stamp['sat_signature'] ?? '';
+        $selloCfdi = $stamp['signature']     ?? '';
+
+        // FacturAPI ya construye la cadena original; si falta, la armamos
+        $cadenaOriginal = $stamp['complement_string']
+            ?? "||1.1|{$uuid}|{$fechaStamp}|{$rfcProvCert}|{$selloCfdi}|{$satCert}||";
+
+        // FacturAPI también provee la URL de verificación SAT
+        $urlVerif = $resp['verification_url'] ?? '';
+        if (!$urlVerif) {
+            $fe       = substr($selloCfdi, -8);
+            $totalFmt = number_format($total, 6, '.', '');
+            $urlVerif = 'https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx'
+                      . "?id={$uuid}&re={$rfcEmisor}&rr={$rfcReceptor}&tt={$totalFmt}&fe={$fe}";
+        }
+
+        // ── Código QR ────────────────────────────────────────────────────
+        $qrBase64 = '';
+        try {
+            $qr     = QrCode::create($urlVerif)->setSize(200)->setMargin(4);
+            $writer = new PngWriter();
+            $result = $writer->write($qr);
+            $qrBase64 = 'data:image/png;base64,' . base64_encode($result->getString());
+        } catch (\Throwable $e) {
+            log_message('error', '[PDF Factura QR] ' . $e->getMessage());
+        }
+
+        $data = [
+            'serie'          => $row['serie']         ?? '',
+            'folio'          => $row['folio']          ?? '',
+            'estado'         => $row['estado']         ?? '',
+            'fecha_timbrado' => $fechaStamp,
+            'cliente_nombre' => $row['nombre_cliente'] ?? '',
+            'cliente_rfc'    => $rfcReceptor,
+            'cliente_email'  => $row['cliente_email']  ?? '',
+            'cliente_cp'     => $row['cliente_cp']     ?? '',
+            'items'          => $items,
+            'subtotal'       => $subtotal,
+            'iva'            => $iva,
+            'total'          => $total,
+            'uuid'           => $uuid,
+            'sat_cert'       => $satCert,
+            'rfc_prov_cert'  => $rfcProvCert,
+            'sello_sat'      => $selloSat,
+            'sello_cfdi'     => $selloCfdi,
+            'cadena_original'=> $cadenaOriginal,
+            'qr_base64'      => $qrBase64,
+            'url_verif'      => $urlVerif,
+        ];
+
+        $dompdf  = new Dompdf();
+        $options = $dompdf->getOptions();
+        $options->set('isRemoteEnabled',    true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultFont',        'DejaVu Sans');
+        $options->set('charset',            'UTF-8');
+        $dompdf->setOptions($options);
+
+        $dompdf->loadHtml(view('Panel/PDF_factura', $data), 'UTF-8');
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("FAC-{$row['serie']}-{$row['folio']}.pdf", ['Attachment' => true]);
+    }
+
+    // ==================================================================
+    // DESCARGAR PDF / XML / ZIP
+    // ==================================================================
+
+    /**
      * GET /facturas/descargar/{id}/{formato}
-     * $formato: "pdf" | "xml"
+     * $formato: "pdf" | "xml" | "zip"
+     *
+     * FacturAPI devuelve el archivo binario directamente.
      */
     public function descargar(int $id, string $formato = 'pdf')
     {
@@ -247,28 +372,30 @@ class FacturasController extends BaseController
         }
 
         $formato = strtolower($formato);
-        if (!in_array($formato, ['pdf', 'xml'])) {
-            return redirect()->back()->with('error', 'Formato no válido. Use pdf o xml.');
+        if (!in_array($formato, ['pdf', 'xml', 'zip'])) {
+            return redirect()->back()->with('error', 'Formato no válido. Use pdf, xml o zip.');
         }
 
-        // GET /cfdi/{formato}/issued/{uuid}
-        $endpoint = "/cfdi/{$formato}/issued/{$factura['factura_uuid']}";
-        $apiResponse = $this->callFacturama('GET', $endpoint);
+        $apiResponse = $this->facturapi->descargar($factura['factura_uuid'], $formato);
 
         if (!$apiResponse['success']) {
-            return redirect()->back()->with('error', 'No se pudo obtener el archivo de Facturama.');
+            return redirect()->back()->with('error', 'No se pudo obtener el archivo de FacturAPI.');
         }
 
-        // La respuesta es un objeto con { ContentType, Content (base64), FileName }
-        $archivo = $apiResponse['body'];
-        $contenido = base64_decode($archivo['Content']);
-        $nombreArchivo = $archivo['FileName'] ?? "factura-{$id}.{$formato}";
-        $contentType = $formato === 'pdf' ? 'application/pdf' : 'text/xml';
+        $contentTypes = [
+            'pdf' => 'application/pdf',
+            'xml' => 'text/xml; charset=utf-8',
+            'zip' => 'application/zip',
+        ];
+
+        $serie  = $factura['serie']  ?? 'F';
+        $folio  = $factura['folio']  ?? $id;
+        $nombre = "{$serie}-{$folio}.{$formato}";
 
         return $this->response
-            ->setHeader('Content-Type', $contentType)
-            ->setHeader('Content-Disposition', "attachment; filename=\"{$nombreArchivo}\"")
-            ->setBody($contenido);
+            ->setHeader('Content-Type', $contentTypes[$formato])
+            ->setHeader('Content-Disposition', "attachment; filename=\"{$nombre}\"")
+            ->setBody($apiResponse['body']);
     }
 
     // ==================================================================
@@ -276,16 +403,14 @@ class FacturasController extends BaseController
     // ==================================================================
 
     /**
-     * Envía la factura por correo usando la API de Facturama.
-     *
      * POST /facturas/enviar_correo
      * Body JSON: { "id_factura": 5, "correo": "cliente@email.com" }
      */
     public function enviarCorreo()
     {
-        $input      = $this->request->getJSON(true);
-        $idFactura  = (int) ($input['id_factura'] ?? 0);
-        $correo     = trim($input['correo'] ?? '');
+        $input     = $this->request->getJSON(true);
+        $idFactura = (int) ($input['id_factura'] ?? 0);
+        $correo    = trim($input['correo'] ?? '');
 
         if (!$idFactura || !$correo) {
             return $this->respond(['status' => 'error', 'message' => 'ID de factura y correo son requeridos'], 400);
@@ -296,13 +421,7 @@ class FacturasController extends BaseController
             return $this->respond(['status' => 'error', 'message' => 'Factura no encontrada'], 404);
         }
 
-        // POST /cfdi/issed/{uuid}/email/{correo}
-        // Facturama acepta: /cfdi/{cfdiType}/{cfdiId}/{email}/{subject}/{comments}
-        $cfdiId  = urlencode($factura['factura_uuid']);
-        $asunto  = urlencode('Su factura electrónica - QT-' . $factura['cotizacion_id']);
-        $endpoint = "/cfdi/issued/{$cfdiId}/{$correo}/{$asunto}";
-
-        $apiResponse = $this->callFacturama('POST', $endpoint);
+        $apiResponse = $this->facturapi->enviarEmail($factura['factura_uuid'], $correo);
 
         if (!$apiResponse['success']) {
             return $this->respond([
@@ -322,19 +441,18 @@ class FacturasController extends BaseController
     // ==================================================================
 
     /**
-     * Cancela un CFDI ante el SAT (a través de Facturama).
-     *
      * POST /facturas/cancelar
-     * Body JSON: { "id_factura": 5, "motivo": "02" }
-     * 
-     * Motivos SAT: 01=Comprobante emitido con errores con relación, 02=Comprobante emitido con errores sin relación,
-     *              03=No se llevó a cabo la operación, 04=Operación nominativa relacionada en la factura global
+     * Body JSON: { "id_factura": 5, "motivo": "02", "uuid_sustituto": null }
+     *
+     * Motivos SAT: 01=Errores con relación, 02=Errores sin relación,
+     *              03=No se realizó la operación, 04=Operación nominativa
      */
     public function cancelar()
     {
-        $input     = $this->request->getJSON(true);
-        $idFactura = (int) ($input['id_factura'] ?? 0);
-        $motivo    = $input['motivo'] ?? '02';
+        $input        = $this->request->getJSON(true);
+        $idFactura    = (int) ($input['id_factura'] ?? 0);
+        $motivo       = $input['motivo']         ?? '02';
+        $uuidSustituto = $input['uuid_sustituto'] ?? null;
 
         if (!$idFactura) {
             return $this->respond(['status' => 'error', 'message' => 'ID de factura requerido'], 400);
@@ -349,11 +467,7 @@ class FacturasController extends BaseController
             return $this->respond(['status' => 'error', 'message' => 'La factura ya fue cancelada'], 409);
         }
 
-        // DELETE /cfdi/{id}?type=issued&motive={motivo}
-        $cfdiId   = urlencode($factura['factura_uuid']);
-        $endpoint = "/cfdi/{$cfdiId}?type=issued&motive={$motivo}";
-
-        $apiResponse = $this->callFacturama('DELETE', $endpoint);
+        $apiResponse = $this->facturapi->cancelar($factura['factura_uuid'], $motivo, $uuidSustituto);
 
         if (!$apiResponse['success']) {
             return $this->respond([
@@ -363,14 +477,8 @@ class FacturasController extends BaseController
             ], 500);
         }
 
-        // Actualizar estado en BD
-        $this->facturaModel->update($idFactura, [
-            'estado'     => 'cancelada',
-            'updated_at' => date('Y-m-d H:i:s'),
-        ]);
-
-        // Revertir el estatus de la cotización
-        $this->cotizacionesModel->update($factura['cotizacion_id'], ['entregada' => 0]);
+        $this->facturaModel->update($idFactura, ['estado' => 'cancelada']);
+        $this->cotizacionesModel->update($factura['cotizacion_id'], ['estatus' => 0]);
 
         return $this->respond([
             'status'  => 'success',
@@ -383,148 +491,52 @@ class FacturasController extends BaseController
     // ==================================================================
 
     /**
-     * Construye el array de Items para el payload de Facturama
-     * a partir de los detalles de la cotización.
+     * Convierte los detalles de la cotización al formato de items de FacturAPI.
+     *
+     * Estructura FacturAPI:
+     * {
+     *   "quantity": 2,
+     *   "product": {
+     *     "description": "...",
+     *     "product_key": "01010101",  ← clave SAT
+     *     "unit_key":    "H87",       ← H87 = Pieza
+     *     "unit_name":   "Pieza",
+     *     "price":       100.00,      ← precio SIN IVA
+     *     "tax_included": false,
+     *     "taxes": [{"type": "IVA", "rate": 0.16}]
+     *   }
+     * }
      */
     private function buildItems(array $detalles): array
     {
         $items = [];
 
         foreach ($detalles as $detalle) {
-            // Si id_articulo = 0 es una línea independiente (sin artículo del catálogo)
-            $claveSat  = '01010101'; // Clave genérica SAT si no hay artículo
-            $sku       = null;
+            $claveSat = '01010101'; // Clave genérica SAT
 
             if (!empty($detalle['id_articulo'])) {
                 $articulo = $this->articulosModel->find($detalle['id_articulo']);
-
                 if ($articulo && !empty($articulo['clave_producto'])) {
                     $claveSat = $articulo['clave_producto'];
-                    $sku      = $articulo['modelo'] ?? null;
                 }
             }
 
-            $precioUnitario = (float) $detalle['p_unitario'];
-            $cantidad       = (float) $detalle['cantidad'];
-            $subtotal       = round($precioUnitario * $cantidad, 6);
-            $baseIva        = $subtotal;
-            $montoIva       = round($baseIva * 0.16, 6);
-
             $items[] = [
-                'ProductCode'         => $claveSat,
-                'IdentificationNumber'=> $sku,
-                'Description'         => $detalle['descripcion'] ?? 'Producto / Servicio',
-                'Unit'                => 'Pieza',
-                'UnitCode'            => 'H87',   // H87 = Pieza en catálogo SAT
-                'UnitPrice'           => $precioUnitario,
-                'Quantity'            => $cantidad,
-                'Subtotal'            => $subtotal,
-                'TaxObject'           => '02',    // 02 = Sí objeto de impuesto
-                'Taxes'               => [
-                    [
-                        'Total'       => $montoIva,
-                        'Name'        => 'IVA',
-                        'Base'        => $baseIva,
-                        'Rate'        => 0.16,
-                        'IsRetention' => false,
-                    ]
+                'quantity' => (float) $detalle['cantidad'],
+                'product'  => [
+                    'description' => $detalle['descripcion'] ?? 'Producto / Servicio',
+                    'product_key' => $claveSat,
+                    'unit_key'    => 'H87',      // H87 = Pieza (catálogo SAT)
+                    'unit_name'   => 'Pieza',
+                    'price'       => (float) $detalle['p_unitario'],
+                    'tax_included'=> false,
+                    'taxes'       => [
+                        ['type' => 'IVA', 'rate' => 0.16],
+                    ],
                 ],
-                'Total' => round($subtotal + $montoIva, 6),
             ];
         }
 
         return $items;
-    }
-
-    /**
-     * Realiza una llamada HTTP a la API de Facturama.
-     *
-     * @param  string $method   GET | POST | DELETE
-     * @param  string $endpoint Ruta sin base URL, ej: "/3/cfdis"
-     * @param  array  $body     Datos a enviar como JSON (solo en POST/PUT)
-     * @return array  ['success' => bool, 'body' => mixed, 'message' => string]
-     */
-    private function callFacturama(string $method, string $endpoint, array $body = []): array
-    {
-        $url    = $this->baseUrl . $endpoint;
-        $method = strtoupper($method);
-
-        $curl = curl_init();
-
-        $headers = [
-            'Authorization: ' . $this->authHeader,
-            'Content-Type: application/json',
-            'Accept: application/json',
-        ];
-
-        $options = [
-            CURLOPT_URL            => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 30,
-            CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_SSL_VERIFYPEER => filter_var(env('FACTURAMA_VERIFY_SSL', true), FILTER_VALIDATE_BOOLEAN),
-        ];
-
-        switch ($method) {
-            case 'POST':
-                $options[CURLOPT_POST]       = true;
-                $options[CURLOPT_POSTFIELDS] = json_encode($body);
-                break;
-
-            case 'PUT':
-                $options[CURLOPT_CUSTOMREQUEST] = 'PUT';
-                $options[CURLOPT_POSTFIELDS]    = json_encode($body);
-                break;
-
-            case 'DELETE':
-                $options[CURLOPT_CUSTOMREQUEST] = 'DELETE';
-                break;
-
-            case 'GET':
-            default:
-                // No body
-                break;
-        }
-
-        curl_setopt_array($curl, $options);
-
-        $rawResponse = curl_exec($curl);
-        $httpCode    = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $curlError   = curl_error($curl);
-        curl_close($curl);
-
-        if ($curlError) {
-            log_message('error', "[Facturama] cURL error: {$curlError}");
-            return [
-                'success' => false,
-                'message' => "Error de conexión: {$curlError}",
-                'body'    => null,
-            ];
-        }
-
-        $decoded = json_decode($rawResponse, true);
-
-        // Facturama devuelve 200/201 en éxito
-        if ($httpCode >= 200 && $httpCode < 300) {
-            return [
-                'success' => true,
-                'body'    => $decoded,
-                'message' => 'OK',
-            ];
-        }
-
-        // Extraer mensaje de error de la respuesta de Facturama
-        $errorMsg = $decoded['ModelState'][0]
-            ?? $decoded['Message']
-            ?? $decoded['message']
-            ?? "HTTP {$httpCode}";
-
-        log_message('error', "[Facturama] HTTP {$httpCode} en {$method} {$endpoint}: " . json_encode($decoded));
-
-        return [
-            'success' => false,
-            'message' => $errorMsg,
-            'body'    => $decoded,
-        ];
     }
 }

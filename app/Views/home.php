@@ -369,6 +369,7 @@
                     <div class="bg-primary h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
                         <h1 class="text-white mb-4">Contáctanos para mas información</h1>
                         <form method="post" action="<?php echo base_url('contacto');?>">
+                            <?= csrf_field() ?>
                             <div class="row g-3">
                                 <div class="col-12 col-sm-6">
                                     <input type="text" class="form-control border-0" placeholder="Nombre" style="height: 55px;" name="nombre">
