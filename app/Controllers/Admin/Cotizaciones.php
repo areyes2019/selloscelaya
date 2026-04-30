@@ -196,8 +196,10 @@ class Cotizaciones extends BaseController
 			}
 
 			$sumaSubtotal = round($sumaSubtotal, 2);
-			$sumaIva = round($sumaSubtotal * 0.16, 2);
-			$sumaTotal = round($sumaSubtotal + $sumaIva, 2);
+			$descuentoExistente = round((float)($cotizacionData['descuento'] ?? 0), 2);
+			$sumaSubtotalNeto = max(0, $sumaSubtotal - $descuentoExistente);
+			$sumaIva = round($sumaSubtotalNeto * 0.16, 2);
+			$sumaTotal = round($sumaSubtotalNeto + $sumaIva, 2);
 
 	        // Actualizar la cotización con los totales
 	        $datosActualizar = [
@@ -420,7 +422,7 @@ class Cotizaciones extends BaseController
 
 	    // 4. Preparar datos para actualizar
 	    $data = [
-	        'subtotal' => $nuevoSubtotal,
+	        'subtotal' => $subtotalBase,
 	        'descuento' => $descuentoMonto,
 	        'iva' => $iva,
 	        'total' => $nuevoTotal
@@ -517,7 +519,7 @@ class Cotizaciones extends BaseController
 
 	    // 7. Actualizar todos los campos
 	    $data = [
-	        'subtotal' => $nuevoSubtotal,
+	        'subtotal' => $subtotalBase,
 	        'descuento' => $nuevo_descuento,
 	        'iva' => $iva,
 	        'total' => $nuevoTotal
