@@ -249,7 +249,12 @@ class FacturasController extends BaseController
     {
         $db = \Config\Database::connect();
         $row = $db->table('sellopro_facturas f')
-            ->select('f.*, cl.nombre as nombre_cliente, cl.tax_id as cliente_rfc, cl.correo as cliente_email, cl.codigo_postal as cliente_cp')
+            ->select('f.*, cl.nombre as nombre_cliente, cl.tax_id as cliente_rfc,
+                      cl.correo as cliente_email, cl.codigo_postal as cliente_cp,
+                      cl.calle as cliente_calle, cl.no_ext as cliente_no_ext,
+                      cl.colonia as cliente_colonia, cl.municipio as cliente_municipio,
+                      cl.ciudad as cliente_ciudad, cl.estado as cliente_estado_dir,
+                      cl.regimen_fiscal as cliente_regimen')
             ->join('sellopro_cotizaciones cot', 'cot.id_cotizacion = f.cotizacion_id')
             ->join('sellopro_clientes cl',      'cl.id_cliente     = cot.cliente')
             ->where('f.id', $id)
@@ -317,15 +322,29 @@ class FacturasController extends BaseController
             log_message('error', '[PDF Factura QR] ' . $e->getMessage());
         }
 
+        $usoCfdi = $resp['use'] ?? '';
+        $clienteDireccion = trim(implode(' ', array_filter([
+            $row['cliente_calle']    ?? '',
+            $row['cliente_no_ext']   ?? '',
+            $row['cliente_colonia']  ?? '',
+            $row['cliente_municipio'] ?? '',
+            $row['cliente_ciudad']   ?? '',
+            $row['cliente_estado_dir'] ?? '',
+            'MEXICO'
+        ])));
+
         $data = [
             'serie'          => $row['serie']         ?? '',
             'folio'          => $row['folio']          ?? '',
             'estado'         => $row['estado']         ?? '',
             'fecha_timbrado' => $fechaStamp,
-            'cliente_nombre' => $row['nombre_cliente'] ?? '',
-            'cliente_rfc'    => $rfcReceptor,
-            'cliente_email'  => $row['cliente_email']  ?? '',
-            'cliente_cp'     => $row['cliente_cp']     ?? '',
+            'cliente_nombre'    => $row['nombre_cliente'] ?? '',
+            'cliente_rfc'       => $rfcReceptor,
+            'cliente_email'     => $row['cliente_email']  ?? '',
+            'cliente_cp'        => $row['cliente_cp']     ?? '',
+            'cliente_direccion' => $clienteDireccion,
+            'cliente_regimen'   => $row['cliente_regimen'] ?? '',
+            'uso_cfdi'          => $usoCfdi,
             'items'          => $items,
             'subtotal'       => $subtotal,
             'iva'            => $iva,
@@ -407,7 +426,11 @@ class FacturasController extends BaseController
         $db  = \Config\Database::connect();
         $row = $db->table('sellopro_facturas f')
             ->select('f.*, cl.nombre as nombre_cliente, cl.tax_id as cliente_rfc,
-                      cl.correo as cliente_email, cl.codigo_postal as cliente_cp')
+                      cl.correo as cliente_email, cl.codigo_postal as cliente_cp,
+                      cl.calle as cliente_calle, cl.no_ext as cliente_no_ext,
+                      cl.colonia as cliente_colonia, cl.municipio as cliente_municipio,
+                      cl.ciudad as cliente_ciudad, cl.estado as cliente_estado_dir,
+                      cl.regimen_fiscal as cliente_regimen')
             ->join('sellopro_cotizaciones cot', 'cot.id_cotizacion = f.cotizacion_id')
             ->join('sellopro_clientes cl',      'cl.id_cliente     = cot.cliente')
             ->where('f.id', $id)
@@ -462,15 +485,29 @@ class FacturasController extends BaseController
             log_message('error', '[Factura Email QR] ' . $e->getMessage());
         }
 
+        $usoCfdi = $resp['use'] ?? '';
+        $clienteDireccion = trim(implode(' ', array_filter([
+            $row['cliente_calle']     ?? '',
+            $row['cliente_no_ext']    ?? '',
+            $row['cliente_colonia']   ?? '',
+            $row['cliente_municipio'] ?? '',
+            $row['cliente_ciudad']    ?? '',
+            $row['cliente_estado_dir'] ?? '',
+            'MEXICO'
+        ])));
+
         $viewData = [
             'serie'          => $row['serie']         ?? '',
             'folio'          => $row['folio']          ?? '',
             'estado'         => $row['estado']         ?? '',
             'fecha_timbrado' => $fechaStamp,
-            'cliente_nombre' => $row['nombre_cliente'] ?? '',
-            'cliente_rfc'    => $rfcReceptor,
-            'cliente_email'  => $correo,
-            'cliente_cp'     => $row['cliente_cp']     ?? '',
+            'cliente_nombre'    => $row['nombre_cliente'] ?? '',
+            'cliente_rfc'       => $rfcReceptor,
+            'cliente_email'     => $correo,
+            'cliente_cp'        => $row['cliente_cp']     ?? '',
+            'cliente_direccion' => $clienteDireccion,
+            'cliente_regimen'   => $row['cliente_regimen'] ?? '',
+            'uso_cfdi'          => $usoCfdi,
             'items'          => $items,
             'subtotal'       => $subtotal,
             'iva'            => $iva,

@@ -167,6 +167,69 @@ if (file_exists($logo)) {
 </tr>
 </table>
 
+<!-- DATOS FISCALES: EMISOR / RECEPTOR -->
+<?php
+$regimenDesc = [
+    601 => 'General de Ley Personas Morales',
+    603 => 'Personas Morales con Fines no Lucrativos',
+    605 => 'Sueldos y Salarios e Ingresos Asimilados a Salarios',
+    606 => 'Arrendamiento',
+    612 => 'Personas Físicas con Actividades Empresariales y Profesionales',
+    616 => 'Sin obligaciones fiscales',
+    621 => 'Incorporación Fiscal',
+    625 => 'Actividades Empresariales con ingresos a través de Plataformas Tecnológicas',
+    626 => 'Régimen Simplificado de Confianza',
+];
+$usoDesc = [
+    'G01' => 'Adquisición de mercancias',
+    'G02' => 'Devoluciones, descuentos o bonificaciones',
+    'G03' => 'Gastos en general',
+    'I01' => 'Construcciones',
+    'I02' => 'Mobiliario y equipo de oficina por inversiones',
+    'P01' => 'Por definir',
+    'S01' => 'Sin efectos fiscales',
+    'CP01'=> 'Pagos',
+    'CN01'=> 'Nómina',
+];
+$estadoLabel = strtolower($estado ?? '') === 'valid' ? 'Vigente' : ucfirst($estado ?? '');
+$estadoColor = strtolower($estado ?? '') === 'valid' ? '#27ae60' : '#c0392b';
+?>
+<table style="width:100%;border-collapse:collapse;margin-bottom:14px;font-size:9pt">
+<tr>
+  <!-- EMISOR -->
+  <td style="width:48%;vertical-align:top;padding-right:10px">
+    <p style="font-weight:bold;color:#2c3e50;border-bottom:1px solid #2c3e50;padding-bottom:3px;margin-bottom:5px">Emisor:</p>
+    <p><strong>SELLO PRONTO SA DE CV</strong></p>
+    <p>RFC: <strong>RERA7701272R1</strong></p>
+    <p>Régimen: 601 - General de Ley Personas Morales</p>
+    <p style="margin-top:6px">Fecha: <?= esc($fecha_timbrado) ?></p>
+    <p>Estado: <span style="color:<?= $estadoColor ?>;font-weight:bold"><?= esc($estadoLabel) ?></span></p>
+  </td>
+
+  <td style="width:4%"></td>
+
+  <!-- RECEPTOR -->
+  <td style="width:48%;vertical-align:top;padding-left:10px;border-left:1px solid #ddd">
+    <p style="font-weight:bold;color:#2c3e50;border-bottom:1px solid #2c3e50;padding-bottom:3px;margin-bottom:5px">Receptor:</p>
+    <p><strong><?= esc($cliente_nombre) ?></strong></p>
+    <p><?= esc($cliente_rfc) ?></p>
+    <?php if (!empty($cliente_direccion)): ?>
+    <p><?= esc($cliente_direccion) ?></p>
+    <?php endif; ?>
+    <p>Código postal: <?= esc($cliente_cp) ?></p>
+    <?php if (!empty($uso_cfdi)): ?>
+    <p>Uso del CFDI: <?= esc($uso_cfdi) ?><?= isset($usoDesc[$uso_cfdi]) ? ' - '.esc($usoDesc[$uso_cfdi]) : '' ?></p>
+    <?php endif; ?>
+    <?php if (!empty($cliente_regimen)): ?>
+    <p>Régimen Fiscal: <?= esc((string)$cliente_regimen) ?><?= isset($regimenDesc[(int)$cliente_regimen]) ? ' - '.esc($regimenDesc[(int)$cliente_regimen]) : '' ?></p>
+    <?php endif; ?>
+    <?php if (!empty($cliente_email)): ?>
+    <p>Correo: <?= esc($cliente_email) ?></p>
+    <?php endif; ?>
+  </td>
+</tr>
+</table>
+
 <!-- CONCEPTOS -->
 <table class="items">
 <thead>
