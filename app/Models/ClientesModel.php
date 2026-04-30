@@ -9,6 +9,7 @@ class ClientesModel extends Model
     protected $primaryKey = 'id_cliente';
     protected $allowedFields = [
         'nombre',
+        'nombre_normalizado',
         'tipo',
         'correo',
         'direccion',
@@ -24,5 +25,9 @@ class ClientesModel extends Model
         'no_int',
         'colonia',
         'municipio',
+        'uso_cfdi',
+        'num_reg_id_trib',
+        'tax_residence',
+        'pais',
     ];
 }

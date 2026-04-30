@@ -41,6 +41,8 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->post('actualizar_cliente', 'Admin\Clientes::actualizar');
 	$routes->post('eliminar_cliente/(:num)', 'Admin\Clientes::eliminar/$1');
 	$routes->post('clientes/parsear_csf',   'Admin\Clientes::parsearCsf');
+	$routes->get('clientes/importar_csv',   'Admin\ImportClientesController::index');
+	$routes->post('clientes/importar_csv',  'Admin\ImportClientesController::importar');
 
 	/*Proveedores*/
 	$routes->get('proveedores', 'Admin\Proveedores::index');
