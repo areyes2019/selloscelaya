@@ -264,8 +264,8 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 		$routes->get('/',                        'Admin\FacturasController::index');
 		$routes->post('timbrar',                 'Admin\FacturasController::timbrar');
 		$routes->get('pdf/(:num)',               'Admin\FacturasController::pdfLocal/$1');
+		$routes->get('enviar/(:num)',            'Admin\FacturasController::enviarFactura/$1');
 		$routes->get('descargar/(:num)/(:alpha)','Admin\FacturasController::descargar/$1/$2');
-		$routes->post('enviar_correo',           'Admin\FacturasController::enviarCorreo');
 		$routes->post('cancelar',                'Admin\FacturasController::cancelar');
 	});
 

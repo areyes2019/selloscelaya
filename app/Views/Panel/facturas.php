@@ -80,6 +80,11 @@
                            class="btn btn-sm btn-secondary" title="Descargar XML" target="_blank">
                             <i class="bi bi-file-earmark-code"></i>
                         </a>
+                        <a href="<?= base_url('facturas/enviar/' . $f['id']) ?>"
+                           class="btn btn-sm btn-primary" title="Enviar por correo"
+                           onclick="return confirm('¿Enviar la factura por correo al cliente?')">
+                            <i class="bi bi-envelope"></i>
+                        </a>
                         <?php if (in_array(strtolower($f['estado'] ?? ''), ['valid', 'timbrada', 'vigente'])): ?>
                         <button class="btn btn-sm btn-warning btn-cancelar"
                                 data-id="<?= $f['id'] ?>"

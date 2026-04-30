@@ -399,41 +399,162 @@ class FacturasController extends BaseController
     }
 
     // ==================================================================
-    // ENVIAR POR CORREO
+    // ENVIAR POR CORREO  (GET /facturas/enviar/{id})
     // ==================================================================
 
-    /**
-     * POST /facturas/enviar_correo
-     * Body JSON: { "id_factura": 5, "correo": "cliente@email.com" }
-     */
-    public function enviarCorreo()
+    public function enviarFactura(int $id)
     {
-        $input     = $this->request->getJSON(true);
-        $idFactura = (int) ($input['id_factura'] ?? 0);
-        $correo    = trim($input['correo'] ?? '');
+        // ── 1. Cargar factura + datos del cliente ──────────────────────
+        $db  = \Config\Database::connect();
+        $row = $db->table('sellopro_facturas f')
+            ->select('f.*, cl.nombre as nombre_cliente, cl.tax_id as cliente_rfc,
+                      cl.correo as cliente_email, cl.codigo_postal as cliente_cp')
+            ->join('sellopro_cotizaciones cot', 'cot.id_cotizacion = f.cotizacion_id')
+            ->join('sellopro_clientes cl',      'cl.id_cliente     = cot.cliente')
+            ->where('f.id', $id)
+            ->get()->getRowArray();
 
-        if (!$idFactura || !$correo) {
-            return $this->respond(['status' => 'error', 'message' => 'ID de factura y correo son requeridos'], 400);
+        if (!$row) {
+            return redirect()->to(base_url('facturas'))
+                ->with('error', 'Factura no encontrada.');
         }
 
-        $factura = $this->facturaModel->find($idFactura);
-        if (!$factura) {
-            return $this->respond(['status' => 'error', 'message' => 'Factura no encontrada'], 404);
+        $correo = trim($row['cliente_email'] ?? '');
+        if (!$correo) {
+            return redirect()->to(base_url('facturas'))
+                ->with('error', 'El cliente no tiene correo registrado.');
         }
 
-        $apiResponse = $this->facturapi->enviarEmail($factura['factura_uuid'], $correo);
+        // ── 2. Parsear respuesta de FacturAPI ──────────────────────────
+        $resp  = json_decode($row['respuesta_completa'] ?? '{}', true) ?? [];
+        $stamp = $resp['stamp'] ?? [];
+        $items = $resp['items'] ?? [];
 
-        if (!$apiResponse['success']) {
-            return $this->respond([
-                'status'  => 'error',
-                'message' => 'No se pudo enviar el correo: ' . ($apiResponse['message'] ?? ''),
-            ], 500);
+        $total    = (float)($resp['total']    ?? $row['monto'] ?? 0);
+        $subtotal = 0;
+        foreach ($items as $it) {
+            $subtotal += (float)($it['product']['price'] ?? $it['unit_price'] ?? 0)
+                       * (float)($it['quantity'] ?? 1);
+        }
+        $iva = $total - $subtotal;
+
+        $uuid        = $resp['uuid']               ?? $row['factura_uuid'] ?? '';
+        $rfcEmisor   = 'RERA7701272R1';
+        $rfcReceptor = $row['cliente_rfc']         ?? '';
+        $satCert     = $stamp['sat_cert_number']   ?? '';
+        $rfcProvCert = $stamp['rfc_provider_cert'] ?? '';
+        $fechaStamp  = $stamp['date']              ?? $row['fecha_timbrado'] ?? '';
+        $selloSat    = $stamp['sat_signature']     ?? '';
+        $selloCfdi   = $stamp['signature']         ?? '';
+
+        $cadenaOriginal = $stamp['complement_string']
+            ?? "||1.1|{$uuid}|{$fechaStamp}|{$rfcProvCert}|{$selloCfdi}|{$satCert}||";
+
+        $urlVerif = $resp['verification_url'] ?? '';
+        if (!$urlVerif) {
+            $fe       = substr($selloCfdi, -8);
+            $totalFmt = number_format($total, 6, '.', '');
+            $urlVerif = 'https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx'
+                      . "?id={$uuid}&re={$rfcEmisor}&rr={$rfcReceptor}&tt={$totalFmt}&fe={$fe}";
         }
 
-        return $this->respond([
-            'status'  => 'success',
-            'message' => "Factura enviada correctamente a {$correo}",
-        ]);
+        // ── 3. Generar QR ──────────────────────────────────────────────
+        $qrBase64 = '';
+        try {
+            $qr     = QrCode::create($urlVerif)->setSize(200)->setMargin(4);
+            $writer = new PngWriter();
+            $qrBase64 = 'data:image/png;base64,' . base64_encode($writer->write($qr)->getString());
+        } catch (\Throwable $e) {
+            log_message('error', '[Factura Email QR] ' . $e->getMessage());
+        }
+
+        // ── 4. Generar PDF en memoria ──────────────────────────────────
+        $viewData = [
+            'serie'          => $row['serie']         ?? '',
+            'folio'          => $row['folio']          ?? '',
+            'estado'         => $row['estado']         ?? '',
+            'fecha_timbrado' => $fechaStamp,
+            'cliente_nombre' => $row['nombre_cliente'] ?? '',
+            'cliente_rfc'    => $rfcReceptor,
+            'cliente_email'  => $correo,
+            'cliente_cp'     => $row['cliente_cp']     ?? '',
+            'items'          => $items,
+            'subtotal'       => $subtotal,
+            'iva'            => $iva,
+            'total'          => $total,
+            'uuid'           => $uuid,
+            'sat_cert'       => $satCert,
+            'rfc_prov_cert'  => $rfcProvCert,
+            'sello_sat'      => $selloSat,
+            'sello_cfdi'     => $selloCfdi,
+            'cadena_original'=> $cadenaOriginal,
+            'qr_base64'      => $qrBase64,
+            'url_verif'      => $urlVerif,
+        ];
+
+        $dompdf  = new Dompdf();
+        $options = $dompdf->getOptions();
+        $options->set('isRemoteEnabled',      true);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('defaultFont',          'DejaVu Sans');
+        $options->set('charset',              'UTF-8');
+        $dompdf->setOptions($options);
+        $dompdf->loadHtml(view('Panel/PDF_factura', $viewData), 'UTF-8');
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $pdfContent = $dompdf->output();
+
+        // ── 5. Obtener XML desde FacturAPI ─────────────────────────────
+        $xmlContent  = '';
+        $xmlResponse = $this->facturapi->descargar($row['factura_uuid'], 'xml');
+        if ($xmlResponse['success']) {
+            $xmlContent = $xmlResponse['body'];
+        } else {
+            log_message('warning', '[Factura Email] No se pudo obtener el XML: ' . ($xmlResponse['message'] ?? ''));
+        }
+
+        // ── 6. Logo para el email ──────────────────────────────────────
+        $logoPath = ROOTPATH . 'public/img/logo2.png';
+        $logoData = file_exists($logoPath)
+            ? base64_encode(file_get_contents($logoPath))
+            : '';
+        $logoMime = file_exists($logoPath) ? mime_content_type($logoPath) : 'image/png';
+
+        // ── 7. Construir y enviar el correo ────────────────────────────
+        $serie = $row['serie'] ?? 'F';
+        $folio = $row['folio'] ?? $id;
+
+        $emailData = [
+            'cliente_nombre' => $row['nombre_cliente'] ?? '',
+            'serie'          => $serie,
+            'folio'          => $folio,
+            'total'          => $total,
+            'uuid'           => $uuid,
+            'logo_data'      => $logoData,
+            'logo_mime'      => $logoMime,
+        ];
+
+        $email = \Config\Services::email();
+        $email->setFrom('ventas@sellopronto.com.mx', 'Sello Pronto');
+        $email->setTo($correo);
+        $email->setSubject("Factura CFDI {$serie}-{$folio}");
+        $email->setMessage(view('Emails/factura', $emailData));
+        $email->setMailType('html');
+
+        $email->attach($pdfContent, 'attachment', "factura-{$serie}-{$folio}.pdf", 'application/pdf');
+
+        if ($xmlContent) {
+            $email->attach($xmlContent, 'attachment', "factura-{$uuid}.xml", 'text/xml');
+        }
+
+        if ($email->send()) {
+            return redirect()->to(base_url('facturas'))
+                ->with('success', "Factura {$serie}-{$folio} enviada correctamente a {$correo}");
+        }
+
+        log_message('error', '[Factura Email] Fallo al enviar: ' . $email->printDebugger(['headers']));
+        return redirect()->to(base_url('facturas'))
+            ->with('error', 'No se pudo enviar el correo. Revisa la configuración de email.');
     }
 
     // ==================================================================
