@@ -76,6 +76,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->get('editar_cotizacion/(:num)', 'Admin\Cotizaciones::editar/$1');
 	$routes->get('actualizar_cotizacion/(:num)', 'Admin\Cotizaciones::actualizar/$1');
 	$routes->post('eliminar_cotizacion/(:num)', 'Admin\Cotizaciones::eliminar/$1');
+	$routes->get('eliminar_cotizacion/(:num)', 'Admin\Cotizaciones::eliminar/$1');
 	$routes->post('agregar_articulo', 'Admin\Cotizaciones::agregar');
 	$routes->post('agregar_articulo_ind', 'Admin\Cotizaciones::agregar_ind');
 	$routes->get('mostrar_detalles/(:num)', 'Admin\Cotizaciones::mostrar_detalles/$1');
