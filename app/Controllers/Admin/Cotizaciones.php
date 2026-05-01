@@ -43,9 +43,10 @@ class Cotizaciones extends BaseController
 	    // Insertar nuevo registro
 	    $nuevo_registro = new CotizacionesModel();
 	    $data = [
-	        'slug' => $slug,
-	        'cliente' => $id,
-	        'tipo_venta' => ($tipoVenta == '1') ? 1 : 2 // Ajusta según tu ENUM
+	        'slug'             => $slug,
+	        'cliente'          => $id,
+	        'tipo_venta'       => ($tipoVenta == '1') ? 1 : 2,
+	        'estado_comercial' => 'borrador',
 	    ];
 	    
 	    $nuevo_registro->insert($data);
@@ -743,6 +744,11 @@ class Cotizaciones extends BaseController
 		}
 		$cot = $resultado_cotizacion[0];
 
+		// Si está en borrador, marcar como enviada al enviar el correo
+		if ($cot['estado_comercial'] === 'borrador') {
+			$cotizacionModel->update($id, ['estado_comercial' => 'enviada']);
+		}
+
 		$clienteModel = new ClientesModel();
 		$clienteModel->where('id_cliente', $cot['cliente']);
 		$resultado = $clienteModel->findAll();
@@ -884,9 +890,10 @@ class Cotizaciones extends BaseController
 	        $db = \Config\Database::connect();
 	        $db->transStart();
 
-	        // 1. Actualizar el anticipo en la cotización
+	        // 1. Actualizar el anticipo en la cotización y estado comercial
 	        $updateCotizacion = $cotizacionModel->update($id_cotizacion, [
-	            'anticipo' => $monto
+	            'anticipo' => $monto,
+	            'estado_comercial' => 'anticipo',
 	        ]);
 
 	        // 2. Registrar el movimiento en GastosModel (como entrada)
@@ -940,14 +947,14 @@ class Cotizaciones extends BaseController
 	{
 	    $request = \Config\Services::request();
 	    $id = $request->getVar('id');
-	    $id_banco = $request->getVar('banco'); // Nuevo: ID del banco seleccionado
+	    $id_banco = $request->getVar('banco');
 
 	    $cotizacionesModel = new CotizacionesModel();
 	    $detalleModel = new DetalleModel();
 	    $articulosModel = new ArticulosModel();
 	    $ventasModel = new VentasModel();
-	    $gastosModel = new GastosModel(); // Nuevo: Modelo para registrar movimientos
-	    $cuentasModel = new CuentasModel(); // Nuevo: Modelo para cuentas bancarias
+	    $gastosModel = new GastosModel();
+	    $cuentasModel = new CuentasModel();
 
 	    $cotizacion = $cotizacionesModel->find($id);
 
@@ -956,6 +963,14 @@ class Cotizaciones extends BaseController
 	            'status' => 'error',
 	            'message' => 'Cotización no encontrada.'
 	        ])->setStatusCode(404);
+	    }
+
+	    // Validar que no esté ya pagada (source of truth = columna pago)
+	    if ((int)$cotizacion['pago'] === 1) {
+	        return $this->response->setJSON([
+	            'status' => 'error',
+	            'message' => "Esta cotización ya ha sido pagada previamente."
+	        ]);
 	    }
 
 	    // Validar que se haya seleccionado un banco
@@ -976,15 +991,6 @@ class Cotizaciones extends BaseController
 	    }
 
 	    $referencia = "QT-" . $id;
-
-	    // Validar si ya existe una venta con esta referencia
-	    $ventaExistente = $ventasModel->where('ref', $referencia)->first();
-	    if ($ventaExistente) {
-	        return $this->response->setJSON([
-	            'status' => 'error',
-	            'message' => "Esta cotización ya ha sido pagada previamente. Referencia: $referencia"
-	        ]);
-	    }
 
 	    // Obtener valores de la cotización
 	    $total = floatval($cotizacion['total']);
@@ -1017,8 +1023,11 @@ class Cotizaciones extends BaseController
 	            'beneficio' => $beneficio
 	        ]);
 
-	        // 2. Marcar como pagado (1 = pagado)
-	        $cotizacionesModel->update($id, ['pago' => 1]);
+	        // 2. Marcar como pagado (1 = pagado) y actualizar estado comercial
+	        $cotizacionesModel->update($id, [
+	            'pago' => 1,
+	            'estado_comercial' => 'pagado',
+	        ]);
 
 	        // 3. Registrar el movimiento en GastosModel (como entrada)
 	        $gastosModel->insert([
@@ -1128,8 +1137,8 @@ class Cotizaciones extends BaseController
 			        ]);
 			    }
 			}
-			$data =['estatus'=> 1];
-			$update = $cotizacionesModel->update($idCotizacion,$data);
+			$data = ['estado_comercial' => 'enviada'];
+			$update = $cotizacionesModel->update($idCotizacion, $data);
 			if (!$update){
 			    return $this->response->setJSON([
 			        'status'=>'error',
@@ -1158,18 +1167,10 @@ class Cotizaciones extends BaseController
 		$builder->select('c.*, cl.nombre, cl.correo, cl.telefono, f.id AS factura_id');
 		$builder->orderBy('c.id_cotizacion', 'DESC');
 
-		$estatus          = $this->request->getGet('estatus');
-		$estadoFinanciero = $this->request->getGet('estado_financiero');
-		$estadoFiscal     = $this->request->getGet('estado_fiscal');
+		$estadoComercial = $this->request->getGet('estado_comercial');
 
-		if ($estatus !== null && $estatus !== '') {
-			$builder->where('c.estatus', (int)$estatus);
-		}
-		if (!empty($estadoFinanciero)) {
-			$builder->where('c.estado_financiero', $estadoFinanciero);
-		}
-		if (!empty($estadoFiscal)) {
-			$builder->where('c.estado_fiscal', $estadoFiscal);
+		if (!empty($estadoComercial)) {
+			$builder->where('c.estado_comercial', $estadoComercial);
 		}
 
 		return $this->response->setJSON(['data' => $builder->get()->getResultArray()]);
@@ -1187,5 +1188,71 @@ class Cotizaciones extends BaseController
 
 		return json_encode($resultado);
 
+	}
+
+	public function clonar()
+	{
+		$request       = \Config\Services::request();
+		$id_cotizacion = (int)$request->getVar('id_cotizacion');
+		$id_cliente    = (int)$request->getVar('id_cliente');
+
+		if (!$id_cotizacion || !$id_cliente) {
+			return $this->response->setJSON(['status' => 'error', 'message' => 'Datos incompletos']);
+		}
+
+		$cotizacionModel = new CotizacionesModel();
+		$detalleModel    = new DetalleModel();
+
+		$original = $cotizacionModel->find($id_cotizacion);
+		if (!$original) {
+			return $this->response->setJSON(['status' => 'error', 'message' => 'Cotización no encontrada']);
+		}
+
+		$db = \Config\Database::connect();
+		$db->transStart();
+
+		try {
+			$slug = substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 12);
+
+			$cotizacionModel->insert([
+				'slug'              => $slug,
+				'cliente'           => $id_cliente,
+				'tipo_venta'        => $original['tipo_venta'],
+				'subtotal'          => $original['subtotal'],
+				'iva'               => $original['iva'],
+				'descuento'         => $original['descuento'],
+				'total'             => $original['total'],
+				'anticipo'          => 0,
+				'pago'              => 0,
+				'estado_comercial'  => 'borrador',
+			]);
+
+			$nuevoId = $cotizacionModel->getInsertID();
+
+			$detalles = $detalleModel->where('id_cotizacion', $id_cotizacion)->findAll();
+			foreach ($detalles as $detalle) {
+				$detalleModel->insert([
+					'cantidad'      => $detalle['cantidad'],
+					'id_articulo'   => $detalle['id_articulo'],
+					'p_unitario'    => $detalle['p_unitario'],
+					'total'         => $detalle['total'],
+					'id_cotizacion' => $nuevoId,
+					'inversion'     => $detalle['inversion'],
+					'descripcion'   => $detalle['descripcion'],
+				]);
+			}
+
+			$db->transComplete();
+
+			return $this->response->setJSON([
+				'status' => 'success',
+				'slug'   => $slug,
+				'id'     => $nuevoId,
+			]);
+
+		} catch (\Exception $e) {
+			$db->transRollback();
+			return $this->response->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
+		}
 	}
 }

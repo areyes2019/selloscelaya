@@ -1,33 +1,13 @@
 const { createApp, ref, computed, onMounted } = Vue
 
-// ── Mapas de badges ──────────────────────────────────────────────
-const BADGE_ESTATUS = {
-  0: { label: 'Pendiente',  cls: 'bg-secondary' },
-  1: { label: 'Enviada',    cls: 'bg-primary'   },
-  2: { label: 'Pagada',     cls: 'bg-success'   },
-  3: { label: 'Entregada',  cls: 'bg-warning text-dark' },
-}
-
-const BADGE_FINANCIERO = {
-  pendiente: { label: 'Pendiente', cls: 'bg-secondary'      },
+// ── Mapa de badges ───────────────────────────────────────────────
+const BADGE_COMERCIAL = {
+  borrador:  { label: 'Borrador',  cls: 'bg-secondary' },
+  enviada:   { label: 'Enviada',   cls: 'bg-primary'   },
   anticipo:  { label: 'Anticipo',  cls: 'bg-info text-dark' },
-  parcial:   { label: 'Parcial',   cls: 'bg-warning text-dark' },
-  pagado:    { label: 'Pagado',    cls: 'bg-success'        },
+  pagado:    { label: 'Pagado',    cls: 'bg-success'   },
+  facturada: { label: 'Facturada', cls: 'bg-warning text-dark' },
 }
-
-const BADGE_FISCAL = {
-  sin_facturar: { label: 'Sin facturar', cls: 'bg-secondary' },
-  facturada:    { label: 'Facturada',    cls: 'bg-success'   },
-  cancelada:    { label: 'Cancelada',    cls: 'bg-danger'    },
-}
-
-// ── Definición de tabs ───────────────────────────────────────────
-const TABS = [
-  { id: 'cotizaciones', label: 'Cotizaciones', icon: 'bi-file-earmark-text' },
-  { id: 'pagos',        label: 'Pagos',        icon: 'bi-cash-coin'         },
-  { id: 'facturacion',  label: 'Facturación',  icon: 'bi-receipt'           },
-  { id: 'acciones',     label: 'Acciones',     icon: 'bi-lightning-charge'  },
-]
 
 createApp({
   setup() {
@@ -36,12 +16,14 @@ createApp({
     const cargando     = ref(true)
     const error        = ref(null)
 
-    const tabActiva          = ref('cotizaciones')
-    const busqueda           = ref('')
-    const filtroEstatus      = ref('todos')
-    const filtroFinanciero   = ref('todos')
-    const filtroFiscal       = ref('todos')
-    const filtroFecha        = ref('mes')
+    const busqueda     = ref('')
+    const filtroEstado = ref('todos')
+    const filtroFecha  = ref('mes')
+
+    // ── Clonar ─────────────────────────────────────────────────
+    const cotizacionAClonar = ref(null)
+    const clienteClonId     = ref('')
+    const clonando          = ref(false)
 
     // ── Carga de datos ──────────────────────────────────────────
     async function cargar() {
@@ -69,6 +51,34 @@ createApp({
       }
     }
 
+    // ── Clonar ──────────────────────────────────────────────────
+    function abrirModalClonar(c) {
+      cotizacionAClonar.value = c
+      clienteClonId.value     = ''
+      new bootstrap.Modal(document.getElementById('modalClonar')).show()
+    }
+
+    async function confirmarClonar() {
+      if (!clienteClonId.value) return
+      clonando.value = true
+      try {
+        const res = await axios.post('/clonar_cotizacion', {
+          id_cotizacion: cotizacionAClonar.value.id_cotizacion,
+          id_cliente:    clienteClonId.value,
+        })
+        if (res.data.status === 'success') {
+          bootstrap.Modal.getInstance(document.getElementById('modalClonar'))?.hide()
+          window.location.href = `/pagina_cotizador/${res.data.slug}`
+        } else {
+          alert(res.data.message || 'Error al clonar la cotización')
+        }
+      } catch (e) {
+        alert('Error al clonar la cotización')
+      } finally {
+        clonando.value = false
+      }
+    }
+
     // ── Rango de fechas según filtroFecha ───────────────────────
     const rangoFecha = computed(() => {
       const hoy = new Date()
@@ -81,11 +91,10 @@ createApp({
       }
       if (filtroFecha.value === 'semana') {
         const inicio = new Date(hoy)
-        const dia = hoy.getDay() // 0=Dom … 6=Sáb
+        const dia = hoy.getDay()
         inicio.setDate(hoy.getDate() - (dia === 0 ? 6 : dia - 1))
         return { inicio, fin }
       }
-      // mes (default)
       return { inicio: new Date(hoy.getFullYear(), hoy.getMonth(), 1), fin }
     })
 
@@ -109,56 +118,16 @@ createApp({
       })
     })
 
-    // ── Listas por tab ──────────────────────────────────────────
+    // ── Lista del tab Cotizaciones ──────────────────────────────
     const listaComercial = computed(() => {
       const base = baseFiltrada.value
-      if (filtroEstatus.value === 'todos') return base
-      return base.filter(c => String(c.estatus ?? 0) === filtroEstatus.value)
+      if (filtroEstado.value === 'todos') return base
+      return base.filter(c => (c.estado_comercial || 'borrador') === filtroEstado.value)
     })
-
-    const listaFinanciero = computed(() => {
-      const base = baseFiltrada.value
-      if (filtroFinanciero.value === 'todos') return base
-      return base.filter(c => (c.estado_financiero || 'pendiente') === filtroFinanciero.value)
-    })
-
-    const listaFiscal = computed(() => {
-      const base = baseFiltrada.value
-      if (filtroFiscal.value === 'todos') return base
-      return base.filter(c => (c.estado_fiscal || 'sin_facturar') === filtroFiscal.value)
-    })
-
-    // ── Listas de Acciones (combinaciones críticas) ─────────────
-    const aceptadasSinPago = computed(() =>
-      baseFiltrada.value.filter(c =>
-        Number(c.estatus) >= 1 &&
-        (c.estado_financiero || 'pendiente') === 'pendiente'
-      )
-    )
-
-    const pagadasSinFacturar = computed(() =>
-      baseFiltrada.value.filter(c =>
-        (c.estado_financiero || 'pendiente') === 'pagado' &&
-        (c.estado_fiscal     || 'sin_facturar') === 'sin_facturar'
-      )
-    )
-
-    const facturadaSinPago = computed(() =>
-      baseFiltrada.value.filter(c =>
-        (c.estado_fiscal     || 'sin_facturar') === 'facturada' &&
-        (c.estado_financiero || 'pendiente')    !== 'pagado'
-      )
-    )
 
     // ── Helpers de presentación ─────────────────────────────────
-    function badgeEstatus(val) {
-      return BADGE_ESTATUS[val ?? 0] ?? { label: val, cls: 'bg-secondary' }
-    }
-    function badgeFinanciero(val) {
-      return BADGE_FINANCIERO[val || 'pendiente'] ?? { label: val, cls: 'bg-secondary' }
-    }
-    function badgeFiscal(val) {
-      return BADGE_FISCAL[val || 'sin_facturar'] ?? { label: val, cls: 'bg-secondary' }
+    function badgeComercial(val) {
+      return BADGE_COMERCIAL[val || 'borrador'] ?? { label: val, cls: 'bg-secondary' }
     }
     function moneda(val) {
       return parseFloat(val || 0).toLocaleString('es-MX', {
@@ -176,18 +145,16 @@ createApp({
     return {
       // estado
       cotizaciones, cargando, error,
-      // navegación
-      TABS, tabActiva,
       // filtros
-      busqueda, filtroEstatus, filtroFinanciero, filtroFiscal,
-      filtroFecha, etiquetaFecha,
-      // listas computadas
-      listaComercial, listaFinanciero, listaFiscal,
-      aceptadasSinPago, pagadasSinFacturar, facturadaSinPago,
+      busqueda, filtroEstado, filtroFecha, etiquetaFecha,
+      // listas
+      listaComercial,
       // helpers
-      badgeEstatus, badgeFinanciero, badgeFiscal, moneda, fecha,
+      badgeComercial, moneda, fecha,
       // acciones
       eliminar, cargar,
+      // clonar
+      cotizacionAClonar, clienteClonId, clonando, abrirModalClonar, confirmarClonar,
     }
   },
 }).mount('#app-cotizaciones')

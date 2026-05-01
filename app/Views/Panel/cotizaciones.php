@@ -71,35 +71,20 @@
             </span>
         </div>
 
-        <!-- Tabs nav -->
-        <ul class="nav nav-tabs mb-0">
-            <li v-for="tab in TABS" :key="tab.id" class="nav-item">
-                <button class="nav-link"
-                        :class="{ active: tabActiva === tab.id }"
-                        @click="tabActiva = tab.id">
-                    <i :class="'bi ' + tab.icon + ' me-1'"></i>{{ tab.label }}
-                </button>
-            </li>
-        </ul>
+        <div class="border rounded p-3 bg-white">
 
-        <div class="tab-content border border-top-0 rounded-bottom p-3 bg-white">
-
-            <!-- ════════════════════════════════════
-                 TAB: Cotizaciones (estado comercial)
-                 ════════════════════════════════════ -->
-            <div v-show="tabActiva === 'cotizaciones'">
-                <!-- Sub-filtros estatus -->
+            <div>
                 <div class="d-flex flex-wrap gap-2 mb-3">
                     <button v-for="f in [
-                        {val:'todos', label:'Todos'},
-                        {val:'0',     label:'Pendiente'},
-                        {val:'1',     label:'Enviada'},
-                        {val:'2',     label:'Pagada'},
-                        {val:'3',     label:'Entregada'},
+                        {val:'todos',     label:'Todos'},
+                        {val:'borrador',  label:'Borrador'},
+                        {val:'anticipo',  label:'Anticipo'},
+                        {val:'pagado',    label:'Pagado'},
+                        {val:'facturada', label:'Facturada'},
                     ]" :key="f.val"
                         class="btn btn-sm"
-                        :class="filtroEstatus===f.val ? 'btn-dark' : 'btn-outline-secondary'"
-                        @click="filtroEstatus=f.val">
+                        :class="filtroEstado===f.val ? 'btn-dark' : 'btn-outline-secondary'"
+                        @click="filtroEstado=f.val">
                         {{ f.label }}
                         <span v-if="f.val==='todos'" class="badge bg-white text-dark ms-1">
                             {{ listaComercial.length }}
@@ -115,7 +100,7 @@
                                 <th>Cliente</th>
                                 <th>Email</th>
                                 <th>Total</th>
-                                <th>Estatus</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -128,14 +113,15 @@
                                 <td data-label="Cliente">{{ c.nombre }}</td>
                                 <td data-label="Email">{{ c.correo || '—' }}</td>
                                 <td data-label="Total">{{ moneda(c.total) }}</td>
-                                <td data-label="Estatus">
-                                    <span class="badge" :class="badgeEstatus(c.estatus).cls">
-                                        {{ badgeEstatus(c.estatus).label }}
+                                <td data-label="Estado">
+                                    <span class="badge" :class="badgeComercial(c.estado_comercial).cls">
+                                        {{ badgeComercial(c.estado_comercial).label }}
                                     </span>
                                 </td>
                                 <td data-label="Acciones">
                                     <a :href="'/pagina_cotizador/'+c.slug" class="btn btn-view btn-sm"><i class="bi bi-eye"></i></a>
                                     <a :href="'/descargar_cotizacion/'+c.id_cotizacion" class="btn btn-sm btn-outline-secondary"><i class="bi bi-download"></i></a>
+                                    <button class="btn btn-sm btn-outline-primary" @click="abrirModalClonar(c)" title="Clonar cotización"><i class="bi bi-copy"></i></button>
                                     <button class="btn btn-delete btn-sm" @click="eliminar(c.id_cotizacion)"><i class="bi bi-trash3"></i></button>
                                 </td>
                             </tr>
@@ -144,219 +130,42 @@
                 </div>
             </div>
 
-            <!-- ════════════════════════════════════
-                 TAB: Pagos (estado financiero)
-                 ════════════════════════════════════ -->
-            <div v-show="tabActiva === 'pagos'">
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                    <button v-for="f in [
-                        {val:'todos',     label:'Todos'},
-                        {val:'pendiente', label:'Pendiente'},
-                        {val:'anticipo',  label:'Anticipo'},
-                        {val:'parcial',   label:'Parcial'},
-                        {val:'pagado',    label:'Pagado'},
-                    ]" :key="f.val"
-                        class="btn btn-sm"
-                        :class="filtroFinanciero===f.val ? 'btn-dark' : 'btn-outline-secondary'"
-                        @click="filtroFinanciero=f.val">
-                        {{ f.label }}
-                    </button>
-                </div>
-
-                <div class="responsive-table-container">
-                    <table class="advanced-responsive-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Cliente</th>
-                                <th>Total</th>
-                                <th>Anticipo</th>
-                                <th>Saldo</th>
-                                <th>Estado Financiero</th>
-                                <th>Ver</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-if="listaFinanciero.length === 0">
-                                <td colspan="7" class="text-center text-muted py-4">Sin resultados</td>
-                            </tr>
-                            <tr v-for="c in listaFinanciero" :key="c.id_cotizacion">
-                                <td data-label="ID">#{{ c.id_cotizacion }}</td>
-                                <td data-label="Cliente">{{ c.nombre }}</td>
-                                <td data-label="Total">{{ moneda(c.total) }}</td>
-                                <td data-label="Anticipo">{{ moneda(c.anticipo) }}</td>
-                                <td data-label="Saldo">{{ moneda(parseFloat(c.total||0) - parseFloat(c.anticipo||0)) }}</td>
-                                <td data-label="Estado Financiero">
-                                    <span class="badge" :class="badgeFinanciero(c.estado_financiero).cls">
-                                        {{ badgeFinanciero(c.estado_financiero).label }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a :href="'/pagina_cotizador/'+c.slug" class="btn btn-view btn-sm"><i class="bi bi-eye"></i></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ════════════════════════════════════
-                 TAB: Facturación (estado fiscal)
-                 ════════════════════════════════════ -->
-            <div v-show="tabActiva === 'facturacion'">
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                    <button v-for="f in [
-                        {val:'todos',        label:'Todos'},
-                        {val:'sin_facturar', label:'Sin facturar'},
-                        {val:'facturada',    label:'Facturada'},
-                        {val:'cancelada',    label:'Cancelada'},
-                    ]" :key="f.val"
-                        class="btn btn-sm"
-                        :class="filtroFiscal===f.val ? 'btn-dark' : 'btn-outline-secondary'"
-                        @click="filtroFiscal=f.val">
-                        {{ f.label }}
-                    </button>
-                </div>
-
-                <div class="responsive-table-container">
-                    <table class="advanced-responsive-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Cliente</th>
-                                <th>Total</th>
-                                <th>Factura</th>
-                                <th>Estado Fiscal</th>
-                                <th>Ver</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-if="listaFiscal.length === 0">
-                                <td colspan="6" class="text-center text-muted py-4">Sin resultados</td>
-                            </tr>
-                            <tr v-for="c in listaFiscal" :key="c.id_cotizacion">
-                                <td data-label="ID">#{{ c.id_cotizacion }}</td>
-                                <td data-label="Cliente">{{ c.nombre }}</td>
-                                <td data-label="Total">{{ moneda(c.total) }}</td>
-                                <td data-label="Factura">
-                                    <span v-if="c.factura_id" class="badge bg-success">F-{{ c.factura_id }}</span>
-                                    <span v-else class="text-muted">—</span>
-                                </td>
-                                <td data-label="Estado Fiscal">
-                                    <span class="badge" :class="badgeFiscal(c.estado_fiscal).cls">
-                                        {{ badgeFiscal(c.estado_fiscal).label }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a :href="'/pagina_cotizador/'+c.slug" class="btn btn-view btn-sm"><i class="bi bi-eye"></i></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- ════════════════════════════════════
-                 TAB: Acciones (combinaciones críticas)
-                 ════════════════════════════════════ -->
-            <div v-show="tabActiva === 'acciones'">
-                <div class="row g-3">
-
-                    <!-- Aceptadas sin pago -->
-                    <div class="col-12">
-                        <div class="card border-warning">
-                            <div class="card-header bg-warning bg-opacity-25 d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
-                                    <strong>Aceptadas sin pago</strong>
-                                    <span class="badge bg-warning text-dark ms-2">{{ aceptadasSinPago.length }}</span>
-                                </span>
-                                <small class="text-muted">estatus ≥ Enviada · financiero = Pendiente</small>
-                            </div>
-                            <div class="card-body p-0">
-                                <table class="table table-sm table-hover mb-0" v-if="aceptadasSinPago.length">
-                                    <thead class="table-light">
-                                        <tr><th>ID</th><th>Cliente</th><th>Total</th><th>Estatus</th><th></th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="c in aceptadasSinPago" :key="c.id_cotizacion">
-                                            <td>#{{ c.id_cotizacion }}</td>
-                                            <td>{{ c.nombre }}</td>
-                                            <td>{{ moneda(c.total) }}</td>
-                                            <td><span class="badge" :class="badgeEstatus(c.estatus).cls">{{ badgeEstatus(c.estatus).label }}</span></td>
-                                            <td><a :href="'/pagina_cotizador/'+c.slug" class="btn btn-view btn-sm"><i class="bi bi-eye"></i></a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <p v-else class="text-muted text-center py-3 mb-0">Sin elementos</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Pagadas sin facturar -->
-                    <div class="col-12">
-                        <div class="card border-info">
-                            <div class="card-header bg-info bg-opacity-25 d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-receipt text-info me-2"></i>
-                                    <strong>Pagadas sin facturar</strong>
-                                    <span class="badge bg-info text-dark ms-2">{{ pagadasSinFacturar.length }}</span>
-                                </span>
-                                <small class="text-muted">financiero = Pagado · fiscal = Sin facturar</small>
-                            </div>
-                            <div class="card-body p-0">
-                                <table class="table table-sm table-hover mb-0" v-if="pagadasSinFacturar.length">
-                                    <thead class="table-light">
-                                        <tr><th>ID</th><th>Cliente</th><th>Total</th><th>Financiero</th><th></th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="c in pagadasSinFacturar" :key="c.id_cotizacion">
-                                            <td>#{{ c.id_cotizacion }}</td>
-                                            <td>{{ c.nombre }}</td>
-                                            <td>{{ moneda(c.total) }}</td>
-                                            <td><span class="badge" :class="badgeFinanciero(c.estado_financiero).cls">{{ badgeFinanciero(c.estado_financiero).label }}</span></td>
-                                            <td><a :href="'/pagina_cotizador/'+c.slug" class="btn btn-view btn-sm"><i class="bi bi-eye"></i></a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <p v-else class="text-muted text-center py-3 mb-0">Sin elementos</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Facturadas sin pago -->
-                    <div class="col-12">
-                        <div class="card border-danger">
-                            <div class="card-header bg-danger bg-opacity-25 d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-cash-coin text-danger me-2"></i>
-                                    <strong>Facturadas sin cobrar</strong>
-                                    <span class="badge bg-danger ms-2">{{ facturadaSinPago.length }}</span>
-                                </span>
-                                <small class="text-muted">fiscal = Facturada · financiero ≠ Pagado</small>
-                            </div>
-                            <div class="card-body p-0">
-                                <table class="table table-sm table-hover mb-0" v-if="facturadaSinPago.length">
-                                    <thead class="table-light">
-                                        <tr><th>ID</th><th>Cliente</th><th>Total</th><th>Fiscal</th><th></th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="c in facturadaSinPago" :key="c.id_cotizacion">
-                                            <td>#{{ c.id_cotizacion }}</td>
-                                            <td>{{ c.nombre }}</td>
-                                            <td>{{ moneda(c.total) }}</td>
-                                            <td><span class="badge" :class="badgeFiscal(c.estado_fiscal).cls">{{ badgeFiscal(c.estado_fiscal).label }}</span></td>
-                                            <td><a :href="'/pagina_cotizador/'+c.slug" class="btn btn-view btn-sm"><i class="bi bi-eye"></i></a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <p v-else class="text-muted text-center py-3 mb-0">Sin elementos</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div><!-- /row -->
-            </div>
-
-        </div><!-- /tab-content -->
+        </div>
     </template>
+
+    <!-- ── Modal: Clonar Cotización ──────────────────────────────────────── -->
+    <div class="modal fade" id="modalClonar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog rounded-0">
+            <div class="modal-content rounded-0">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-copy me-2"></i>Clonar Cotización #{{ cotizacionAClonar?.id_cotizacion }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">
+                        Original: <strong>{{ cotizacionAClonar?.nombre }}</strong>
+                    </p>
+                    <label class="form-label fw-semibold">Cliente destino</label>
+                    <select v-model="clienteClonId" class="form-select">
+                        <option value="">— Seleccionar cliente —</option>
+                        <?php foreach ($clientes as $cliente): ?>
+                        <option value="<?= $cliente['id_cliente'] ?>"><?= esc($cliente['nombre']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="my-btn-danger p-2" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-my" @click="confirmarClonar" :disabled="!clienteClonId || clonando">
+                        <span v-if="clonando" class="spinner-border spinner-border-sm me-1"></span>
+                        <i v-else class="bi bi-copy me-1"></i>
+                        Replicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div><!-- /#app-cotizaciones -->
 
@@ -408,19 +217,35 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // DataTable solo para el modal de clientes
-    new DataTable('#modal-clientes')
+    // DataTable para el modal de clientes (con searchable para mejor UX)
+    new DataTable('#modal-clientes', {
+        pageLength: 10,
+        language: {
+            search: 'Buscar:',
+            lengthMenu: 'Mostrar _MENU_',
+            info: 'Mostrando _START_ a _END_ de _TOTAL_ clientes',
+            infoEmpty: 'Sin resultados',
+            infoFiltered: '(filtrados de _MAX_ total)',
+        }
+    })
 
-    // Crear cotización desde el modal
-    document.querySelectorAll('.crear-cotizacion').forEach(btn => {
-        btn.addEventListener('click', function (e) {
+    // ── Delegación de eventos para crear cotización ──
+    // DataTable recrea las filas al paginar/buscar, por lo que NO podemos
+    // usar querySelectorAll + addEventListener.
+    // En su lugar, escuchamos clicks en el <tbody> de la tabla (delegación).
+    const tabla = document.querySelector('#modal-clientes tbody')
+    if (tabla) {
+        tabla.addEventListener('click', function (e) {
+            const btn = e.target.closest('.crear-cotizacion')
+            if (!btn) return
+
             e.preventDefault()
-            const clienteId = this.getAttribute('data-cliente')
-            const row       = this.closest('tr')
+            const clienteId = btn.getAttribute('data-cliente')
+            const row       = btn.closest('tr')
             const tipoVenta = row.querySelector('.tipo-venta-select').value
             window.location.href = `/nueva_cotizacion/${clienteId}?tipo_venta=${tipoVenta}`
         })
-    })
+    }
 
     // Auto-cerrar flash después de 4s
     const flash = document.getElementById('alert-flash')

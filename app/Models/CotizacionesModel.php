@@ -19,9 +19,7 @@ class CotizacionesModel extends Model
         'anticipo',
         'descuento',
         'pago',
-        'estatus',
-        'estado_financiero',
-        'estado_fiscal',
+        'estado_comercial',
     ];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';

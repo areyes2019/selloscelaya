@@ -4,13 +4,13 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AddEstadosFinancieroFiscalToCotizaciones extends Migration
+class RenameEstatusToEstadoComercial extends Migration
 {
     public function up(): void
     {
         $existing = $this->db->getFieldNames('sellopro_cotizaciones');
 
-        // Agregar estado_comercial si no existe
+        // Agregar estado_comercial si no existe todavía
         if (!in_array('estado_comercial', $existing)) {
             $this->forge->addColumn('sellopro_cotizaciones', [
                 'estado_comercial' => [
@@ -22,7 +22,7 @@ class AddEstadosFinancieroFiscalToCotizaciones extends Migration
                 ],
             ]);
 
-            // Migrar valores numéricos de estatus si existe la columna
+            // Migrar valores desde estatus TINYINT si existe
             if (in_array('estatus', $existing)) {
                 $this->db->query("
                     UPDATE sellopro_cotizaciones
@@ -34,14 +34,9 @@ class AddEstadosFinancieroFiscalToCotizaciones extends Migration
             }
         }
 
-        // Eliminar estatus (ya reemplazado por estado_comercial)
-        if (in_array('estatus', $existing)) {
-            $this->forge->dropColumn('sellopro_cotizaciones', 'estatus');
-        }
-
-        // Eliminar estado_financiero y estado_fiscal si existían de un migration anterior
-        foreach (['estado_financiero', 'estado_fiscal'] as $col) {
-            if (in_array($col, $existing)) {
+        // Eliminar columnas que ya no se usan
+        foreach (['estatus', 'estado_financiero', 'estado_fiscal'] as $col) {
+            if (in_array($col, $this->db->getFieldNames('sellopro_cotizaciones'))) {
                 $this->forge->dropColumn('sellopro_cotizaciones', $col);
             }
         }
@@ -51,7 +46,7 @@ class AddEstadosFinancieroFiscalToCotizaciones extends Migration
     {
         $existing = $this->db->getFieldNames('sellopro_cotizaciones');
 
-        // Restaurar estatus como TINYINT
+        // Restaurar estatus
         if (!in_array('estatus', $existing)) {
             $this->forge->addColumn('sellopro_cotizaciones', [
                 'estatus' => [
@@ -75,7 +70,7 @@ class AddEstadosFinancieroFiscalToCotizaciones extends Migration
         }
 
         // Eliminar estado_comercial
-        if (in_array('estado_comercial', $existing)) {
+        if (in_array('estado_comercial', $this->db->getFieldNames('sellopro_cotizaciones'))) {
             $this->forge->dropColumn('sellopro_cotizaciones', 'estado_comercial');
         }
     }

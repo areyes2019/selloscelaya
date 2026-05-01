@@ -214,7 +214,7 @@ class FacturasController extends BaseController
             'respuesta_completa' => json_encode($cfdi),
         ]);
 
-        $this->cotizacionesModel->update($idCotizacion, ['estatus' => 1]);
+        $this->cotizacionesModel->update($idCotizacion, ['estado_comercial' => 'facturada']);
 
         $db->transComplete();
 
@@ -656,7 +656,7 @@ class FacturasController extends BaseController
         }
 
         $this->facturaModel->update($idFactura, ['estado' => 'cancelada']);
-        $this->cotizacionesModel->update($factura['cotizacion_id'], ['estatus' => 0]);
+        $this->cotizacionesModel->update($factura['cotizacion_id'], ['estado_comercial' => 'pagado']);
 
         return $this->respond([
             'status'  => 'success',

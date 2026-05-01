@@ -92,6 +92,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->post('descontar_inventario', 'Admin\Cotizaciones::descontar_inventario');
 	$routes->post('marcar_pagado', 'Admin\Cotizaciones::pago_total');
 	$routes->get('api/cotizaciones',  'Admin\Cotizaciones::listar');
+	$routes->post('clonar_cotizacion', 'Admin\Cotizaciones::clonar');
 	
 
 	/*Facturas*/
