@@ -67,11 +67,11 @@ class FacturapiService
      */
     public function cancelar(string $invoiceId, string $motivo = '02', ?string $relatedUuid = null): array
     {
-        $body = ['motive' => $motivo];
+        $params = ['motive' => $motivo];
         if ($relatedUuid) {
-            $body['related_uuid'] = $relatedUuid;
+            $params['related_uuid'] = $relatedUuid;
         }
-        return $this->request('DELETE', "/invoices/{$invoiceId}", $body);
+        return $this->request('DELETE', '/invoices/' . $invoiceId . '?' . http_build_query($params));
     }
 
     /**
@@ -131,7 +131,9 @@ class FacturapiService
             case 'DELETE':
                 $options[CURLOPT_CUSTOMREQUEST] = 'DELETE';
                 if (!empty($body)) {
-                    $options[CURLOPT_POSTFIELDS] = json_encode($body);
+                    $jsonBody = json_encode($body);
+                    $options[CURLOPT_POSTFIELDS] = $jsonBody;
+                    $options[CURLOPT_HTTPHEADER][] = 'Content-Length: ' . strlen($jsonBody);
                 }
                 break;
         }
