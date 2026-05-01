@@ -75,13 +75,7 @@
 
             <div>
                 <div class="d-flex flex-wrap gap-2 mb-3">
-                    <button v-for="
-                        {val:'todos',     label:'Todos'},
-                        {val:'borrador',  label:'Borrador'},
-                        {val:'anticipo',  label:'Anticipo'},
-                        {val:'pagado',    label:'Pagado'},
-                        {val:'facturada', label:'Facturada'},
-                    ]" :key="f.val"
+                    <button v-for="f in [{val:'todos',label:'Todos'},{val:'borrador',label:'Borrador'},{val:'anticipo',label:'Anticipo'},{val:'pagado',label:'Pagado'},{val:'facturada',label:'Facturada'}]" :key="f.val"
                         class="btn btn-sm"
                         :class="filtroEstado===f.val ? 'btn-dark' : 'btn-outline-secondary'"
                         @click="filtroEstado=f.val">
