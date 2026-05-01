@@ -10,29 +10,10 @@ class RenameEstatusToEstadoComercial extends Migration
     {
         $existing = $this->db->getFieldNames('sellopro_cotizaciones');
 
-        // Agregar estado_comercial si no existe todavía
-        if (!in_array('estado_comercial', $existing)) {
-            $this->forge->addColumn('sellopro_cotizaciones', [
-                'estado_comercial' => [
-                    'type'       => 'ENUM',
-                    'constraint' => ['borrador', 'enviada', 'anticipo', 'pagado', 'facturada'],
-                    'default'    => 'borrador',
-                    'null'       => false,
-                    'after'      => 'pago',
-                ],
-            ]);
-
-            // Migrar valores desde estatus TINYINT si existe
-            if (in_array('estatus', $existing)) {
-                $this->db->query("
-                    UPDATE sellopro_cotizaciones
-                    SET estado_comercial = CASE
-                        WHEN estatus >= 1 THEN 'enviada'
-                        ELSE 'borrador'
-                    END
-                ");
-            }
-        }
+        // NOTA: La columna 'estado_comercial' se agregó en la migración
+        // 2026-04-30-120000_AddEstadosFinancieroFiscalToCotizaciones.
+        // Aquí solo nos aseguramos de limpiar columnas antiguas que pudieran
+        // haber quedado si esa migración no se ejecutó completamente.
 
         // Eliminar columnas que ya no se usan
         foreach (['estatus', 'estado_financiero', 'estado_fiscal'] as $col) {
@@ -67,11 +48,6 @@ class RenameEstatusToEstadoComercial extends Migration
                     END
                 ");
             }
-        }
-
-        // Eliminar estado_comercial
-        if (in_array('estado_comercial', $this->db->getFieldNames('sellopro_cotizaciones'))) {
-            $this->forge->dropColumn('sellopro_cotizaciones', 'estado_comercial');
         }
     }
 }
