@@ -18,7 +18,7 @@ createApp({
 
     const busqueda     = ref('')
     const filtroEstado = ref('todos')
-    const filtroFecha  = ref('mes')
+    const filtroFecha  = ref('todos')
 
     // ── Clonar ─────────────────────────────────────────────────
     const cotizacionAClonar = ref(null)
@@ -81,6 +81,8 @@ createApp({
 
     // ── Rango de fechas según filtroFecha ───────────────────────
     const rangoFecha = computed(() => {
+      if (filtroFecha.value === 'todos') return null
+
       const hoy = new Date()
       hoy.setHours(0, 0, 0, 0)
       const fin = new Date()
@@ -95,20 +97,25 @@ createApp({
         inicio.setDate(hoy.getDate() - (dia === 0 ? 6 : dia - 1))
         return { inicio, fin }
       }
+      // mes
       return { inicio: new Date(hoy.getFullYear(), hoy.getMonth(), 1), fin }
     })
 
-    const LABELS_FECHA = { hoy: 'Hoy', semana: 'Esta semana', mes: 'Este mes' }
+    const LABELS_FECHA = { todos: 'Todas', hoy: 'Hoy', semana: 'Esta semana', mes: 'Este mes' }
     const etiquetaFecha = computed(() => LABELS_FECHA[filtroFecha.value] ?? '')
 
     // ── Filtro base: texto + rango de fecha ─────────────────────
     const baseFiltrada = computed(() => {
-      const { inicio, fin } = rangoFecha.value
+      const rango = rangoFecha.value
       const q = busqueda.value.trim().toLowerCase()
 
       return cotizaciones.value.filter(c => {
-        const fechaDoc = c.created_at ? new Date(c.created_at.replace(' ', 'T')) : null
-        if (!fechaDoc || fechaDoc < inicio || fechaDoc > fin) return false
+        // Filtro por fecha (solo si no es 'todos')
+        if (rango) {
+          const fechaDoc = c.created_at ? new Date(c.created_at.replace(' ', 'T')) : null
+          if (!fechaDoc || fechaDoc < rango.inicio || fechaDoc > rango.fin) return false
+        }
+        // Filtro por texto de búsqueda
         if (!q) return true
         return (
           (c.nombre  || '').toLowerCase().includes(q) ||

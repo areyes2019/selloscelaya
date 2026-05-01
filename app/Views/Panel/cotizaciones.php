@@ -59,7 +59,7 @@
         <!-- Filtro por rango de fecha -->
         <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
             <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>Período:</span>
-            <button v-for="f in [{val:'hoy',label:'Hoy'},{val:'semana',label:'Esta semana'},{val:'mes',label:'Este mes'}]"
+            <button v-for="f in [{val:'todos',label:'Todas'},{val:'hoy',label:'Hoy'},{val:'semana',label:'Esta semana'},{val:'mes',label:'Este mes'}]"
                     :key="f.val"
                     class="btn btn-sm"
                     :class="filtroFecha===f.val ? 'btn-dark' : 'btn-outline-secondary'"
@@ -75,7 +75,7 @@
 
             <div>
                 <div class="d-flex flex-wrap gap-2 mb-3">
-                    <button v-for="f in [
+                    <button v-for="
                         {val:'todos',     label:'Todos'},
                         {val:'borrador',  label:'Borrador'},
                         {val:'anticipo',  label:'Anticipo'},
