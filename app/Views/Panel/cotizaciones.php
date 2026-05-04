@@ -270,6 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (flash) setTimeout(() => bootstrap.Alert.getOrCreateInstance(flash).close(), 4000)
 })
 </script>
-<script src="<?= base_url('public/js/cotizaciones_lista.js') ?>"></script>
+<script src="<?= base_url('public/js/cotizaciones_lista.js') ?>?v=<?= filemtime(ROOTPATH . 'public/js/cotizaciones_lista.js') ?>"></script>
 
 <?php echo $this->endSection(); ?>
