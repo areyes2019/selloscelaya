@@ -197,16 +197,25 @@ class Cotizaciones extends BaseController
 			}
 
 			$sumaSubtotal = round($sumaSubtotal, 2);
-			$descuentoExistente = round((float)($cotizacionData['descuento'] ?? 0), 2);
+
+			// Re-aplicar porcentaje si está guardado; si no, usar monto fijo
+			$porcentajeGuardado = (float)($cotizacionData['porcentaje_descuento'] ?? 0);
+			if ($porcentajeGuardado > 0) {
+				$descuentoExistente = round($sumaSubtotal * ($porcentajeGuardado / 100), 2);
+			} else {
+				$descuentoExistente = round((float)($cotizacionData['descuento'] ?? 0), 2);
+			}
+
 			$sumaSubtotalNeto = max(0, $sumaSubtotal - $descuentoExistente);
 			$sumaIva = round($sumaSubtotalNeto * 0.16, 2);
 			$sumaTotal = round($sumaSubtotalNeto + $sumaIva, 2);
 
 	        // Actualizar la cotización con los totales
 	        $datosActualizar = [
-	            'subtotal' => $sumaSubtotal,
-	            'iva' => $sumaIva,
-	            'total' => $sumaTotal,
+	            'subtotal'  => $sumaSubtotal,
+	            'descuento' => $descuentoExistente,
+	            'iva'       => $sumaIva,
+	            'total'     => $sumaTotal,
 	        ];
 
 	        $cot->update($cotizacion, $datosActualizar);
@@ -272,19 +281,24 @@ class Cotizaciones extends BaseController
 
 	        // 6. Obtener descuento actual
 	        $cotizacion = $cotizacionModel->find($detalle['id_cotizacion']);
-	        $descuento = (float)$cotizacion['descuento'];
+	        $porcentajeGuardado = (float)($cotizacion['porcentaje_descuento'] ?? 0);
+	        if ($porcentajeGuardado > 0) {
+	            $descuento = round($sumaSubtotal * ($porcentajeGuardado / 100), 2);
+	        } else {
+	            $descuento = (float)$cotizacion['descuento'];
+	        }
 
 	        // 7. Calcular nuevos totales con descuento
 	        $subtotalConDescuento = $sumaSubtotal - $descuento;
-	        $iva = $subtotalConDescuento * 0.16;
-	        $total = $subtotalConDescuento + $iva;
+	        $iva = round($subtotalConDescuento * 0.16, 2);
+	        $total = round($subtotalConDescuento + $iva, 2);
 
 	        // 8. Actualizar la cotización
 	        $cotizacionModel->update($detalle['id_cotizacion'], [
-	            'subtotal' => $sumaSubtotal,
-	            'iva' => $iva,
-	            'total' => $total
-	            // Mantiene el descuento existente
+	            'subtotal'  => $sumaSubtotal,
+	            'descuento' => $descuento,
+	            'iva'       => $iva,
+	            'total'     => $total,
 	        ]);
 
 	        $db->transComplete();
@@ -404,29 +418,30 @@ class Cotizaciones extends BaseController
 	{
 	    $request = \Config\Services::request();
 	    $cotizacionModel = new CotizacionesModel();
-	    $detalleModel = new DetalleModel(); // Asumiendo que tienes este modelo
+	    $detalleModel = new DetalleModel();
 
 	    $id_cotizacion = $request->getVar('id_cotizacion');
-	    $porcentajeDescuento = $request->getVar('descuento');
+	    $porcentajeDescuento = (float)$request->getVar('descuento');
 
 	    // 1. Obtener el subtotal base (suma de todos los artículos sin descuento)
 	    $detalles = $detalleModel->where('id_cotizacion', $id_cotizacion)->findAll();
 	    $subtotalBase = array_sum(array_column($detalles, 'total'));
 
 	    // 2. Calcular el descuento en monto
-	    $descuentoMonto = $subtotalBase * ($porcentajeDescuento / 100);
+	    $descuentoMonto = round($subtotalBase * ($porcentajeDescuento / 100), 2);
 
 	    // 3. Calcular nuevos valores
 	    $nuevoSubtotal = $subtotalBase - $descuentoMonto;
-	    $iva = $nuevoSubtotal * 0.16; // IVA del 16%
-	    $nuevoTotal = $nuevoSubtotal + $iva;
+	    $iva = round($nuevoSubtotal * 0.16, 2);
+	    $nuevoTotal = round($nuevoSubtotal + $iva, 2);
 
-	    // 4. Preparar datos para actualizar
+	    // 4. Preparar datos para actualizar (guardar porcentaje para re-aplicarlo al cambiar artículos)
 	    $data = [
-	        'subtotal' => $subtotalBase,
-	        'descuento' => $descuentoMonto,
-	        'iva' => $iva,
-	        'total' => $nuevoTotal
+	        'subtotal'             => $subtotalBase,
+	        'descuento'            => $descuentoMonto,
+	        'porcentaje_descuento' => $porcentajeDescuento,
+	        'iva'                  => $iva,
+	        'total'                => $nuevoTotal,
 	    ];
 
 	    // 5. Actualizar la cotización
@@ -438,10 +453,10 @@ class Cotizaciones extends BaseController
 	            'message' => 'Descuento aplicado y totales actualizados',
 	            'flag' => 1,
 	            'data' => [
-	                'subtotal' => number_format($nuevoSubtotal, 2),
+	                'subtotal'  => number_format($nuevoSubtotal, 2),
 	                'descuento' => number_format($descuentoMonto, 2),
-	                'iva' => number_format($iva, 2),
-	                'total' => number_format($nuevoTotal, 2)
+	                'iva'       => number_format($iva, 2),
+	                'total'     => number_format($nuevoTotal, 2),
 	            ]
 	        ]);
 	    }
@@ -484,10 +499,11 @@ class Cotizaciones extends BaseController
 	        $total = $subtotalBase + $iva;
 
 	        $data = [
-	            'subtotal' => $subtotalBase,
-	            'descuento' => 0,
-	            'iva' => $iva,
-	            'total' => $total
+	            'subtotal'             => $subtotalBase,
+	            'descuento'            => 0,
+	            'porcentaje_descuento' => 0,
+	            'iva'                  => $iva,
+	            'total'                => $total,
 	        ];
 	        
 	        $update = $cotizacionModel->update($id_cotizacion, $data);
@@ -518,12 +534,13 @@ class Cotizaciones extends BaseController
 	    $iva = $nuevoSubtotal * 0.16;
 	    $nuevoTotal = $nuevoSubtotal + $iva;
 
-	    // 7. Actualizar todos los campos
+	    // 7. Actualizar todos los campos (descuento en dinero: resetear porcentaje)
 	    $data = [
-	        'subtotal' => $subtotalBase,
-	        'descuento' => $nuevo_descuento,
-	        'iva' => $iva,
-	        'total' => $nuevoTotal
+	        'subtotal'             => $subtotalBase,
+	        'descuento'            => $nuevo_descuento,
+	        'porcentaje_descuento' => 0,
+	        'iva'                  => $iva,
+	        'total'                => $nuevoTotal,
 	    ];
 	    
 	    $update = $cotizacionModel->update($id_cotizacion, $data);
@@ -591,16 +608,23 @@ class Cotizaciones extends BaseController
 	                'anticipo' => 0
 	            ];
 	        } else {
-	            // Calcular IVA y total con descuento existente
-	            $subtotalConDescuento = $sumaSubtotal - (float)$cotizacionModel->find($id_cotizacion)['descuento'];
-	            $iva = $subtotalConDescuento * 0.16;
-	            $total = $subtotalConDescuento + $iva;
-	            
+	            // Calcular IVA y total re-aplicando descuento
+	            $cotizacionActual = $cotizacionModel->find($id_cotizacion);
+	            $porcentajeGuardado = (float)($cotizacionActual['porcentaje_descuento'] ?? 0);
+	            if ($porcentajeGuardado > 0) {
+	                $descuentoRecalculado = round($sumaSubtotal * ($porcentajeGuardado / 100), 2);
+	            } else {
+	                $descuentoRecalculado = (float)$cotizacionActual['descuento'];
+	            }
+	            $subtotalConDescuento = $sumaSubtotal - $descuentoRecalculado;
+	            $iva = round($subtotalConDescuento * 0.16, 2);
+	            $total = round($subtotalConDescuento + $iva, 2);
+
 	            $datosActualizar = [
-	                'subtotal' => $sumaSubtotal,
-	                'iva' => $iva,
-	                'total' => $total
-	                // Mantiene el descuento existente
+	                'subtotal'  => $sumaSubtotal,
+	                'descuento' => $descuentoRecalculado,
+	                'iva'       => $iva,
+	                'total'     => $total,
 	            ];
 	        }
 

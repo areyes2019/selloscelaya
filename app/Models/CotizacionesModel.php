@@ -18,6 +18,7 @@ class CotizacionesModel extends Model
         'total',
         'anticipo',
         'descuento',
+        'porcentaje_descuento',
         'pago',
         'estado_comercial',
     ];

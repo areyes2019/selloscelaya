@@ -1,4 +1,4 @@
-const { createApp, ref, computed, onMounted } = Vue
+const { createApp, ref, computed, watch, onMounted } = Vue
 
 // ── Mapa de badges ───────────────────────────────────────────────
 const BADGE_COMERCIAL = {
@@ -19,6 +19,10 @@ createApp({
     const busqueda     = ref('')
     const filtroEstado = ref('todos')
     const filtroFecha  = ref('todos')
+
+    // ── Paginación ─────────────────────────────────────────────
+    const paginaActual = ref(1)
+    const porPagina    = ref(10)
 
     // ── Clonar ─────────────────────────────────────────────────
     const cotizacionAClonar = ref(null)
@@ -132,6 +136,49 @@ createApp({
       return base.filter(c => (c.estado_comercial || 'borrador') === filtroEstado.value)
     })
 
+    // ── Paginación ──────────────────────────────────────────────
+    const totalPaginas = computed(() =>
+      Math.max(1, Math.ceil(listaComercial.value.length / porPagina.value))
+    )
+
+    const listaComercialPaginada = computed(() => {
+      const inicio = (paginaActual.value - 1) * porPagina.value
+      return listaComercial.value.slice(inicio, inicio + porPagina.value)
+    })
+
+    const infoRango = computed(() => {
+      const total = listaComercial.value.length
+      if (total === 0) return ''
+      const inicio = (paginaActual.value - 1) * porPagina.value + 1
+      const fin    = Math.min(paginaActual.value * porPagina.value, total)
+      return `${inicio}–${fin} de ${total}`
+    })
+
+    const paginasVisibles = computed(() => {
+      const total  = totalPaginas.value
+      const actual = paginaActual.value
+      if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+
+      const pages = new Set([1, total, actual])
+      if (actual > 1) pages.add(actual - 1)
+      if (actual < total) pages.add(actual + 1)
+
+      const sorted = [...pages].sort((a, b) => a - b)
+      const result = []
+      for (let i = 0; i < sorted.length; i++) {
+        if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push('...')
+        result.push(sorted[i])
+      }
+      return result
+    })
+
+    function cambiarPagina(n) {
+      if (n < 1 || n > totalPaginas.value) return
+      paginaActual.value = n
+    }
+
+    watch([busqueda, filtroEstado, filtroFecha], () => { paginaActual.value = 1 })
+
     // ── Helpers de presentación ─────────────────────────────────
     function badgeComercial(val) {
       return BADGE_COMERCIAL[val || 'borrador'] ?? { label: val, cls: 'bg-secondary' }
@@ -155,7 +202,9 @@ createApp({
       // filtros
       busqueda, filtroEstado, filtroFecha, etiquetaFecha,
       // listas
-      listaComercial,
+      listaComercial, listaComercialPaginada,
+      // paginación
+      paginaActual, totalPaginas, paginasVisibles, infoRango, cambiarPagina,
       // helpers
       badgeComercial, moneda, fecha,
       // acciones

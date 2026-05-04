@@ -102,7 +102,7 @@
                             <tr v-if="listaComercial.length === 0">
                                 <td colspan="6" class="text-center text-muted py-4">Sin resultados</td>
                             </tr>
-                            <tr v-for="c in listaComercial" :key="c.id_cotizacion">
+                            <tr v-for="c in listaComercialPaginada" :key="c.id_cotizacion">
                                 <td data-label="ID">#{{ c.id_cotizacion }}</td>
                                 <td data-label="Cliente">{{ c.nombre }}</td>
                                 <td data-label="Email">{{ c.correo || '—' }}</td>
@@ -121,6 +121,30 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Paginación -->
+                <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                    <small class="text-muted">{{ infoRango }}</small>
+                    <nav v-if="totalPaginas > 1" aria-label="Paginación cotizaciones">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item" :class="{ disabled: paginaActual === 1 }">
+                                <button class="page-link" @click="cambiarPagina(paginaActual - 1)" aria-label="Anterior">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </button>
+                            </li>
+                            <li v-for="p in paginasVisibles" :key="p"
+                                class="page-item"
+                                :class="{ active: p === paginaActual, disabled: p === '...' }">
+                                <button class="page-link" @click="p !== '...' && cambiarPagina(p)">{{ p }}</button>
+                            </li>
+                            <li class="page-item" :class="{ disabled: paginaActual === totalPaginas }">
+                                <button class="page-link" @click="cambiarPagina(paginaActual + 1)" aria-label="Siguiente">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
 
