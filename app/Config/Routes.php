@@ -62,7 +62,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	$routes->post('nuevo_articulo', 'Admin\Articulos::nuevo');
 	$routes->get('editar_articulo/(:num)', 'Admin\Articulos::editar/$1');
 	$routes->post('actualizar_articulo', 'Admin\Articulos::actualizar');
-	$routes->post('eliminar_articulo/(:num)', 'Admin\Articulos::eliminar/$1');
+	$routes->get('eliminar_articulo/(:num)', 'Admin\Articulos::eliminar/$1');
 	$routes->post('eliminar_masivo', 'Admin\Articulos::eliminarMasivo');
 	$routes->get('ver_imagen/(:any)', 'Admin\Articulos::verImagen/$1');
 	$routes->get('nuevo_art_vista', 'Admin\Articulos::nuevo_art');
