@@ -49,7 +49,6 @@
         <!-- Búsqueda global -->
         <div class="mb-3">
             <div class="input-group" style="max-width:360px">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
                 <input v-model="busqueda" type="text" class="form-control"
                        placeholder="Buscar por nombre, correo o ID…">
                 <button v-if="busqueda" class="btn btn-outline-secondary" @click="busqueda=''">
