@@ -29,6 +29,12 @@ createApp({
     const clienteClonId     = ref('')
     const clonando          = ref(false)
 
+    // ── Clientes para el modal de clonar ────────────────────────
+    const todosClientes = ref([])
+    const busquedaCliente = ref('')
+    const pagCliActual    = ref(1)
+    const porPagCli       = ref(8)
+
     // ── Carga de datos ──────────────────────────────────────────
     async function cargar() {
       cargando.value = true
@@ -59,8 +65,23 @@ createApp({
     function abrirModalClonar(c) {
       cotizacionAClonar.value = c
       clienteClonId.value     = ''
+      busquedaCliente.value   = ''
+      pagCliActual.value      = 1
       new bootstrap.Modal(document.getElementById('modalClonar')).show()
     }
+
+    function seleccionarCliente(cli) {
+      if (clienteClonId.value === cli.id_cliente) {
+        clienteClonId.value = ''
+      } else {
+        clienteClonId.value = cli.id_cliente
+      }
+    }
+
+    const clienteSeleccionado = computed(() => {
+      if (!clienteClonId.value) return null
+      return todosClientes.value.find(c => c.id_cliente == clienteClonId.value) || null
+    })
 
     async function confirmarClonar() {
       if (!clienteClonId.value) return
@@ -82,6 +103,58 @@ createApp({
         clonando.value = false
       }
     }
+
+    // ── Filtro de clientes en el modal ──────────────────────────
+    const clientesFiltrados = computed(() => {
+      const q = busquedaCliente.value.trim().toLowerCase()
+      if (!q) return todosClientes.value
+      return todosClientes.value.filter(cli =>
+        (cli.nombre || '').toLowerCase().includes(q)
+      )
+    })
+
+    // ── Paginación de clientes ──────────────────────────────────
+    const totalPagClientes = computed(() =>
+      Math.max(1, Math.ceil(clientesFiltrados.value.length / porPagCli.value))
+    )
+
+    const clientesPaginados = computed(() => {
+      const inicio = (pagCliActual.value - 1) * porPagCli.value
+      return clientesFiltrados.value.slice(inicio, inicio + porPagCli.value)
+    })
+
+    const infoRangoClientes = computed(() => {
+      const total = clientesFiltrados.value.length
+      if (total === 0) return ''
+      const inicio = (pagCliActual.value - 1) * porPagCli.value + 1
+      const fin    = Math.min(pagCliActual.value * porPagCli.value, total)
+      return `${inicio}–${fin} de ${total} clientes`
+    })
+
+    const pagCliVisibles = computed(() => {
+      const total  = totalPagClientes.value
+      const actual = pagCliActual.value
+      if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+
+      const pages = new Set([1, total, actual])
+      if (actual > 1) pages.add(actual - 1)
+      if (actual < total) pages.add(actual + 1)
+
+      const sorted = [...pages].sort((a, b) => a - b)
+      const result = []
+      for (let i = 0; i < sorted.length; i++) {
+        if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push('...')
+        result.push(sorted[i])
+      }
+      return result
+    })
+
+    function cambiarPagCli(n) {
+      if (n < 1 || n > totalPagClientes.value) return
+      pagCliActual.value = n
+    }
+
+    watch(busquedaCliente, () => { pagCliActual.value = 1 })
 
     // ── Rango de fechas según filtroFecha ───────────────────────
     const rangoFecha = computed(() => {
@@ -194,7 +267,19 @@ createApp({
       return new Date(val).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
     }
 
-    onMounted(cargar)
+    // ── Inicialización: cargar clientes desde data-attribute ────
+    onMounted(() => {
+      cargar()
+      const el = document.getElementById('app-cotizaciones')
+      if (el && el.dataset.clientes) {
+        try {
+          todosClientes.value = JSON.parse(el.dataset.clientes)
+        } catch (e) {
+          console.error('Error al parsear clientes:', e)
+          todosClientes.value = []
+        }
+      }
+    })
 
     return {
       // estado
@@ -211,6 +296,10 @@ createApp({
       eliminar, cargar,
       // clonar
       cotizacionAClonar, clienteClonId, clonando, abrirModalClonar, confirmarClonar,
+      // clientes modal
+      todosClientes, busquedaCliente, clientesFiltrados, clientesPaginados,
+      pagCliActual, totalPagClientes, pagCliVisibles, infoRangoClientes,
+      cambiarPagCli, seleccionarCliente, clienteSeleccionado,
     }
   },
 }).mount('#app-cotizaciones')

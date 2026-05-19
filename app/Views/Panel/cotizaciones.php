@@ -15,7 +15,9 @@
 <?php endif; ?>
 
 <!-- ── Vue App ─────────────────────────────────────────────────────── -->
-<div id="app-cotizaciones" class="container mt-3">
+<div id="app-cotizaciones"
+     class="container mt-3"
+     data-clientes='<?= json_encode($clientes, JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
 
     <!-- Header -->
     <div class="my-card d-flex justify-content-between align-items-center mb-3">
@@ -153,7 +155,7 @@
 
     <!-- ── Modal: Clonar Cotización ──────────────────────────────────────── -->
     <div class="modal fade" id="modalClonar" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog rounded-0">
+        <div class="modal-dialog modal-lg rounded-0">
             <div class="modal-content rounded-0">
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -165,13 +167,78 @@
                     <p class="text-muted mb-3">
                         Original: <strong>{{ cotizacionAClonar?.nombre }}</strong>
                     </p>
+
+                    <!-- Campo de búsqueda de clientes -->
                     <label class="form-label fw-semibold">Cliente destino</label>
-                    <select v-model="clienteClonId" class="form-select">
-                        <option value="">— Seleccionar cliente —</option>
-                        <?php foreach ($clientes as $cliente): ?>
-                        <option value="<?= $cliente['id_cliente'] ?>"><?= esc($cliente['nombre']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="input-group mb-3">
+                        <input v-model="busquedaCliente" type="text" class="form-control"
+                               placeholder="Buscar cliente por nombre…">
+                        <button v-if="busquedaCliente" class="btn btn-outline-secondary" @click="busquedaCliente=''">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+
+                    <!-- Tabla de clientes con paginación -->
+                    <div v-if="clientesFiltrados.length === 0" class="text-center text-muted py-3">
+                        <i class="bi bi-people me-1"></i> No se encontraron clientes
+                    </div>
+                    <div v-else class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                        <table class="table table-sm table-hover table-bordered mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th style="width:50px">#</th>
+                                    <th>Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th style="width:90px">Seleccionar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="cli in clientesPaginados" :key="cli.id_cliente"
+                                    :class="{ 'table-primary': clienteClonId == cli.id_cliente }"
+                                    @dblclick="seleccionarCliente(cli)">
+                                    <td>{{ cli.id_cliente }}</td>
+                                    <td>{{ cli.nombre }}</td>
+                                    <td>{{ cli.telefono || '—' }}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm"
+                                                :class="clienteClonId == cli.id_cliente ? 'btn-success' : 'btn-outline-success'"
+                                                @click="seleccionarCliente(cli)">
+                                            <i v-if="clienteClonId == cli.id_cliente" class="bi bi-check-circle-fill"></i>
+                                            <i v-else class="bi bi-circle"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación de clientes -->
+                    <div v-if="totalPagClientes > 1" class="d-flex justify-content-between align-items-center mt-2">
+                        <small class="text-muted">
+                            {{ infoRangoClientes }}
+                        </small>
+                        <nav aria-label="Paginación clientes">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item" :class="{ disabled: pagCliActual === 1 }">
+                                    <button class="page-link" @click="cambiarPagCli(pagCliActual - 1)">&laquo;</button>
+                                </li>
+                                <li v-for="p in pagCliVisibles" :key="p"
+                                    class="page-item"
+                                    :class="{ active: p === pagCliActual, disabled: p === '...' }">
+                                    <button class="page-link" @click="p !== '...' && cambiarPagCli(p)">{{ p }}</button>
+                                </li>
+                                <li class="page-item" :class="{ disabled: pagCliActual === totalPagClientes }">
+                                    <button class="page-link" @click="cambiarPagCli(pagCliActual + 1)">&raquo;</button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <!-- Cliente seleccionado -->
+                    <div v-if="clienteSeleccionado" class="alert alert-success mt-3 mb-0 py-2">
+                        <i class="bi bi-person-check-fill me-1"></i>
+                        Cliente seleccionado: <strong>{{ clienteSeleccionado.nombre }}</strong>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="my-btn-danger p-2" data-bs-dismiss="modal">Cancelar</button>
