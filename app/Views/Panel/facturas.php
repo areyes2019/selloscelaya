@@ -6,6 +6,15 @@
         <h2 class="mb-0">Facturas Emitidas</h2>
     </div>
 
+    <!-- Filtros rápidos por fecha -->
+    <div class="my-card mt-2 d-flex gap-2 align-items-center flex-wrap">
+        <span class="fw-bold me-1">Filtrar:</span>
+        <button class="btn btn-sm btn-outline-primary btn-filtro-fecha active" data-rango="hoy">Hoy</button>
+        <button class="btn btn-sm btn-outline-primary btn-filtro-fecha" data-rango="semana">Esta semana</button>
+        <button class="btn btn-sm btn-outline-primary btn-filtro-fecha" data-rango="mes">Este mes</button>
+        <button class="btn btn-sm btn-outline-secondary btn-filtro-fecha" data-rango="todas">Todas</button>
+    </div>
+
     <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success alert-dismissible fade show mt-2">
             <?= session()->getFlashdata('success') ?>
@@ -53,7 +62,7 @@
                             <span class="badge bg-secondary"><?= esc($f['estado']) ?></span>
                         <?php endif; ?>
                     </td>
-                    <td data-label="Fecha timbrado">
+                    <td data-label="Fecha timbrado" data-order="<?= esc($f['fecha_timbrado'] ?? '') ?>">
                         <?= $f['fecha_timbrado'] ? date('d/m/Y H:i', strtotime($f['fecha_timbrado'])) : '—' ?>
                     </td>
                     <td data-label="Acciones">
@@ -236,17 +245,86 @@ function buildPreview(d) {
 }
 
 $(document).ready(function () {
-    new DataTable('#tbl-facturas');
+    // Inicializar DataTable sin ordenamiento en columnas
+    const dt = new DataTable('#tbl-facturas', {
+        ordering: false
+    });
+
+    // ── Filtros rápidos por fecha ─────────────────────────────────
+    function aplicarFiltroFecha(rango) {
+        // Actualizar botones activos
+        document.querySelectorAll('.btn-filtro-fecha').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const btnActivo = document.querySelector(`.btn-filtro-fecha[data-rango="${rango}"]`);
+        if (btnActivo) btnActivo.classList.add('active');
+
+        // Mostrar todas las filas primero
+        dt.rows().every(function (rowIdx, tableLoop, rowLoop) {
+            $(this.node()).show();
+        });
+
+        if (rango === 'todas') {
+            return;
+        }
+
+        const hoy = new Date();
+        let inicio, fin;
+
+        switch (rango) {
+            case 'hoy':
+                inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+                fin = new Date(inicio);
+                fin.setDate(fin.getDate() + 1);
+                break;
+            case 'semana':
+                const diaSem = hoy.getDay(); // 0=domingo
+                const diff = diaSem === 0 ? 6 : diaSem - 1; // lunes = 0
+                inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - diff);
+                fin = new Date(inicio);
+                fin.setDate(fin.getDate() + 7);
+                break;
+            case 'mes':
+                inicio = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+                fin = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 1);
+                break;
+        }
+
+        const fmtInicio = inicio.toISOString().split('T')[0];
+        const fmtFin = fin.toISOString().split('T')[0];
+
+        // Filtrar por rango de fecha usando el atributo data-order de la columna "Fecha timbrado" (índice 4)
+        dt.rows().every(function (rowIdx, tableLoop, rowLoop) {
+            const rowNode = this.node();
+            const cells = rowNode.querySelectorAll('td');
+            // La celda de fecha es la número 4 (índice 4)
+            const fechaCell = cells[4];
+            if (fechaCell) {
+                const fechaAttr = fechaCell.getAttribute('data-order') || '';
+                // Extraer solo la parte de la fecha (YYYY-MM-DD)
+                const fechaFactura = fechaAttr.split(' ')[0];
+                if (fechaFactura && (fechaFactura < fmtIn
+                    this.nodes().to$().hide();
+                }
+            }
+        });
+    }
+
+    document.querySelectorAll('.btn-filtro-fecha').forEach(btn => {
+        btn.addEventListener('click', function () {
+            aplicarFiltroFecha(this.dataset.rango);
+        });
+    });
 
     // ── Vista previa ──────────────────────────────────────────────
-    const modalPreview = new bootstrap.Modal(document.getElementById('modalPreview'));
-
     document.querySelectorAll('.btn-preview').forEach(btn => {
         btn.addEventListener('click', function () {
             const data = JSON.parse(this.dataset.factura);
             document.getElementById('prev-titulo').textContent =
                 'Factura ' + (data.serie ?? '') + '-' + (data.folio ?? '');
             document.getElementById('prev-body').innerHTML = buildPreview(data);
+            const modalEl = document.getElementById('modalPreview');
+            const modalPreview = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
             modalPreview.show();
         });
     });
@@ -258,7 +336,9 @@ $(document).ready(function () {
         btn.addEventListener('click', function () {
             facturaIdCancelar = this.dataset.id;
             document.getElementById('folio-cancelar').textContent = this.dataset.folio;
-            new bootstrap.Modal(document.getElementById('modalCancelar')).show();
+            const modalEl = document.getElementById('modalCancelar');
+            const modalCancelar = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modalCancelar.show();
         });
     });
 

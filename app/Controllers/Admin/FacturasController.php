@@ -62,7 +62,7 @@ class FacturasController extends BaseController
             ->select('f.*, c.nombre as nombre_cliente, cot.total as total_cotizacion')
             ->join('sellopro_cotizaciones cot', 'cot.id_cotizacion = f.cotizacion_id')
             ->join('sellopro_clientes c',       'c.id_cliente = cot.cliente')
-            ->orderBy('f.created_at', 'DESC')
+            ->orderBy('f.id', 'ASC')
             ->get()
             ->getResultArray();
 
