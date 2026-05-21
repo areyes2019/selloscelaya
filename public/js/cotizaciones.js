@@ -28,7 +28,10 @@ const { createApp, ref } = Vue
         totales:[],
         dinero_descuento:"",
         saldo:"",
-        entregada:""
+        entregada:"",
+        metodoPago:"PUE",
+        usoCfdi:"G03",
+        formaPago:"03"
       }
     },
     computed: {
@@ -255,14 +258,38 @@ const { createApp, ref } = Vue
         });
       },
       generar_factura(){
-        if (!confirm('¿Deseas generar esta factura?')) return;
+        // Abrir el modal de configuración de factura
+        $('#modalFacturacion').modal('show');
+      },
+      confirmarFacturacion(){
+        // Validar que los campos requeridos estén seleccionados
+        if (!this.metodoPago) {
+          alert('Debes seleccionar un método de pago.');
+          return;
+        }
+        if (!this.usoCfdi) {
+          alert('Debes seleccionar un uso de CFDI.');
+          return;
+        }
+        if (!this.formaPago) {
+          alert('Debes seleccionar una forma de pago.');
+          return;
+        }
 
         const csrfToken = window.csrfToken
           || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
           || '';
 
+        // Cerrar el modal
+        $('#modalFacturacion').modal('hide');
+
         axios.post('/facturar_cotizacion',
-          { id_cotizacion: this.$refs.id_cotizacion.innerHTML },
+          {
+            id_cotizacion: this.$refs.id_cotizacion.innerHTML,
+            metodo_pago: this.metodoPago,
+            uso_cfdi: this.usoCfdi,
+            forma_pago: this.formaPago
+          },
           { headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' } }
         ).then((response) => {
           if (response.data.status === 'success') {

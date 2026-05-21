@@ -19,6 +19,15 @@ class App extends BaseConfig
 
     public string $baseURL = 'https://sellopronto.com.mx';
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $envBaseURL = env('app.baseURL');
+        if ($envBaseURL) {
+            $this->baseURL = $envBaseURL;
+        }
+    }
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
