@@ -351,6 +351,7 @@ $(document).ready(function () {
             motivo     : motivo,
         }).then(res => {
             if (res.data.status === 'success') {
+                alert('✅ Factura cancelada exitosamente');
                 location.reload();
             } else {
                 alert('Error: ' + (res.data.message ?? 'No se pudo cancelar'));
