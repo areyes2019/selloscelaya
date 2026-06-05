@@ -303,8 +303,8 @@ $(document).ready(function () {
                 const fechaAttr = fechaCell.getAttribute('data-order') || '';
                 // Extraer solo la parte de la fecha (YYYY-MM-DD)
                 const fechaFactura = fechaAttr.split(' ')[0];
-                if (fechaFactura && (fechaFactura < fmtIn
-                    this.nodes().to$().hide();
+                if (fechaFactura && (fechaFactura < fmtInicio || fechaFactura >= fmtFin)) {
+                    $(this.node()).hide();
                 }
             }
         });
