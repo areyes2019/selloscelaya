@@ -332,14 +332,14 @@ $(document).ready(function () {
     // ── Cancelar ──────────────────────────────────────────────────
     let facturaIdCancelar = null;
 
-    document.querySelectorAll('.btn-cancelar').forEach(btn => {
-        btn.addEventListener('click', function () {
-            facturaIdCancelar = this.dataset.id;
-            document.getElementById('folio-cancelar').textContent = this.dataset.folio;
-            const modalEl = document.getElementById('modalCancelar');
-            const modalCancelar = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-            modalCancelar.show();
-        });
+    document.querySelector('#tbl-facturas tbody').addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-cancelar');
+        if (!btn) return;
+        facturaIdCancelar = btn.dataset.id;
+        document.getElementById('folio-cancelar').textContent = btn.dataset.folio;
+        const modalEl = document.getElementById('modalCancelar');
+        const modalCancelar = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modalCancelar.show();
     });
 
     document.getElementById('btn-confirmar-cancelar').addEventListener('click', function () {
