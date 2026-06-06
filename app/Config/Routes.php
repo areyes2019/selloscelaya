@@ -264,6 +264,9 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 	    $routes->post('delete/(:num)', 'CategoriasController::delete/$1');
 	});
 
+	/*WhatsApp*/
+	$routes->post('whatsapp/send', 'Admin\WhatsappController::send');
+
 	/*facturas*/
 	$routes->group('facturas', ['filter' => 'AuthFilter'], function($routes) {
 		$routes->get('/',                        'Admin\FacturasController::index');

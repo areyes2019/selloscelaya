@@ -26,7 +26,7 @@ class Compras extends BaseController
 	    $ultimoDiaMesActual = date('Y-m-t');
 
 	    $builder = $db->table('sellopro_pedidos');
-	    $builder->select('sellopro_pedidos.*, sellopro_proveedores.empresa');
+	    $builder->select('sellopro_pedidos.*, sellopro_proveedores.empresa, sellopro_proveedores.telefono as telefono_proveedor');
 	    $builder->join('sellopro_proveedores', 'sellopro_proveedores.id_proveedor = sellopro_pedidos.proveedor');
 
 	    // Filtrar desde el primer día del mes pasado hasta el último día del mes actual

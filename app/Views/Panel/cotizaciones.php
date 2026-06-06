@@ -117,6 +117,7 @@
                                     <a :href="'/pagina_cotizador/'+c.slug" class="btn btn-view btn-sm"><i class="bi bi-eye"></i></a>
                                     <a :href="'/descargar_cotizacion/'+c.id_cotizacion" class="btn btn-sm btn-outline-secondary"><i class="bi bi-download"></i></a>
                                     <button class="btn btn-sm btn-outline-primary" @click="abrirModalClonar(c)" title="Clonar cotización"><i class="bi bi-copy"></i></button>
+                                    <button v-if="c.telefono" class="btn btn-sm text-white" style="background:#25D366; border-color:#25D366;" title="Enviar WhatsApp" @click="abrirWA(c)"><i class="bi bi-whatsapp"></i></button>
                                     <button class="btn btn-delete btn-sm" @click="eliminar(c.id_cotizacion)"><i class="bi bi-trash3"></i></button>
                                 </td>
                             </tr>
@@ -336,6 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (flash) setTimeout(() => bootstrap.Alert.getOrCreateInstance(flash).close(), 4000)
 })
 </script>
+<script src="<?= base_url('public/js/whatsapp.js') ?>"></script>
 <script src="<?= base_url('public/js/cotizaciones_lista.js') ?>?v=<?= filemtime(ROOTPATH . 'public/js/cotizaciones_lista.js') ?>"></script>
 
 <?php echo $this->endSection(); ?>

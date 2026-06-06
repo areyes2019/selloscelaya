@@ -94,6 +94,19 @@
                            onclick="return confirm('¿Enviar la factura por correo al cliente?')">
                             <i class="bi bi-envelope"></i>
                         </a>
+                        <?php if (!empty($f['telefono_cliente'])): ?>
+                        <?php
+                            $folio   = ($f['serie'] ?? '') . '-' . ($f['folio'] ?? '');
+                            $monto   = number_format((float)($f['monto'] ?? 0), 2);
+                            $msgWA   = "Hola, tu factura con folio {$folio} por \${$monto} MXN ha sido generada. Puedes solicitar el PDF a este número. Gracias.";
+                        ?>
+                        <button class="btn btn-sm text-white"
+                                style="background:#25D366; border-color:#25D366;"
+                                title="Enviar WhatsApp"
+                                onclick="abrirModalWA('factura', <?= $f['id'] ?>, '<?= esc($f['telefono_cliente']) ?>', <?= json_encode($msgWA) ?>)">
+                            <i class="bi bi-whatsapp"></i>
+                        </button>
+                        <?php endif; ?>
                         <?php if (in_array(strtolower($f['estado'] ?? ''), ['valid', 'timbrada', 'vigente'])): ?>
                         <button class="btn btn-sm btn-warning btn-cancelar"
                                 data-id="<?= $f['id'] ?>"
@@ -363,4 +376,5 @@ $(document).ready(function () {
 });
 </script>
 
+<script src="<?= base_url('public/js/whatsapp.js') ?>"></script>
 <?php echo $this->endSection()?>

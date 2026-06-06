@@ -252,6 +252,14 @@ createApp({
 
     watch([busqueda, filtroEstado, filtroFecha], () => { paginaActual.value = 1 })
 
+    // ── WhatsApp ────────────────────────────────────────────────
+    function abrirWA(c) {
+      if (!c.telefono) return
+      const monto = parseFloat(c.total || 0).toFixed(2)
+      const msg   = `Hola, te informamos que tu cotización #${c.id_cotizacion} por un total de $${monto} MXN está lista. Para más información contáctanos.`
+      window.abrirModalWA('cotizacion', c.id_cotizacion, c.telefono, msg)
+    }
+
     // ── Helpers de presentación ─────────────────────────────────
     function badgeComercial(val) {
       return BADGE_COMERCIAL[val || 'borrador'] ?? { label: val, cls: 'bg-secondary' }
@@ -293,7 +301,7 @@ createApp({
       // helpers
       badgeComercial, moneda, fecha,
       // acciones
-      eliminar, cargar,
+      eliminar, cargar, abrirWA,
       // clonar
       cotizacionAClonar, clienteClonId, clonando, abrirModalClonar, confirmarClonar,
       // clientes modal

@@ -72,6 +72,18 @@
                                 </button>
                             </form>
                         <?php endif; ?>
+                        <?php if (!empty($data['telefono_proveedor'])): ?>
+                        <?php
+                            $montoWA = number_format((float)($data['total'] ?? 0), 2);
+                            $msgWA   = "Hola, te compartimos que la orden de compra #{$data['id_pedido']} por \${$montoWA} MXN ha sido registrada. Para dudas contáctanos.";
+                        ?>
+                        <button class="btn btn-sm btn-circle text-white"
+                                style="background:#25D366; border-color:#25D366;"
+                                title="Enviar WhatsApp"
+                                onclick="abrirModalWA('orden_compra', <?= $data['id_pedido'] ?>, '<?= esc($data['telefono_proveedor']) ?>', <?= json_encode($msgWA) ?>)">
+                            <i class="bi bi-whatsapp"></i>
+                        </button>
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach ?>
@@ -132,6 +144,7 @@
     </div>
   </div>
 </div>
+<script src="<?= base_url('public/js/whatsapp.js') ?>"></script>
 <script>
     new DataTable('#modal');
     new DataTable('#example');

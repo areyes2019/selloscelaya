@@ -59,7 +59,7 @@ class FacturasController extends BaseController
     {
         $db      = \Config\Database::connect();
         $facturas = $db->table('sellopro_facturas f')
-            ->select('f.*, c.nombre as nombre_cliente, cot.total as total_cotizacion')
+            ->select('f.*, c.nombre as nombre_cliente, c.telefono as telefono_cliente, cot.total as total_cotizacion')
             ->join('sellopro_cotizaciones cot', 'cot.id_cotizacion = f.cotizacion_id')
             ->join('sellopro_clientes c',       'c.id_cliente = cot.cliente')
             ->orderBy('f.id', 'ASC')
