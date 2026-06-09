@@ -48,6 +48,18 @@ class WhatsappController extends BaseController
         return $this->respond(['success' => true, 'message' => 'Mensaje enviado correctamente']);
     }
 
+    public function test()
+    {
+        $result = $this->whatsapp->enviarHelloWorld('4612901439');
+
+        if (!$result['success']) {
+            log_message('error', '[WhatsApp Test] ' . $result['message']);
+            return $this->respond(['success' => false, 'message' => $result['message']], 500);
+        }
+
+        return $this->respond(['success' => true, 'message' => 'Mensaje de prueba enviado correctamente']);
+    }
+
     private function datosCotizacion(int $id): array
     {
         $db  = \Config\Database::connect();

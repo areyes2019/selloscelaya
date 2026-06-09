@@ -41,6 +41,21 @@ class WhatsappService
         return strlen($n) === 10 ? '52' . $n : $n;
     }
 
+    public function enviarHelloWorld(string $telefono): array
+    {
+        $payload = [
+            'messaging_product' => 'whatsapp',
+            'to'                => $this->formatearTelefono($telefono),
+            'type'              => 'template',
+            'template'          => [
+                'name'     => 'hello_world',
+                'language' => ['code' => 'en_US'],
+            ],
+        ];
+
+        return $this->post($payload);
+    }
+
     private function post(array $payload): array
     {
         $url = "https://graph.facebook.com/{$this->apiVersion}/{$this->phoneNumberId}/messages";

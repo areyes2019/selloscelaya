@@ -250,6 +250,13 @@
                                             @click="eliminarOrden(orden.id_ot)">
                                         <i class="bi bi-trash3"></i>
                                     </button>
+
+                                    <!-- Botón WhatsApp prueba -->
+                                    <button class="btn btn-sm text-white ms-1 btn-wa-test"
+                                            style="background:#25D366; border-color:#25D366;"
+                                            title="Enviar WhatsApp de prueba">
+                                        <i class="bi bi-whatsapp"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -430,4 +437,30 @@
     window.csrfHash = "<?= csrf_hash() ?>";
 </script>
 <script src="<?php echo base_url('public/js/admin.js'); ?>"></script>
+<script>
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-wa-test');
+        if (!btn) return;
+        if (!confirm('¿Enviar mensaje de prueba de WhatsApp al número 4612901439?')) return;
+        btn.disabled = true;
+        const original = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        axios.post('/whatsapp/test')
+            .then(function(r) {
+                const el = document.getElementById('liveToast');
+                document.getElementById('toastMessage').textContent = r.data.message || 'Mensaje enviado correctamente';
+                el.classList.remove('bg-danger');
+                el.classList.add('bg-success');
+                new bootstrap.Toast(el).show();
+            })
+            .catch(function(e) {
+                const el = document.getElementById('liveToast');
+                document.getElementById('toastMessage').textContent = (e.response && e.response.data && e.response.data.message) ? e.response.data.message : 'Error al enviar';
+                el.classList.remove('bg-success');
+                el.classList.add('bg-danger');
+                new bootstrap.Toast(el).show();
+            })
+            .finally(function() { btn.disabled = false; btn.innerHTML = original; });
+    });
+</script>
 <?php echo $this->endSection()?>

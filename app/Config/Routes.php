@@ -266,6 +266,7 @@ $routes->group('',['filter'=>'AuthFilter'], function($routes){
 
 	/*WhatsApp*/
 	$routes->post('whatsapp/send', 'Admin\WhatsappController::send');
+	$routes->post('whatsapp/test', 'Admin\WhatsappController::test');
 
 	/*facturas*/
 	$routes->group('facturas', ['filter' => 'AuthFilter'], function($routes) {

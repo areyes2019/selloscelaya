@@ -165,12 +165,18 @@
                                     </select>
                                 </form>
                             <?php else: ?>
-                                <a href="<?= base_url('ordenes/eliminar/'.$orden->id_ot) ?>" 
+                                <a href="<?= base_url('ordenes/eliminar/'.$orden->id_ot) ?>"
                                    class="btn btn-danger btn-sm rounded-0"
                                    onclick="return confirm('¿Estás seguro de eliminar esta orden?')">
                                    <span class="bi bi-trash3"></span> Eliminar
                                 </a>
                             <?php endif; ?>
+                            <button class="btn btn-sm text-white mt-1"
+                                    style="background:#25D366; border-color:#25D366;"
+                                    title="Enviar WhatsApp de prueba"
+                                    onclick="enviarWATest(this)">
+                                <i class="bi bi-whatsapp"></i>
+                            </button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -179,13 +185,14 @@
     </div>
 </div>
 
+<script src="<?= base_url('public/js/whatsapp.js') ?>"></script>
 <script>
     $(document).ready(function() {
         // Inicializar DataTables en cada tabla
         $('.tab-pane table').each(function() {
             $(this).DataTable();
         });
-        
+
         // Actualizar badges cuando cambia el estado
         $('select[name="status"]').on('change', function() {
             setTimeout(() => {
@@ -193,6 +200,18 @@
             }, 500);
         });
     });
+
+    function enviarWATest(btn) {
+        if (!confirm('¿Enviar mensaje de prueba de WhatsApp al número 4612901439?')) return;
+        btn.disabled = true;
+        const original = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+        axios.post('/whatsapp/test')
+            .then(r  => alert('✅ ' + r.data.message))
+            .catch(e => alert('❌ ' + (e.response?.data?.message || 'Error al enviar')))
+            .finally(() => { btn.disabled = false; btn.innerHTML = original; });
+    }
 </script>
 
 <?= $this->endSection() ?>
