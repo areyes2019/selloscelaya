@@ -199,9 +199,10 @@ $estadoColor = strtolower($estado ?? '') === 'valid' ? '#27ae60' : '#c0392b';
   <!-- EMISOR -->
   <td style="width:48%;vertical-align:top;padding-right:10px">
     <p style="font-weight:bold;color:#2c3e50;border-bottom:1px solid #2c3e50;padding-bottom:3px;margin-bottom:5px">Emisor:</p>
-    <p><strong>SELLO PRONTO SA DE CV</strong></p>
+    <p><strong>ABDIAS REYES REYNA</strong></p>
     <p>RFC: <strong>RERA7701272R1</strong></p>
-    <p>Régimen: 601 - General de Ley Personas Morales</p>
+    <P>38024, Celaya, Celaya, Guanajuato, MEX</P>
+    <p>Régimen: 612 -  Personas Físicas con Actividades Empresariales y Profesionales</p>
     <p style="margin-top:6px">Fecha: <?= esc($fecha_timbrado) ?></p>
     <p>Estado: <span style="color:<?= $estadoColor ?>;font-weight:bold"><?= esc($estadoLabel) ?></span></p>
   </td>
